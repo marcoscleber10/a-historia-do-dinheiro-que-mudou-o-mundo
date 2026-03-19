@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clube DCA — Bitcoin DCA Tracker</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --btc: #F7931A;
+    --btc-dim: rgba(247,147,26,0.15);
+    --btc-border: rgba(247,147,26,0.35);
+    --green: #10B981;
+    --red: #EF4444;
+    --blue: #60A5FA;
+    --purple: #A78BFA;
+    --bg: #0a0e1a;
+    --bg-card: #111827;
+    --bg-sidebar: #0d1117;
+    --bg-hover: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.08);
+    --text: #F1F5F9;
+    --text-dim: rgba(255,255,255,0.45);
+    --text-faint: rgba(255,255,255,0.2);
+    --sidebar-w: 220px;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+    transition: transform 0.25s ease;
+  }
+  .sidebar-logo {
+    padding: 1.4rem 1.2rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo-top {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 2px;
+  }
+  .sidebar-logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #F7931A, #e07a10);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .sidebar-logo-name {
+    font-size: 1.05rem; font-weight: 900; color: #fff;
+    line-height: 1.1;
+  }
+  .sidebar-logo-name span { color: var(--btc); }
+  .sidebar-logo-sub {
+    font-size: 0.6rem; color: var(--text-dim);
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    padding-left: 46px;
+  }
+  .sidebar-nav { flex: 1; padding: 0.75rem 0.6rem; overflow-y: auto; }
+  .sidebar-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    text-decoration: none;
+    user-select: none;
+  }
+  .sidebar-nav-item:hover { background: var(--bg-hover); color: #fff; }
+  .sidebar-nav-item.active { background: var(--btc-dim); color: var(--btc); border: 1px solid var(--btc-border); }
+  .sidebar-nav-item svg { flex-shrink: 0; }
+  .sidebar-footer {
+    padding: 0.75rem 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0.5rem 0.85rem;
+    border-radius: 9px;
+  }
+  .sidebar-user-avatar {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--btc), #e07a10);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 800; color: #000;
+  }
+  .sidebar-user-name { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); flex: 1; }
+  .sidebar-logout {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0.6rem 0.85rem;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--text-faint);
+    transition: all 0.15s;
+    margin-top: 2px;
+  }
+  .sidebar-logout:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+
+  /* ── MAIN ── */
+  .main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title { font-size: 1.1rem; font-weight: 800; color: #fff; }
+  .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+  .btc-live-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--btc-dim); border: 1px solid var(--btc-border);
+    border-radius: 20px; padding: 5px 12px;
+    font-size: 0.72rem; font-weight: 800; color: var(--btc);
+  }
+  .live-dot {
+    width: 6px; height: 6px; background: var(--green);
+    border-radius: 50%; animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .hamburger {
+    display: none; background: none; border: none;
+    color: var(--text); cursor: pointer; padding: 4px;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 1.5rem; }
+  .page.active { display: block; }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .kpi-card.orange::before { background: linear-gradient(90deg, var(--btc), #e07a10); }
+  .kpi-card.green::before  { background: linear-gradient(90deg, var(--green), #059669); }
+  .kpi-card.blue::before   { background: linear-gradient(90deg, var(--blue), #3b82f6); }
+  .kpi-card.purple::before { background: linear-gradient(90deg, var(--purple), #7c3aed); }
+  .kpi-card.red::before    { background: linear-gradient(90deg, var(--red), #dc2626); }
+  .kpi-label {
+    font-size: 0.65rem; font-weight: 700; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 0.4rem;
+  }
+  .kpi-value {
+    font-size: 1.3rem; font-weight: 900; color: #fff;
+    line-height: 1.2; margin-bottom: 0.2rem;
+  }
+  .kpi-value.btc { color: var(--btc); }
+  .kpi-sub {
+    font-size: 0.68rem; color: var(--text-dim);
+  }
+  .kpi-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.65rem; font-weight: 800;
+    border-radius: 5px; padding: 2px 6px;
+    margin-top: 3px;
+  }
+  .kpi-badge.up   { background: rgba(16,185,129,0.12); color: var(--green); }
+  .kpi-badge.down { background: rgba(239,68,68,0.12);  color: var(--red);   }
+
+  /* ── CHARTS ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .chart-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem;
+  }
+  .chart-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .chart-card-title {
+    font-size: 0.8rem; font-weight: 800; color: #fff;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chart-card-sub { font-size: 0.65rem; color: var(--text-dim); margin-top: 1px; }
+
+  /* ── COMPRAS TABLE ── */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.25rem;
+  }
+  .page-title { font-size: 1.05rem; font-weight: 800; color: #fff; }
+  .btn-primary {
+    display: flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, var(--btc), #e07a10);
+    border: none; color: #000; font-weight: 800;
+    font-size: 0.78rem; padding: 0.6rem 1.1rem;
+    border-radius: 8px; cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-secondary {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    color: var(--text); font-weight: 700; font-size: 0.75rem;
+    padding: 0.55rem 1rem; border-radius: 8px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+  .table-wrap {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: rgba(255,255,255,0.03); }
+  th {
+    padding: 0.7rem 1rem; text-align: left;
+    font-size: 0.65rem; font-weight: 800; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem; color: var(--text);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg-hover); }
+  .td-plat {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--btc-dim); border: 1px solid var(--btc-border);
+    color: var(--btc); border-radius: 5px; padding: 2px 8px;
+    font-size: 0.68rem; font-weight: 700;
+  }
+  .td-sats { color: var(--btc); font-weight: 700; font-family: monospace; }
+  .td-delete {
+    background: none; border: none; color: var(--text-faint);
+    cursor: pointer; padding: 4px; border-radius: 5px;
+    transition: all 0.15s;
+  }
+  .td-delete:hover { color: var(--red); background: rgba(239,68,68,0.1); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem;
+    width: 100%; max-width: 420px; margin: 1rem;
+  }
+  .modal-title {
+    font-size: 1rem; font-weight: 800; color: #fff;
+    margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+  }
+  .form-group { margin-bottom: 1rem; }
+  .form-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); margin-bottom: 0.35rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-input {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.65rem 0.9rem; color: var(--text);
+    font-size: 0.85rem; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--btc); }
+  .form-input option { background: #1a1f2e; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .form-hint { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.25rem; }
+  .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+  .modal-actions .btn-primary { flex: 1; justify-content: center; }
+  .modal-actions .btn-secondary { flex: 0; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--text-dim);
+  }
+  .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
+  .empty-state h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .empty-state p { font-size: 0.75rem; }
+
+  /* ── VITRINE ── */
+  .vitrine-card {
+    background: linear-gradient(135deg, #0d1117, #161b27);
+    border: 1px solid rgba(247,147,26,0.2);
+    border-radius: 16px; padding: 1.75rem;
+    text-align: center; max-width: 420px; margin: 0 auto;
+  }
+  .vitrine-title { font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem; }
+  .vitrine-subtitle { font-size: 0.75rem; color: var(--text-dim); margin-bottom: 1.5rem; }
+  .vitrine-kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .vitrine-kpi { background: rgba(255,255,255,0.04); border-radius: 10px; padding: 0.85rem; }
+  .vitrine-kpi-label { font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.3rem; }
+  .vitrine-kpi-value { font-size: 1rem; font-weight: 900; color: #fff; }
+  .vitrine-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--btc-dim); border: 1px solid var(--btc-border); color: var(--btc); border-radius: 20px; padding: 5px 14px; font-size: 0.72rem; font-weight: 800; margin-bottom: 1rem; }
+  .vitrine-share-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, var(--btc), #e07a10); border: none; color: #000; font-weight: 800; font-size: 0.78rem; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer; margin: 0 auto; transition: opacity 0.15s; }
+  .vitrine-share-btn:hover { opacity: 0.85; }
+
+  /* ── ANALISE ── */
+  .analise-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.25rem; }
+  .analise-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; }
+  .analise-stat-label { font-size: 0.65rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.35rem; }
+  .analise-stat-value { font-size: 1.1rem; font-weight: 900; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; }
+    .hamburger { display: flex; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-row { grid-template-columns: 1fr; }
+    .page { padding: 1rem; }
+    .analise-grid { grid-template-columns: repeat(2,1fr); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+    .sidebar-overlay.open { display: block; }
+  }
+  @media (max-width: 480px) {
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .kpi-value { font-size: 1rem; }
+    table { font-size: 0.72rem; }
+    th, td { padding: 0.6rem 0.6rem; }
+  }
+
+  /* ── SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 0.8s linear infinite; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-top">
+      <div class="sidebar-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+      </div>
+      <div>
+        <div class="sidebar-logo-name">Clube <span>DCA</span></div>
+      </div>
+    </div>
+    <div class="sidebar-logo-sub">Bitcoin DCA Tracker</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-nav-item active" onclick="showPage('dashboard', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('compras', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Compras
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('analise', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Analise
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('vitrine', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Vitrine
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('admin', this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Admin
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('apoio', this)" style="color:#F59E0B;margin-top:2px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      Apoiar
+    </div>
+    <div class="sidebar-nav-item" onclick="showPage('precojusto', this)" style="color:#22C55E;border-top:1px solid rgba(255,255,255,0.06);margin-top:6px;padding-top:12px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/></svg>
+      PrecoJusto
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-user-avatar">M</div>
+      <div class="sidebar-user-name">Marcos</div>
+    </div>
+    <div class="sidebar-logout" onclick="clearAllData()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Limpar Dados
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main-content">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="hamburger" onclick="toggleSidebar()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="btc-live-badge">
+        <div class="live-dot"></div>
+        <span id="btc-price-topbar">BTC ...</span>
+      </div>
+      <button class="btn-secondary" onclick="addCompra()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Registrar DCA
+      </button>
+    </div>
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div id="page-dashboard" class="page active">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card orange">
+        <div class="kpi-label">Total Investido</div>
+        <div class="kpi-value" id="kpi-total">R$ 0,00</div>
+        <div class="kpi-sub" id="kpi-compras-count">0 compras</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">BTC Acumulado</div>
+        <div class="kpi-value btc" id="kpi-sats">0 sats</div>
+        <div class="kpi-sub" id="kpi-btc">0.00000000 BTC</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Valor Atual</div>
+        <div class="kpi-value" id="kpi-valor-atual">R$ 0,00</div>
+        <div class="kpi-sub" id="kpi-valor-usd">$ 0,00</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-label">Preco Medio de Compra</div>
+        <div class="kpi-value" id="kpi-preco-medio">R$ 0</div>
+        <div class="kpi-sub" id="kpi-preco-atual">BTC agora: R$ 0</div>
+      </div>
+      <div class="kpi-card" id="kpi-pnl-card">
+        <div class="kpi-label">Lucro / Prejuizo</div>
+        <div class="kpi-value" id="kpi-pnl-brl">R$ 0,00</div>
+        <div id="kpi-pnl-badge" class="kpi-badge">0.00%</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">BTC Agora (USD)</div>
+        <div class="kpi-value" id="kpi-btc-usd">$ 0</div>
+        <div class="kpi-sub" id="kpi-usd-brl">USD/BRL: ...</div>
+      </div>
+    </div>
+
+    <!-- Equity Curve -->
+    <div class="chart-card" style="margin-bottom:1rem;">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            Curva de Equity
+          </div>
+          <div class="chart-card-sub">Valor do portfolio vs Total investido</div>
+        </div>
+      </div>
+      <canvas id="chart-equity" height="200"></canvas>
+    </div>
+
+    <!-- BTC Acumulado + Resultado Mensal -->
+    <div class="charts-row" style="margin-bottom:1rem;">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+              Acumulo BTC
+            </div>
+            <div class="chart-card-sub">Sats acumulados mes a mes</div>
+          </div>
+        </div>
+        <canvas id="chart-btc-acum" height="200"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
+              Resultado Mensal
+            </div>
+            <div class="chart-card-sub">Lucro/Prejuizo por mes (BRL)</div>
+          </div>
+          <select id="year-filter" onchange="renderMonthlyChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
+        </div>
+        <canvas id="chart-monthly" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- TWR — Retorno Ponderado pelo Tempo -->
+    <div class="chart-card" style="margin-bottom:1rem;">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            TWR — Retorno Ponderado pelo Tempo
+          </div>
+          <div class="chart-card-sub">% retorno mensal (barras) + TWR acumulado (linha)</div>
+        </div>
+        <select id="twr-year-filter" onchange="renderTWRChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
+      </div>
+      <canvas id="chart-twr" height="180"></canvas>
+    </div>
+
+    <!-- ETH Acumulado + SOL Acumulado -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 7 12 22 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><line x1="2" y1="7" x2="22" y2="7"/></svg>
+              Acumulo ETH
+            </div>
+            <div class="chart-card-sub">ETH acumulado mes a mes</div>
+          </div>
+          <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.35);color:#627EEA;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Atualizar
+          </button>
+        </div>
+        <canvas id="chart-eth-acum" height="200"></canvas>
+        <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo ETH para ver o grafico</span>
+          <button onclick="addCompraAtivo('ETH')" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.1);border:1px solid rgba(98,126,234,0.3);color:#627EEA;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            + ETH
+          </button>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div>
+            <div class="chart-card-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Acumulo SOL
+            </div>
+            <div class="chart-card-sub">SOL acumulado mes a mes</div>
+          </div>
+          <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.35);color:#9945FF;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Atualizar
+          </button>
+        </div>
+        <canvas id="chart-sol-acum" height="200"></canvas>
+        <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo SOL para ver o grafico</span>
+          <button onclick="addCompraAtivo('SOL')" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.3);color:#9945FF;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            + SOL
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMPRAS ── -->
+  <div id="page-compras" class="page">
+    <div class="page-header">
+      <div class="page-title">Minhas Compras</div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn-secondary" onclick="exportCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn-primary" onclick="addCompra()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova Compra
+        </button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Ativo</th>
+            <th>Plataforma</th>
+            <th>Investido (R$)</th>
+            <th>Preco (R$)</th>
+            <th>Quantidade</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="compras-tbody">
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <h3>Nenhuma compra registrada</h3>
+                <p>Clique em "Nova Compra" para comecar seu DCA</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── ANALISE ── -->
+  <div id="page-analise" class="page">
+    <div class="page-header">
+      <div class="page-title">Analise do Portfolio</div>
+    </div>
+    <div class="analise-grid" id="analise-stats"></div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Sats Acumulados por Mes</div>
+        </div>
+        <canvas id="chart-sats-monthly" height="220"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <div class="chart-card-title">Preco Medio de Compra vs BTC</div>
+        </div>
+        <canvas id="chart-preco-medio" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VITRINE ── -->
+  <div id="page-vitrine" class="page">
+    <div class="page-header">
+      <div class="page-title">Minha Vitrine DCA</div>
+    </div>
+    <div class="vitrine-card">
+      <div class="vitrine-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+        Clube DCA
+      </div>
+      <div class="vitrine-title" id="vitrine-name">Marcos</div>
+      <div class="vitrine-subtitle">Acumulando Bitcoin com disciplina</div>
+      <div class="vitrine-kpi-grid">
+        <div class="vitrine-kpi">
+          <div class="vitrine-kpi-label">Total Investido</div>
+          <div class="vitrine-kpi-value" id="vitrine-total">R$ 0</div>
+        </div>
+        <div class="vitrine-kpi">
+          <div class="vitrine-kpi-label">BTC Acumulado</div>
+          <div class="vitrine-kpi-value" id="vitrine-sats">0 sats</div>
+        </div>
+        <div class="vitrine-kpi">
+          <div class="vitrine-kpi-label">Lucro/Prejuizo</div>
+          <div class="vitrine-kpi-value" id="vitrine-pnl">0%</div>
+        </div>
+        <div class="vitrine-kpi">
+          <div class="vitrine-kpi-label">Compras</div>
+          <div class="vitrine-kpi-value" id="vitrine-compras">0</div>
+        </div>
+      </div>
+      <button class="vitrine-share-btn" onclick="shareVitrine()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Compartilhar Vitrine
+      </button>
+    </div>
+  </div>
+
+  <!-- ── ADMIN ── -->
+  <div id="page-admin" class="page">
+    <div class="page-header">
+      <div class="page-title">Configuracoes</div>
+    </div>
+    <div style="display:grid;gap:1rem;max-width:480px;">
+      <!-- Google Drive Backup -->
+      <div class="chart-card" style="border-color:rgba(66,133,244,0.35);">
+        <div class="chart-card-title" style="margin-bottom:0.35rem;display:flex;align-items:center;gap:8px;">
+          <svg width="15" height="13" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L28 48.1H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.45 0c-1.35.8-2.5 1.9-3.3 3.3L1.2 43.6C.4 45 0 46.55 0 48.1h28z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.6c.8-1.4 1.2-2.95 1.2-4.5H59.3l5.9 11.4z" fill="#ea4335"/><path d="M43.65 25L57.85 0H29.45L15.25 25z" fill="#00832d"/><path d="M59.3 48.1H87.3l-13.75-23.8-14.25-23.8-14.2 24.5z" fill="#2684fc"/></svg>
+          Backup no Google Drive
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5;">Salve e restaure seus dados automaticamente no Google Drive — acesse de qualquer celular ou PC.</div>
+        <div id="drive-status" style="display:none;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.72rem;color:var(--green);">
+          <div class="live-dot"></div>
+          <span id="drive-status-text">Conectado ao Google Drive</span>
+        </div>
+        <div style="display:grid;gap:0.5rem;">
+          <button id="btn-drive-connect" onclick="driveConnect()" style="display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#4285F4,#1a73e8);border:none;color:#fff;font-weight:800;font-size:0.78rem;padding:0.7rem;border-radius:8px;cursor:pointer;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Conectar com Google Drive
+          </button>
+          <div id="drive-actions" style="display:none;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <button onclick="driveSave()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar no Drive
+            </button>
+            <button onclick="driveLoad()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Restaurar do Drive
+            </button>
+            <button onclick="driveDisconnect()" style="grid-column:1/-1;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-faint);font-size:0.68rem;font-weight:600;padding:0.4rem;border-radius:8px;cursor:pointer;">
+              Desconectar
+            </button>
+          </div>
+        </div>
+        <div id="drive-msg" style="margin-top:0.5rem;font-size:0.68rem;text-align:center;min-height:1.2rem;"></div>
+      </div>
+
+      <!-- Backup Local JSON -->
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:0.35rem;">Backup Local</div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Baixe seus dados como arquivo JSON para guardar no celular ou computador.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+          <button class="btn-secondary" onclick="exportJSON()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Baixar JSON
+          </button>
+          <button class="btn-secondary" onclick="document.getElementById('json-import').click()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Restaurar JSON
+          </button>
+        </div>
+        <input type="file" id="json-import" accept=".json" onchange="importJSON(event)" style="display:none;">
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:1rem;">Seu Nome na Vitrine</div>
+        <div style="display:flex;gap:0.5rem;">
+          <input class="form-input" id="admin-nome" placeholder="Ex: Marcos" style="flex:1;">
+          <button class="btn-primary" onclick="saveNome()">Salvar</button>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:0.35rem;">Importar CSV</div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Formato: data,plataforma,brl,btc_preco</div>
+        <input type="file" id="csv-import" accept=".csv" onchange="importCSV(event)" style="font-size:0.78rem;color:var(--text-dim);">
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title" style="margin-bottom:0.35rem;color:var(--red);">Zona de Perigo</div>
+        <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Apaga todas as compras registradas.</div>
+        <button class="btn-secondary" style="border-color:rgba(239,68,68,0.3);color:var(--red);" onclick="clearAllData()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          Apagar Todos os Dados
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page PrecoJusto -->
+<div id="page-apoio" class="page" style="padding:1rem;">
+  <div style="text-align:center;margin-bottom:1.25rem;">
+    <div style="width:54px;height:54px;background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;box-shadow:0 0 22px rgba(245,158,11,0.3);">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </div>
+    <div style="font-size:1.15rem;font-weight:900;color:#fff;margin-bottom:0.3rem;">Apoiar o Projeto</div>
+    <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);line-height:1.55;max-width:320px;margin:0 auto;">Este projeto e mantido de forma independente, sem anuncios ou investidores. Se ele te ajudou, qualquer contribuicao faz diferenca.</div>
+  </div>
+
+  <!-- PIX -->
+  <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+      <div style="width:34px;height:34px;background:rgba(34,197,94,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div><div style="font-size:0.78rem;font-weight:800;color:#22C55E;">PIX</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Chave UUID</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=127d59fc-1f37-4e8e-9fd4-295e1883727b&bgcolor=0d1117&color=22C55E" style="border-radius:8px;border:1px solid rgba(34,197,94,0.2);width:70px;height:70px;" alt="QR PIX">
+      <div style="flex:1;">
+        <div style="font-size:0.6rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;line-height:1.5;">127d59fc-1f37-4e8e-9fd4-295e1883727b</div>
+        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('127d59fc-1f37-4e8e-9fd4-295e1883727b').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);color:#22C55E;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar chave
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightning -->
+  <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+      <div style="width:34px;height:34px;background:rgba(245,158,11,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div><div style="font-size:0.78rem;font-weight:800;color:#F59E0B;">Bitcoin Lightning</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Instantaneo, taxa zero</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=cloggedparrot01@walletofsatoshi.com&bgcolor=0d1117&color=F59E0B" style="border-radius:8px;border:1px solid rgba(245,158,11,0.2);width:70px;height:70px;" alt="QR Lightning">
+      <div style="flex:1;">
+        <div style="font-size:0.6rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">cloggedparrot01@walletofsatoshi.com</div>
+        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('cloggedparrot01@walletofsatoshi.com').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);color:#F59E0B;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar endereco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BTC on-chain -->
+  <div style="background:rgba(247,147,26,0.07);border:1px solid rgba(247,147,26,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+      <div style="width:34px;height:34px;background:rgba(247,147,26,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 8h4a2 2 0 0 1 0 4H9v4h4a2 2 0 0 0 0-4"/><line x1="9" y1="12" x2="13" y2="12"/></svg>
+      </div>
+      <div><div style="font-size:0.78rem;font-weight:800;color:#F7931A;">Bitcoin On-chain</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">Rede Bitcoin nativa</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5&bgcolor=0d1117&color=F7931A" style="border-radius:8px;border:1px solid rgba(247,147,26,0.2);width:70px;height:70px;" alt="QR BTC">
+      <div style="flex:1;">
+        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5</div>
+        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('bc1q3zf09xtensa5kag3nz6jsvqyle3sgnmns0j9n5').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(247,147,26,0.12);border:1px solid rgba(247,147,26,0.25);color:#F7931A;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar endereco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVM -->
+  <div style="background:rgba(98,126,234,0.07);border:1px solid rgba(98,126,234,0.2);border-radius:14px;padding:1rem;margin-bottom:0.75rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+      <div style="width:34px;height:34px;background:rgba(98,126,234,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 19 22 19"/></svg>
+      </div>
+      <div><div style="font-size:0.78rem;font-weight:800;color:#627EEA;">Ethereum / Polygon EVM</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">ETH, MATIC, USDC, USDT</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=0xAd944bA180610F1Fe43151eD81c0084C918c68e1&bgcolor=0d1117&color=627EEA" style="border-radius:8px;border:1px solid rgba(98,126,234,0.2);width:70px;height:70px;" alt="QR EVM">
+      <div style="flex:1;">
+        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">0xAd944bA180610F1Fe43151eD81c0084C918c68e1</div>
+        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('0xAd944bA180610F1Fe43151eD81c0084C918c68e1').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.25);color:#627EEA;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar endereco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Solana -->
+  <div style="background:rgba(153,69,255,0.07);border:1px solid rgba(153,69,255,0.2);border-radius:14px;padding:1rem;margin-bottom:1rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:0.75rem;">
+      <div style="width:34px;height:34px;background:rgba(153,69,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8l4 4-4 4"/></svg>
+      </div>
+      <div><div style="font-size:0.78rem;font-weight:800;color:#9945FF;">Solana</div><div style="font-size:0.65rem;color:rgba(255,255,255,0.4);">SOL, USDC-SPL</div></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm&bgcolor=0d1117&color=9945FF" style="border-radius:8px;border:1px solid rgba(153,69,255,0.2);width:70px;height:70px;" alt="QR SOL">
+      <div style="flex:1;">
+        <div style="font-size:0.55rem;word-break:break-all;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);padding:6px 8px;border-radius:7px;font-family:monospace;">EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm</div>
+        <button onclick="navigator.clipboard&&navigator.clipboard.writeText('EtSD7W7YG36ZuMAAX6bwJYJ9keciRK7cP7rJiadiZdmm').then(function(){var b=event.target;var t=b.textContent;b.textContent='Copiado!';setTimeout(function(){b.textContent=t;},1800);})" style="margin-top:5px;display:flex;align-items:center;gap:5px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.25);color:#9945FF;padding:4px 10px;border-radius:6px;font-size:0.65rem;font-weight:700;cursor:pointer;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar endereco
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;font-size:0.65rem;color:rgba(255,255,255,0.25);line-height:1.5;">Obrigado por usar e apoiar o Clube DCA.</div>
+</div>
+
+<div id="page-precojusto" class="page" style="padding:1rem;">
+  <!-- Hero banner -->
+  <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0a1a12 0%,#0d1117 50%,#0a1512 100%);border:1px solid rgba(34,197,94,0.2);border-radius:16px;padding:2rem 1.2rem 1.5rem;margin-bottom:1rem;">
+    <div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;background:radial-gradient(circle,rgba(34,197,94,0.12),transparent 70%);border-radius:50%;pointer-events:none;"></div>
+    <div style="text-align:center;position:relative;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:0.85rem;">
+        <div style="width:50px;height:50px;background:linear-gradient(135deg,#22C55E,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px rgba(34,197,94,0.35);">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/><path d="M19 6.5l2 1.5v3l-2 1"/></svg>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:1.5rem;font-weight:900;color:#fff;line-height:1.1;">Preco<span style="color:#22C55E;">Justo</span></div>
+          <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Combustivel e Medicamentos</div>
+        </div>
+      </div>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.55);margin-bottom:1.25rem;line-height:1.5;">Encontre o menor preco de combustivel e medicamentos perto de voce em tempo real.</div>
+      <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank"
+         style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#22C55E,#16a34a);color:#000;font-weight:900;font-size:0.85rem;padding:0.8rem 1.5rem;border-radius:12px;text-decoration:none;box-shadow:0 4px 16px rgba(34,197,94,0.3);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Abrir PrecoJusto
+      </a>
+    </div>
+  </div>
+
+  <!-- Cards de categoria -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+    <!-- Combustivel -->
+    <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank" style="text-decoration:none;">
+      <div style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(249,115,22,0.06));border:1px solid rgba(245,158,11,0.3);border-radius:14px;padding:1rem;text-align:center;">
+        <div style="width:42px;height:42px;background:rgba(245,158,11,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/><path d="M19 6.5l2 1.5v3l-2 1"/></svg>
+        </div>
+        <div style="font-size:0.85rem;font-weight:900;color:#F59E0B;margin-bottom:4px;">Combustivel</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">Gasolina, Etanol, Diesel, GNV</div>
+        <div style="display:flex;gap:3px;justify-content:center;flex-wrap:wrap;">
+          <span style="background:rgba(245,158,11,0.18);color:#F59E0B;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">G</span>
+          <span style="background:rgba(16,185,129,0.18);color:#10B981;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">E</span>
+          <span style="background:rgba(59,130,246,0.18);color:#60A5FA;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">D</span>
+          <span style="background:rgba(139,92,246,0.18);color:#A78BFA;border-radius:4px;padding:2px 5px;font-size:0.55rem;font-weight:800;">GNV</span>
+        </div>
+      </div>
+    </a>
+    <!-- Medicamentos -->
+    <a href="https://site-combustai-620634786284.southamerica-east1.run.app" target="_blank" style="text-decoration:none;">
+      <div style="background:linear-gradient(135deg,rgba(236,72,153,0.1),rgba(168,85,247,0.06));border:1px solid rgba(236,72,153,0.3);border-radius:14px;padding:1rem;text-align:center;">
+        <div style="width:42px;height:42px;background:rgba(236,72,153,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.6rem;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EC4899" stroke-width="2.2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/><path d="M13 13h4M15 11v4"/></svg>
+        </div>
+        <div style="font-size:0.85rem;font-weight:900;color:#EC4899;margin-bottom:4px;">Medicamentos</div>
+        <div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-bottom:8px;">Farmacias perto de voce</div>
+        <div>
+          <span style="background:rgba(236,72,153,0.18);color:#EC4899;border-radius:4px;padding:2px 8px;font-size:0.55rem;font-weight:800;">TEMPO REAL</span>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Features -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
+      <div style="width:30px;height:30px;background:rgba(34,197,94,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+      </div>
+      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Geolocalizacao</div>
+      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Detecta onde voce esta</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
+      <div style="width:30px;height:30px;background:rgba(96,165,250,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      </div>
+      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Filtros</div>
+      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Raio, preco e horas</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
+      <div style="width:30px;height:30px;background:rgba(245,158,11,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
+      </div>
+      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Ranking ANP</div>
+      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">Media por estado (27 UFs)</div>
+    </div>
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0.85rem;">
+      <div style="width:30px;height:30px;background:rgba(239,68,68,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:0.5rem;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div style="font-size:0.75rem;font-weight:800;color:#fff;margin-bottom:2px;">Tempo real</div>
+      <div style="font-size:0.62rem;color:rgba(255,255,255,0.4);line-height:1.35;">NF-e dos postos (BA)</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nova Compra -->
+<div class="modal-overlay" id="modal-compra">
+  <div class="modal">
+    <div class="modal-title">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--btc)" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Registrar Compra DCA
+    </div>
+    <!-- Ativo -->
+    <div class="form-group">
+      <label class="form-label">Ativo</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">
+        <button id="btn-ativo-BTC" onclick="setAtivo('BTC')" style="padding:0.55rem;border-radius:8px;border:2px solid var(--btc);background:var(--btc-dim);color:var(--btc);font-weight:800;font-size:0.8rem;cursor:pointer;">BTC</button>
+        <button id="btn-ativo-ETH" onclick="setAtivo('ETH')" style="padding:0.55rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.4);font-weight:700;font-size:0.8rem;cursor:pointer;">ETH</button>
+        <button id="btn-ativo-SOL" onclick="setAtivo('SOL')" style="padding:0.55rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.4);font-weight:700;font-size:0.8rem;cursor:pointer;">SOL</button>
+      </div>
+    </div>
+    <!-- Data -->
+    <div class="form-group">
+      <label class="form-label">Data da Compra</label>
+      <input type="date" class="form-input" id="f-data" onchange="onDateChange()">
+    </div>
+    <!-- Valor + Preco -->
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Valor Investido (R$)</label>
+        <input type="number" class="form-input" id="f-brl" placeholder="500" min="0" step="0.01" oninput="calcSatsPreview()">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="f-preco-label">Preco BTC</label>
+        <!-- Toggle BRL/USD -->
+        <div style="display:flex;gap:4px;margin-bottom:5px;">
+          <button id="btn-cur-BRL" onclick="setCurrency('BRL')" style="flex:1;padding:3px 0;border-radius:5px;border:1px solid var(--btc);background:var(--btc-dim);color:var(--btc);font-size:0.65rem;font-weight:800;cursor:pointer;">R$ BRL</button>
+          <button id="btn-cur-USD" onclick="setCurrency('USD')" style="flex:1;padding:3px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.35);font-size:0.65rem;font-weight:700;cursor:pointer;">$ USD</button>
+        </div>
+        <input type="number" class="form-input" id="f-preco" placeholder="Auto" min="0" step="0.01" oninput="calcSatsPreview()">
+        <div class="form-hint" id="f-preco-hint">Clique em "Cotacao atual"</div>
+      </div>
+    </div>
+    <!-- Plataforma -->
+    <div class="form-group">
+      <label class="form-label">Plataforma</label>
+      <select class="form-input" id="f-plat">
+        <option>Depix</option><option>Picnic</option><option>Binance</option>
+        <option>Mercado Bitcoin</option><option>Foxbit</option><option>NovaDAX</option>
+        <option>BitcoinTrade</option><option>Cripto.com</option><option>Outro</option>
+      </select>
+    </div>
+    <!-- Preview unidades -->
+    <div id="sats-preview" style="background:var(--btc-dim);border:1px solid var(--btc-border);border-radius:8px;padding:0.65rem;font-size:0.78rem;color:var(--btc);font-weight:700;display:none;margin-bottom:0.5rem;text-align:center;"></div>
+    <!-- Botoes de cotacao -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem;">
+      <button class="btn-secondary" style="justify-content:center;font-size:0.68rem;" onclick="useLivePrice()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Cotacao atual
+      </button>
+      <button class="btn-secondary" id="btn-hist" style="justify-content:center;font-size:0.68rem;color:#60A5FA;border-color:rgba(96,165,250,0.35);" onclick="fetchHistoricalPrice()">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg>
+        Preco historico
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveCompra()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvar Compra
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── GLOBALS ──
+var compras = JSON.parse(localStorage.getItem('clube-dca-compras') || '[]');
+var nome    = localStorage.getItem('clube-dca-nome') || 'Marcos';
+var btcUSD  = 0, ethUSD  = 0, solUSD  = 0;
+var usdBRL  = 0;
+var btcBRL  = 0, ethBRL  = 0, solBRL  = 0;
+var modalAtivo    = 'BTC';   // BTC | ETH | SOL
+var modalCurrency = 'BRL';   // BRL | USD
+var ATIVO_COLORS  = { BTC: '#F7931A', ETH: '#627EEA', SOL: '#9945FF' };
+var ATIVO_SYMBOLS = { BTC: 'BTCUSDT', ETH: 'ETHUSDT', SOL: 'SOLUSDT' };
+var chartEquity, chartPlat, chartMonthly, chartSatsMonthly, chartPrecoMedio;
+var PLAT_COLORS = ['#F7931A','#627EEA','#10B981','#EF4444','#60A5FA','#A78BFA','#F59E0B','#06B6D4','#EC4899'];
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('f-data').value = today;
+    document.getElementById('admin-nome').value = nome;
+    fetchPrices().then(function() {
+        updateKPIs();
+        renderComprasTable();
+        renderCharts();
+        renderAnalise();
+        renderVitrine();
+    });
+    setInterval(fetchPrices, 30000);
+    lucide && lucide.createIcons && lucide.createIcons();
+});
+
+// ── PRICES ──
+async function fetchPrices() {
+    try {
+        var r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+        btcUSD = parseFloat((await r.json()).price) || 0;
+    } catch(e) {}
+    try {
+        var r2 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT');
+        ethUSD = parseFloat((await r2.json()).price) || 0;
+    } catch(e) {}
+    try {
+        var r3 = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=SOLUSDT');
+        solUSD = parseFloat((await r3.json()).price) || 0;
+    } catch(e) {}
+    try {
+        var r4 = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
+        usdBRL = parseFloat((await r4.json()).USDBRL.bid) || 0;
+    } catch(e) {}
+    btcBRL = btcUSD * usdBRL;
+    ethBRL = ethUSD * usdBRL;
+    solBRL = solUSD * usdBRL;
+    var fmt = btcBRL > 0 ? 'R$ ' + fmtBRL(btcBRL) : '...';
+    document.getElementById('btc-price-topbar').textContent = 'BTC ' + fmt;
+    document.getElementById('kpi-preco-atual').textContent  = 'BTC agora: ' + (btcBRL > 0 ? 'R$ ' + fmtBRL(btcBRL) : '...');
+    document.getElementById('kpi-btc-usd').textContent      = btcUSD > 0 ? '$ ' + fmtUSD(btcUSD) : '...';
+    document.getElementById('kpi-usd-brl').textContent      = usdBRL > 0 ? 'USD/BRL: R$ ' + usdBRL.toFixed(2) : '...';
+    updateKPIs();
+}
+
+function getAtivoPriceBRL(ativo) {
+    if (ativo === 'ETH') return ethBRL;
+    if (ativo === 'SOL') return solBRL;
+    return btcBRL;
+}
+function getAtivoPriceUSD(ativo) {
+    if (ativo === 'ETH') return ethUSD;
+    if (ativo === 'SOL') return solUSD;
+    return btcUSD;
+}
+
+// ── KPIs ──
+function updateKPIs() {
+    var totalBRL = compras.reduce(function(s,c){ return s + c.brl; }, 0);
+    var totalSats = compras.reduce(function(s,c){ return s + c.sats; }, 0);
+    var totalBTC  = totalSats / 1e8;
+    var valorAtual = totalBTC * btcBRL;
+    var precoMedio = totalSats > 0 ? totalBRL / totalBTC : 0;
+    var pnl = valorAtual - totalBRL;
+    var pnlPct = totalBRL > 0 ? pnl / totalBRL * 100 : 0;
+
+    document.getElementById('kpi-total').textContent          = 'R$ ' + fmtBRL(totalBRL);
+    document.getElementById('kpi-compras-count').textContent  = compras.length + ' compra' + (compras.length !== 1 ? 's' : '');
+    document.getElementById('kpi-sats').textContent           = fmtSats(totalSats) + ' sats';
+    document.getElementById('kpi-btc').textContent            = totalBTC.toFixed(8) + ' BTC';
+    document.getElementById('kpi-valor-atual').textContent    = 'R$ ' + fmtBRL(valorAtual);
+    document.getElementById('kpi-valor-usd').textContent      = usdBRL > 0 ? '$ ' + fmtUSD(valorAtual / usdBRL) : '';
+    document.getElementById('kpi-preco-medio').textContent    = precoMedio > 0 ? 'R$ ' + fmtBRL(precoMedio) : 'R$ 0';
+    document.getElementById('kpi-pnl-brl').textContent        = (pnl >= 0 ? '+' : '') + 'R$ ' + fmtBRL(pnl);
+
+    var badge = document.getElementById('kpi-pnl-badge');
+    badge.textContent = (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%';
+    badge.className = 'kpi-badge ' + (pnlPct >= 0 ? 'up' : 'down');
+    var card = document.getElementById('kpi-pnl-card');
+    card.className = 'kpi-card ' + (pnlPct >= 0 ? 'green' : 'red');
+
+    // Vitrine
+    document.getElementById('vitrine-total').textContent   = 'R$ ' + fmtBRL(totalBRL);
+    document.getElementById('vitrine-sats').textContent    = fmtSats(totalSats) + ' sats';
+    document.getElementById('vitrine-pnl').textContent     = (pnlPct >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%';
+    document.getElementById('vitrine-compras').textContent = compras.length;
+    document.getElementById('vitrine-name').textContent    = nome;
+}
+
+var chartEthAcum = null, chartSolAcum = null, chartTWR = null;
+
+// ── CHARTS ──
+function renderCharts() {
+    renderEquityChart();
+    renderBtcAcumChart();
+    renderMonthlyChart();
+    renderTWRChart();
+    renderAltcoinAcumChart('ETH', 'chart-eth-acum', '#627EEA');
+    renderAltcoinAcumChart('SOL', 'chart-sol-acum', '#9945FF');
+}
+
+function renderEquityChart() {
+    var sorted = compras.slice().sort(function(a,b){ return new Date(a.data) - new Date(b.data); });
+    var labels = [], valPortfolio = [], valInvestido = [];
+    var cumInv = 0, cumSats = 0;
+    sorted.forEach(function(c, i) {
+        cumInv  += c.brl;
+        cumSats += c.sats;
+        // Valor do portfolio no momento da compra (usa preco atual como proxy)
+        var val = btcBRL > 0 ? (cumSats / 1e8) * btcBRL : cumInv;
+        labels.push(c.data.substring(5)); // MM-DD
+        valPortfolio.push(val.toFixed(2));
+        valInvestido.push(cumInv.toFixed(2));
+    });
+    if (labels.length === 0) { labels = ['Sem dados']; valPortfolio = [0]; valInvestido = [0]; }
+
+    if (chartEquity) chartEquity.destroy();
+    chartEquity = new Chart(document.getElementById('chart-equity'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Valor do Portfolio', data: valPortfolio, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.08)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#10B981' },
+                { label: 'Total Investido',    data: valInvestido, borderColor: '#F7931A', backgroundColor: 'rgba(247,147,26,0.05)', fill: false, tension: 0.4, borderDash: [5,4], pointRadius: 2, pointBackgroundColor: '#F7931A' }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } } } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: function(v){ return 'R$' + fmtBRL(v); } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+    });
+}
+
+var PT_MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function renderPlatChart() { /* substituido por renderBtcAcumChart */ }
+
+function renderBtcAcumChart() {
+    // Sats acumulados mes a mes (curva crescente)
+    var monthMap = {};
+    compras.forEach(function(c){
+        var m = c.data.substring(0,7);
+        monthMap[m] = (monthMap[m] || 0) + c.sats;
+    });
+    var months = Object.keys(monthMap).sort();
+    var labels = [], cumSats = 0, data = [];
+    months.forEach(function(m){
+        cumSats += monthMap[m];
+        var parts = m.split('-');
+        labels.push(PT_MONTHS[parseInt(parts[1])-1] + '/' + parts[0].substring(2));
+        data.push(cumSats);
+    });
+    if (labels.length === 0) { labels = ['Sem dados']; data = [0]; }
+
+    if (chartPlat) chartPlat.destroy();
+    chartPlat = new Chart(document.getElementById('chart-btc-acum'), {
+        type: 'line',
+        data: { labels: labels, datasets: [{ label: 'Sats acumulados', data: data, borderColor: '#F7931A', backgroundColor: 'rgba(247,147,26,0.1)', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#F7931A' }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: {
+            x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, callback: function(v){ return v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v; } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }}
+    });
+}
+
+// TWR — Time-Weighted Return
+// Metodologia correta: busca preco de fechamento mensal real na Binance (velas 1M)
+// Retorno mensal = (close_mes / close_mes_anterior) - 1  (independe de aportes)
+// TWR acumulado = produto encadeado de (1 + retorno_mensal)
+async function renderTWRChart() {
+    var el = document.getElementById('chart-twr'); if (!el) return;
+
+    // Popular filtro de ano
+    var selTwr = document.getElementById('twr-year-filter');
+    if (selTwr && compras.length > 0) {
+        var yrs = [...new Set(compras.map(function(c){ return c.data.substring(0,4); }))].sort();
+        if (selTwr.options.length === 0) {
+            selTwr.innerHTML = '<option value="all">Todos</option>' + yrs.map(function(y){ return '<option value="'+y+'">'+y+'</option>'; }).join('');
+        }
+    }
+    var yearFilter = selTwr ? selTwr.value : 'all';
+
+    if (compras.length === 0) {
+        if (chartTWR) chartTWR.destroy();
+        chartTWR = new Chart(el, { type:'bar', data:{ labels:['Sem compras registradas'], datasets:[{ data:[0], backgroundColor:'rgba(255,255,255,0.05)' }]}, options:{ plugins:{ legend:{ display:false }}, scales:{ x:{ ticks:{ color:'rgba(255,255,255,0.3)', font:{ size:9 }}}, y:{ ticks:{ color:'rgba(255,255,255,0.3)', font:{ size:9 }}}}}});
+        return;
+    }
+
+    // Determinar intervalo de datas
+    var allDates = compras.map(function(c){ return c.data; }).sort();
+    var firstDate = new Date(allDates[0] + 'T00:00:00Z');
+    // Comecar 1 mes antes para ter o preco inicial de referencia
+    var startDate = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, 1);
+    var startMs = startDate.getTime();
+
+    // Buscar velas mensais BTCUSDT na Binance
+    var monthlyClose = {}; // { 'YYYY-MM': closePrice }
+    try {
+        var url = 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1M&startTime=' + startMs + '&limit=60';
+        var r = await fetch(url);
+        var klines = await r.json();
+        klines.forEach(function(k) {
+            var dt = new Date(k[0]);
+            var key = dt.getUTCFullYear() + '-' + String(dt.getUTCMonth()+1).padStart(2,'0');
+            monthlyClose[key] = parseFloat(k[4]); // close
+        });
+        // Mes atual usa preco live se disponivel
+        var now = new Date();
+        var curKey = now.getUTCFullYear() + '-' + String(now.getUTCMonth()+1).padStart(2,'0');
+        if (btcBRL > 0 && usdBRL > 0) monthlyClose[curKey] = btcBRL / usdBRL * usdBRL; // btcUSD
+        if (btcUSD > 0) monthlyClose[curKey] = btcUSD;
+    } catch(e) { console.warn('TWR: erro ao buscar klines', e); }
+
+    // Gerar lista de meses do portfolio
+    var monthSet = {};
+    compras.forEach(function(c) {
+        var m = c.data.substring(0,7);
+        if (yearFilter !== 'all' && !m.startsWith(yearFilter)) return;
+        monthSet[m] = true;
+    });
+    var months = Object.keys(monthSet).sort();
+
+    if (months.length === 0) {
+        if (chartTWR) chartTWR.destroy();
+        return;
+    }
+
+    // Calcular retorno mensal real: (close_n / close_{n-1}) - 1
+    var labels = [], monthRetPct = [], twrCum = [], twr = 1;
+    months.forEach(function(m, i) {
+        var closeN = monthlyClose[m] || 0;
+
+        // Mes anterior: usar o mes imediatamente anterior no mapa de closes
+        var prevKey;
+        var mp = m.split('-');
+        var y = parseInt(mp[0]), mo = parseInt(mp[1]) - 1;
+        if (mo === 0) { prevKey = (y-1) + '-12'; } else { prevKey = y + '-' + String(mo).padStart(2,'0'); }
+        var closeP = monthlyClose[prevKey] || 0;
+
+        var ret = (closeN > 0 && closeP > 0) ? (closeN / closeP - 1) : 0;
+        twr *= (1 + ret);
+        var p = m.split('-');
+        labels.push(PT_MONTHS[parseInt(p[1])-1] + (yearFilter === 'all' ? '/'+p[0].substring(2) : ''));
+        monthRetPct.push(parseFloat((ret * 100).toFixed(2)));
+        twrCum.push(parseFloat(((twr - 1) * 100).toFixed(2)));
+    });
+
+    var barColors = monthRetPct.map(function(v){ return v >= 0 ? 'rgba(16,185,129,0.75)' : 'rgba(239,68,68,0.75)'; });
+    if (chartTWR) chartTWR.destroy();
+    chartTWR = new Chart(el, {
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: 'bar', label: 'Retorno mensal (%)', data: monthRetPct,
+                    backgroundColor: barColors, borderRadius: 4, yAxisID: 'y'
+                },
+                {
+                    type: 'line', label: 'TWR Acumulado (%)', data: twrCum,
+                    borderColor: '#A78BFA', backgroundColor: 'rgba(167,139,250,0.08)',
+                    fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#A78BFA',
+                    borderWidth: 2, yAxisID: 'y'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top', labels: { color: 'rgba(255,255,255,0.45)', font: { size: 10 }, boxWidth: 10 } },
+                tooltip: { callbacks: { label: function(ctx){ return ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%'; } } }
+            },
+            scales: {
+                x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, callback: function(v){ return v + '%'; } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+        }
+    });
+}
+
+function renderAltcoinAcumChart(ativo, canvasId, color) {
+    var el = document.getElementById(canvasId); if (!el) return;
+    var monthMap = {};
+    compras.filter(function(c){ return (c.ativo || 'BTC') === ativo; }).forEach(function(c) {
+        var m = c.data.substring(0,7);
+        monthMap[m] = (monthMap[m] || 0) + (c.quantidade || 0);
+    });
+    var months = Object.keys(monthMap).sort();
+    var labels = [], cumQtd = 0, data = [];
+    months.forEach(function(m) {
+        cumQtd += monthMap[m];
+        var p = m.split('-');
+        labels.push(PT_MONTHS[parseInt(p[1])-1] + '/' + p[0].substring(2));
+        data.push(parseFloat(cumQtd.toFixed(6)));
+    });
+    var chartRef = ativo === 'ETH' ? chartEthAcum : chartSolAcum;
+    if (chartRef) chartRef.destroy();
+    var noData = labels.length === 0;
+    var c = new Chart(el, {
+        type: 'line',
+        data: { labels: noData ? ['Sem compras de ' + ativo] : labels, datasets: [{
+            label: ativo + ' acumulado',
+            data: noData ? [0] : data,
+            borderColor: color,
+            backgroundColor: color + '18',
+            fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: color
+        }]},
+        options: { responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 },
+                    callback: function(v){ return v.toFixed(4) + ' ' + ativo; }
+                }, grid: { color: 'rgba(255,255,255,0.04)' } }
+            }
+        }
+    });
+    if (ativo === 'ETH') chartEthAcum = c; else chartSolAcum = c;
+}
+
+function renderMonthlyChart() {
+    // Resultado mensal: sats * btcBRL atual - brl investido (verde = lucro, vermelho = prejuizo)
+    var allMonths = {};
+    compras.forEach(function(c){
+        var m = c.data.substring(0,7);
+        if (!allMonths[m]) allMonths[m] = { brl: 0, sats: 0 };
+        allMonths[m].brl  += c.brl;
+        allMonths[m].sats += c.sats;
+    });
+
+    // Popular filtro de anos
+    var years = [...new Set(Object.keys(allMonths).map(function(m){ return m.substring(0,4); }))].sort();
+    var sel = document.getElementById('year-filter');
+    if (sel && sel.options.length === 0) {
+        sel.innerHTML = '<option value="all">Todos</option>';
+        years.forEach(function(y){ sel.innerHTML += '<option value="'+y+'">'+y+'</option>'; });
+    }
+    var selectedYear = sel ? sel.value : 'all';
+
+    var months = Object.keys(allMonths).sort().filter(function(m){
+        return selectedYear === 'all' || m.startsWith(selectedYear);
+    });
+    if (months.length === 0) { months = []; }
+
+    var labels = months.map(function(m){
+        var p = m.split('-');
+        return PT_MONTHS[parseInt(p[1])-1] + (selectedYear === 'all' ? '/'+p[0].substring(2) : '');
+    });
+    var data   = months.map(function(m){
+        var val = btcBRL > 0 ? (allMonths[m].sats / 1e8) * btcBRL : allMonths[m].brl;
+        return parseFloat((val - allMonths[m].brl).toFixed(2));
+    });
+    var colors = data.map(function(v){ return v >= 0 ? 'rgba(16,185,129,0.75)' : 'rgba(239,68,68,0.75)'; });
+
+    if (chartMonthly) chartMonthly.destroy();
+    chartMonthly = new Chart(document.getElementById('chart-monthly'), {
+        type: 'bar',
+        data: { labels: labels.length ? labels : ['Sem dados'], datasets: [{ label: 'Resultado (R$)', data: data.length ? data : [0], backgroundColor: colors.length ? colors : ['rgba(255,255,255,0.1)'], borderRadius: 5 }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: {
+            x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 9 }, callback: function(v){ return 'R$'+v; } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }}
+    });
+}
+
+// ── ANALISE ──
+function renderAnalise() {
+    if (compras.length === 0) {
+        document.getElementById('analise-stats').innerHTML = '<div class="analise-stat" style="grid-column:1/-1;text-align:center;color:var(--text-dim);padding:2rem;font-size:0.8rem;">Registre suas compras para ver a analise</div>';
+        return;
+    }
+    var sorted = compras.slice().sort(function(a,b){ return new Date(a.data) - new Date(b.data); });
+    var totalBRL  = compras.reduce(function(s,c){ return s + c.brl; }, 0);
+    var totalSats = compras.reduce(function(s,c){ return s + c.sats; }, 0);
+    var totalBTC  = totalSats / 1e8;
+    var precoMedio = totalBTC > 0 ? totalBRL / totalBTC : 0;
+    var melhorCompra = compras.reduce(function(best, c){ return c.btcPreco < best.btcPreco ? c : best; });
+    var piorCompra   = compras.reduce(function(worst, c){ return c.btcPreco > worst.btcPreco ? c : worst; });
+    var mediaMensal  = compras.length > 0 ? totalBRL / Math.max(1, getMonthsCount()) : 0;
+    var diasDCA = Math.round((new Date() - new Date(sorted[0].data)) / (1000*60*60*24));
+
+    var stats = [
+        { label: 'Preco Medio de Compra', value: 'R$ ' + fmtBRL(precoMedio), color: '' },
+        { label: 'Melhor Compra', value: 'R$ ' + fmtBRL(melhorCompra.btcPreco), color: 'var(--green)' },
+        { label: 'Pior Compra', value: 'R$ ' + fmtBRL(piorCompra.btcPreco), color: 'var(--red)' },
+        { label: 'Media Mensal', value: 'R$ ' + fmtBRL(mediaMensal), color: '' },
+        { label: 'Dias Acumulando', value: diasDCA + ' dias', color: 'var(--btc)' },
+        { label: 'Total de Compras', value: compras.length, color: '' },
+    ];
+    document.getElementById('analise-stats').innerHTML = stats.map(function(s){
+        return '<div class="analise-stat"><div class="analise-stat-label">'+s.label+'</div><div class="analise-stat-value" style="color:'+(s.color||'#fff')+'">'+s.value+'</div></div>';
+    }).join('');
+
+    // Charts analise
+    var monthMap = {};
+    compras.forEach(function(c){
+        var m = c.data.substring(0,7);
+        if (!monthMap[m]) monthMap[m] = { sats: 0, brl: 0, prices: [] };
+        monthMap[m].sats   += c.sats;
+        monthMap[m].brl    += c.brl;
+        monthMap[m].prices.push(c.btcPreco);
+    });
+    var months = Object.keys(monthMap).sort();
+
+    if (chartSatsMonthly) chartSatsMonthly.destroy();
+    chartSatsMonthly = new Chart(document.getElementById('chart-sats-monthly'), {
+        type: 'bar',
+        data: { labels: months.map(function(m){ return m.substring(5); }), datasets: [{ label: 'Sats', data: months.map(function(m){ return monthMap[m].sats; }), backgroundColor: 'rgba(247,147,26,0.7)', borderRadius: 5 }] },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+    });
+
+    var cumSats = 0, cumBRL = 0;
+    if (chartPrecoMedio) chartPrecoMedio.destroy();
+    chartPrecoMedio = new Chart(document.getElementById('chart-preco-medio'), {
+        type: 'line',
+        data: {
+            labels: months.map(function(m){ return m.substring(5); }),
+            datasets: [
+                { label: 'Preco Medio', data: months.map(function(m){ cumBRL += monthMap[m].brl; cumSats += monthMap[m].sats; return cumSats > 0 ? (cumBRL / (cumSats/1e8)).toFixed(0) : 0; }), borderColor: '#F7931A', backgroundColor: 'transparent', tension: 0.4, pointRadius: 3 },
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 11 } } } }, scales: { x: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }, y: { ticks: { color: 'rgba(255,255,255,0.3)', font: { size: 10 }, callback: function(v){ return 'R$' + fmtBRL(v); } }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
+    });
+}
+
+function getMonthsCount() {
+    if (compras.length === 0) return 1;
+    var months = {};
+    compras.forEach(function(c){ months[c.data.substring(0,7)] = 1; });
+    return Object.keys(months).length;
+}
+
+// ── COMPRAS TABLE ──
+function renderComprasTable() {
+    var tbody = document.getElementById('compras-tbody');
+    if (compras.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><h3>Nenhuma compra registrada</h3><p>Clique em "Nova Compra" para comecar seu DCA</p></div></td></tr>';
+        return;
+    }
+    var sorted = compras.slice().sort(function(a,b){ return new Date(b.data) - new Date(a.data); });
+    tbody.innerHTML = sorted.map(function(c){
+        var ativo = c.ativo || 'BTC';
+        var col   = ATIVO_COLORS[ativo] || '#F7931A';
+        var qtdStr = ativo === 'BTC'
+            ? fmtSats(c.sats) + ' sats'
+            : (c.quantidade || (c.sats/1e8)).toFixed(6) + ' ' + ativo;
+        return '<tr>'+
+            '<td>'+formatDate(c.data)+'</td>'+
+            '<td><span style="background:'+col+'22;border:1px solid '+col+'66;color:'+col+';border-radius:5px;padding:2px 7px;font-size:0.68rem;font-weight:800;">'+ativo+'</span></td>'+
+            '<td><span class="td-plat">'+c.plat+'</span></td>'+
+            '<td>R$ '+fmtBRL(c.brl)+'</td>'+
+            '<td>R$ '+fmtBRL(c.btcPreco)+'</td>'+
+            '<td class="td-sats" style="font-family:monospace;font-size:0.72rem;">'+qtdStr+'</td>'+
+            '<td><button class="td-delete" onclick="deleteCompra(\''+c.id+'\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button></td>'+
+        '</tr>';
+    }).join('');
+}
+
+// ── MODAL ──
+function setAtivo(ativo) {
+    modalAtivo = ativo;
+    ['BTC','ETH','SOL'].forEach(function(a) {
+        var btn = document.getElementById('btn-ativo-' + a);
+        if (!btn) return;
+        var isActive = a === ativo;
+        var col = ATIVO_COLORS[a] || 'var(--btc)';
+        btn.style.border      = isActive ? '2px solid ' + col : '1px solid rgba(255,255,255,0.1)';
+        btn.style.background  = isActive ? col + '22' : 'none';
+        btn.style.color       = isActive ? col : 'rgba(255,255,255,0.4)';
+        btn.style.fontWeight  = isActive ? '800' : '700';
+    });
+    document.getElementById('f-preco-label').textContent = 'Preco ' + ativo + ' (' + modalCurrency + ')';
+    var liveP = modalCurrency === 'BRL' ? getAtivoPriceBRL(ativo) : getAtivoPriceUSD(ativo);
+    if (liveP > 0) document.getElementById('f-preco-hint').textContent = 'Atual: ' + (modalCurrency === 'BRL' ? 'R$ ' : '$ ') + fmtBRL(liveP);
+    calcSatsPreview();
+}
+
+function setCurrency(cur) {
+    modalCurrency = cur;
+    document.getElementById('btn-cur-BRL').style.cssText = cur === 'BRL'
+        ? 'flex:1;padding:3px 0;border-radius:5px;border:1px solid var(--btc);background:var(--btc-dim);color:var(--btc);font-size:0.65rem;font-weight:800;cursor:pointer;'
+        : 'flex:1;padding:3px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.35);font-size:0.65rem;font-weight:700;cursor:pointer;';
+    document.getElementById('btn-cur-USD').style.cssText = cur === 'USD'
+        ? 'flex:1;padding:3px 0;border-radius:5px;border:1px solid #60A5FA;background:rgba(96,165,250,0.1);color:#60A5FA;font-size:0.65rem;font-weight:800;cursor:pointer;'
+        : 'flex:1;padding:3px 0;border-radius:5px;border:1px solid rgba(255,255,255,0.1);background:none;color:rgba(255,255,255,0.35);font-size:0.65rem;font-weight:700;cursor:pointer;';
+    document.getElementById('f-preco').value = '';
+    setAtivo(modalAtivo);
+}
+
+function onDateChange() { calcSatsPreview(); }
+
+function addCompraAtivo(ativo) {
+    document.getElementById('modal-compra').classList.add('open');
+    document.getElementById('f-brl').value   = '';
+    document.getElementById('f-preco').value = '';
+    document.getElementById('sats-preview').style.display = 'none';
+    setAtivo(ativo || 'BTC');
+    setCurrency('BRL');
+}
+
+function addCompra() {
+    document.getElementById('modal-compra').classList.add('open');
+    document.getElementById('f-brl').value   = '';
+    document.getElementById('f-preco').value = '';
+    document.getElementById('sats-preview').style.display = 'none';
+    setAtivo('BTC');
+    setCurrency('BRL');
+}
+function closeModal() {
+    document.getElementById('modal-compra').classList.remove('open');
+}
+document.getElementById('modal-compra').addEventListener('click', function(e){ if (e.target === this) closeModal(); });
+
+function useLivePrice() {
+    var price = modalCurrency === 'BRL' ? getAtivoPriceBRL(modalAtivo) : getAtivoPriceUSD(modalAtivo);
+    if (price > 0) {
+        document.getElementById('f-preco').value = price.toFixed(2);
+        calcSatsPreview();
+    }
+}
+
+async function fetchHistoricalPrice() {
+    var data = document.getElementById('f-data').value;
+    if (!data) { alert('Selecione a data primeiro!'); return; }
+    var btn = document.getElementById('btn-hist');
+    btn.textContent = 'Buscando...'; btn.disabled = true;
+    try {
+        var ts = new Date(data + 'T12:00:00Z').getTime();
+        var sym = ATIVO_SYMBOLS[modalAtivo] || 'BTCUSDT';
+        var r = await fetch('https://api.binance.com/api/v3/klines?symbol=' + sym + '&interval=1d&startTime=' + ts + '&limit=1');
+        var d = await r.json();
+        if (d && d[0]) {
+            var closeUSD = parseFloat(d[0][4]); // preco de fechamento
+            var price = modalCurrency === 'BRL' ? closeUSD * usdBRL : closeUSD;
+            document.getElementById('f-preco').value = price.toFixed(2);
+            document.getElementById('f-preco-hint').textContent = 'Preco historico em ' + formatDate(data) + ' (' + (modalCurrency === 'BRL' ? 'R$' : '$') + price.toFixed(2) + ')';
+            calcSatsPreview();
+        } else { alert('Nao foi possivel encontrar o preco nessa data.'); }
+    } catch(e) { alert('Erro ao buscar preco historico.'); }
+    btn.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><polyline points="12 7 12 12 15 15"/></svg> Preco historico';
+    btn.disabled = false;
+}
+
+function calcSatsPreview() {
+    var brl   = parseFloat(document.getElementById('f-brl').value)   || 0;
+    var preco = parseFloat(document.getElementById('f-preco').value) || 0;
+    if (brl <= 0 || preco <= 0) return;
+    // Converter preco para BRL se necessario
+    var precoBRL = modalCurrency === 'USD' ? preco * usdBRL : preco;
+    var qtd = brl / precoBRL;
+    var prev = document.getElementById('sats-preview');
+    prev.style.display = 'block';
+    var color = ATIVO_COLORS[modalAtivo] || 'var(--btc)';
+    prev.style.color = color;
+    if (modalAtivo === 'BTC') {
+        var sats = Math.round(qtd * 1e8);
+        prev.textContent = fmtSats(sats) + ' sats  (' + qtd.toFixed(8) + ' BTC)';
+    } else {
+        prev.textContent = qtd.toFixed(6) + ' ' + modalAtivo;
+    }
+}
+
+function saveCompra() {
+    var data  = document.getElementById('f-data').value;
+    var brl   = parseFloat(document.getElementById('f-brl').value);
+    var preco = parseFloat(document.getElementById('f-preco').value);
+    var plat  = document.getElementById('f-plat').value;
+    if (!data || !brl || !preco || brl <= 0 || preco <= 0) { alert('Preencha todos os campos!'); return; }
+    var precoBRL = modalCurrency === 'USD' ? preco * usdBRL : preco;
+    var qtd = brl / precoBRL;
+    var sats = modalAtivo === 'BTC' ? Math.round(qtd * 1e8) : 0;
+    var compra = { id: Date.now().toString(), data: data, brl: brl, btcPreco: precoBRL, sats: sats, plat: plat, ativo: modalAtivo, quantidade: qtd };
+    compras.push(compra);
+    saveData(); closeModal();
+    renderComprasTable(); updateKPIs(); renderCharts(); renderAnalise(); renderVitrine();
+}
+function deleteCompra(id) {
+    if (!confirm('Apagar esta compra?')) return;
+    compras = compras.filter(function(c){ return c.id !== id; });
+    saveData();
+    renderComprasTable();
+    updateKPIs();
+    renderCharts();
+    renderAnalise();
+    renderVitrine();
+}
+function saveData() {
+    localStorage.setItem('clube-dca-compras', JSON.stringify(compras));
+}
+function clearAllData() {
+    if (!confirm('Apagar TODOS os dados? Esta acao nao pode ser desfeita.')) return;
+    compras = [];
+    localStorage.removeItem('clube-dca-compras');
+    renderComprasTable();
+    updateKPIs();
+    renderCharts();
+    renderAnalise();
+    renderVitrine();
+}
+function saveNome() {
+    nome = document.getElementById('admin-nome').value || 'Marcos';
+    localStorage.setItem('clube-dca-nome', nome);
+    document.getElementById('vitrine-name').textContent = nome;
+    alert('Nome salvo!');
+}
+
+// ── VITRINE ──
+function renderVitrine() { updateKPIs(); }
+function shareVitrine() {
+    if (navigator.share) {
+        navigator.share({ title: 'Clube DCA — Meu Portfolio BTC', text: 'Veja minha jornada DCA no Bitcoin!', url: window.location.href });
+    } else {
+        navigator.clipboard.writeText(window.location.href).then(function(){ alert('Link copiado!'); });
+    }
+}
+
+// ── IMPORT/EXPORT ──
+function exportCSV() {
+    if (compras.length === 0) { alert('Sem dados para exportar.'); return; }
+    var header = 'data,plataforma,brl,btc_preco,sats\n';
+    var rows = compras.map(function(c){ return [c.data, c.plat, c.brl, c.btcPreco, c.sats].join(','); }).join('\n');
+    var blob = new Blob([header + rows], { type: 'text/csv' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'clube-dca-' + new Date().toISOString().split('T')[0] + '.csv'; a.click();
+}
+function importCSV(event) {
+    var file = event.target.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var lines = e.target.result.split('\n').filter(Boolean);
+        var imported = 0;
+        lines.slice(1).forEach(function(line) {
+            var cols = line.split(',');
+            if (cols.length < 4) return;
+            var brl = parseFloat(cols[2]); var preco = parseFloat(cols[3]);
+            if (!brl || !preco) return;
+            compras.push({ id: Date.now() + '-' + imported, data: cols[0], plat: cols[1]||'Outro', brl: brl, btcPreco: preco, sats: Math.round((brl/preco)*1e8) });
+            imported++;
+        });
+        saveData();
+        alert(imported + ' compras importadas!');
+        renderComprasTable(); updateKPIs(); renderCharts(); renderAnalise();
+    };
+    reader.readAsText(file);
+}
+
+// ── NAVIGATION ──
+function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.sidebar-nav-item').forEach(function(i){ i.classList.remove('active'); });
+    document.getElementById('page-' + id).classList.add('active');
+    if (el) el.classList.add('active');
+    var titles = { dashboard:'Dashboard', compras:'Minhas Compras', analise:'Analise', vitrine:'Vitrine', admin:'Configuracoes', precojusto:'PrecoJusto', apoio:'Apoiar o Projeto' };
+    document.getElementById('topbar-title').textContent = titles[id] || id;
+    closeSidebar();
+    if (id === 'analise') renderAnalise();
+}
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// ── FORMATTERS ──
+function fmtBRL(v)  { return (v||0).toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function fmtUSD(v)  { return (v||0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function fmtSats(v) { return Math.round(v||0).toLocaleString('pt-BR'); }
+function formatDate(s) {
+    if (!s) return '';
+    var p = s.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
+}
+
+// ── EXPORT/IMPORT JSON ──
+function exportJSON() {
+    var data = { compras: compras, nome: nome, exportado: new Date().toISOString() };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'clube-dca-backup-' + new Date().toISOString().split('T')[0] + '.json'; a.click();
+    setDriveMsg('Backup baixado com sucesso!', 'var(--green)');
+}
+function importJSON(event) {
+    var file = event.target.files[0]; if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var data = JSON.parse(e.target.result);
+            if (data.compras && Array.isArray(data.compras)) {
+                compras = data.compras;
+                if (data.nome) { nome = data.nome; localStorage.setItem('clube-dca-nome', nome); document.getElementById('admin-nome').value = nome; }
+                saveData();
+                renderComprasTable(); updateKPIs(); renderCharts(); renderAnalise(); renderVitrine();
+                alert(compras.length + ' compras restauradas com sucesso!');
+            } else { alert('Arquivo invalido. Use um backup gerado pelo Clube DCA.'); }
+        } catch(e) { alert('Erro ao ler arquivo JSON.'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+// ── GOOGLE DRIVE — OAuth2 real via Google Identity Services ──
+var DRIVE_CLIENT_ID = '78644360838-5jv60v6csdr6rduedn2k50qe63knuovq.apps.googleusercontent.com';
+var DRIVE_SCOPE     = 'https://www.googleapis.com/auth/drive.file';
+var BACKUP_FILE     = 'clube-dca-backup.json';
+var driveToken      = null;
+var driveFileId     = localStorage.getItem('clube-dca-drive-fileid') || null;
+var tokenClient     = null;
+
+function setDriveMsg(msg, color) {
+    var el = document.getElementById('drive-msg');
+    if (el) { el.textContent = msg; el.style.color = color || 'var(--text-dim)'; }
+}
+function driveSetConnected(connected) {
+    var btn     = document.getElementById('btn-drive-connect');
+    var actions = document.getElementById('drive-actions');
+    var status  = document.getElementById('drive-status');
+    if (btn)     btn.style.display     = connected ? 'none' : 'flex';
+    if (actions) actions.style.display = connected ? 'grid' : 'none';
+    if (status)  status.style.display  = connected ? 'flex' : 'none';
+}
+function driveConnect() {
+    if (typeof google === 'undefined') {
+        setDriveMsg('Verifique sua conexao com a internet.', 'var(--red)'); return;
+    }
+    if (!tokenClient) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: DRIVE_CLIENT_ID,
+            scope: DRIVE_SCOPE,
+            callback: function(resp) {
+                if (resp.error) { setDriveMsg('Erro: ' + resp.error, 'var(--red)'); return; }
+                driveToken = resp.access_token;
+                driveSetConnected(true);
+                setDriveMsg('Conectado ao Google Drive!', 'var(--green)');
+            }
+        });
+    }
+    tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+function driveDisconnect() {
+    if (driveToken && typeof google !== 'undefined') google.accounts.oauth2.revoke(driveToken);
+    driveToken = null; driveFileId = null;
+    localStorage.removeItem('clube-dca-drive-fileid');
+    driveSetConnected(false);
+    setDriveMsg('Desconectado.', 'var(--text-dim)');
+}
+async function driveSave() {
+    if (!driveToken) { driveConnect(); return; }
+    setDriveMsg('Salvando...', 'var(--text-dim)');
+    var body = JSON.stringify({ compras: compras, nome: nome, exportado: new Date().toISOString() }, null, 2);
+    try {
+        var fileId = driveFileId;
+        if (!fileId) {
+            var sr = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'" + BACKUP_FILE + "'%20and%20trashed%3Dfalse&fields=files(id)", { headers: { Authorization: 'Bearer ' + driveToken } });
+            var sd = await sr.json(); if (sd.files && sd.files[0]) fileId = sd.files[0].id;
+        }
+        if (fileId) {
+            await fetch('https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=media', { method: 'PATCH', headers: { Authorization: 'Bearer ' + driveToken, 'Content-Type': 'application/json' }, body: body });
+        } else {
+            var form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify({ name: BACKUP_FILE, mimeType: 'application/json' })], { type: 'application/json' }));
+            form.append('file', new Blob([body], { type: 'application/json' }));
+            var cr = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', headers: { Authorization: 'Bearer ' + driveToken }, body: form });
+            var cd = await cr.json(); fileId = cd.id;
+        }
+        driveFileId = fileId; localStorage.setItem('clube-dca-drive-fileid', fileId);
+        setDriveMsg('Salvo no Drive! ' + new Date().toLocaleTimeString('pt-BR'), 'var(--green)');
+    } catch(e) { setDriveMsg('Erro ao salvar. Reconecte o Drive.', 'var(--red)'); }
+}
+async function driveLoad() {
+    if (!driveToken) { driveConnect(); return; }
+    setDriveMsg('Buscando backup...', 'var(--text-dim)');
+    try {
+        var fileId = driveFileId;
+        if (!fileId) {
+            var sr = await fetch("https://www.googleapis.com/drive/v3/files?q=name%3D'" + BACKUP_FILE + "'%20and%20trashed%3Dfalse&fields=files(id)", { headers: { Authorization: 'Bearer ' + driveToken } });
+            var sd = await sr.json();
+            if (!sd.files || !sd.files[0]) { setDriveMsg('Nenhum backup encontrado no Drive.', 'var(--red)'); return; }
+            fileId = sd.files[0].id; driveFileId = fileId; localStorage.setItem('clube-dca-drive-fileid', fileId);
+        }
+        var r = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', { headers: { Authorization: 'Bearer ' + driveToken } });
+        var d = await r.json();
+        if (d.compras) {
+            compras = d.compras;
+            if (d.nome) { nome = d.nome; localStorage.setItem('clube-dca-nome', nome); document.getElementById('admin-nome').value = nome; }
+            saveData(); renderComprasTable(); updateKPIs(); renderCharts(); renderAnalise(); renderVitrine();
+            setDriveMsg(compras.length + ' compras restauradas!', 'var(--green)');
+        }
+    } catch(e) { setDriveMsg('Erro ao carregar. Token expirou — reconecte.', 'var(--red)'); }
+}
+</script>
+</body>
+</html>
