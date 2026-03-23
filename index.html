@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Clube DCA — Bitcoin DCA Tracker</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -28,7 +28,7 @@
         --radius: 12px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; }
     /* ── SIDEBAR ── */
     .sidebar {
         width: var(--sidebar-w);
@@ -401,14 +401,16 @@
 </style>
 </head>
 <body>
+
 <!-- Sidebar overlay (mobile) -->
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <div class="sidebar-logo-top">
             <div class="sidebar-logo-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
             </div>
             <div>
                 <div class="sidebar-logo-name">Clube <span>DCA</span></div>
@@ -477,7 +479,8 @@
         </div>
     </div>
 </aside>
-<!-- Main -->
+
+<!-- Main Content -->
 <div class="main-content">
     <!-- Topbar -->
     <div class="topbar">
@@ -498,664 +501,352 @@
             </button>
         </div>
     </div>
-    <!-- ── DASHBOARD ── -->
-    <div id="page-dashboard" class="page active">
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-            <div class="kpi-card orange">
-                <div class="kpi-label">Total Investido</div>
-                <div class="kpi-value" id="kpi-total">R$ 0,00</div>
-                <div class="kpi-sub" id="kpi-compras-count">0 compras</div>
-            </div>
-            <div class="kpi-card orange">
-                <div class="kpi-label">BTC Acumulado</div>
-                <div class="kpi-value btc" id="kpi-sats">0 sats</div>
-                <div class="kpi-sub" id="kpi-btc">0.00000000 BTC</div>
-            </div>
-            <div class="kpi-card green">
-                <div class="kpi-label">Valor Atual</div>
-                <div class="kpi-value" id="kpi-valor-atual">R$ 0,00</div>
-                <div class="kpi-sub" id="kpi-valor-usd">$ 0,00</div>
-            </div>
-            <div class="kpi-card blue">
-                <div class="kpi-label">Preco Medio de Compra</div>
-                <div class="kpi-value" id="kpi-preco-medio">R$ 0</div>
-                <div class="kpi-sub" id="kpi-preco-atual">BTC agora: R$ 0</div>
-            </div>
-            <div class="kpi-card" id="kpi-pnl-card">
-                <div class="kpi-label">Lucro / Prejuizo</div>
-                <div class="kpi-value" id="kpi-pnl-brl">R$ 0,00</div>
-                <div id="kpi-pnl-badge" class="kpi-badge">0.00%</div>
-            </div>
-            <div class="kpi-card purple">
-                <div class="kpi-label">BTC Agora (USD)</div>
-                <div class="kpi-value" id="kpi-btc-usd">$ 0</div>
-                <div class="kpi-sub" id="kpi-usd-brl">USD/BRL: ...</div>
-            </div>
-        </div>
-        <!-- Equity Curve -->
-        <div class="chart-card" style="margin-bottom:1rem;">
-            <div class="chart-card-header">
-                <div>
-                    <div class="chart-card-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                        Curva de Equity
-                    </div>
-                    <div class="chart-card-sub">Valor do portfolio vs Total investido</div>
-                </div>
-            </div>
-            <canvas id="chart-equity" height="200"></canvas>
-        </div>
-        <!-- BTC Acumulado + Resultado Mensal -->
-        <div class="charts-row" style="margin-bottom:1rem;">
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div>
-                        <div class="chart-card-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F7931A" stroke-width="2"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-                            Acumulo BTC
-                        </div>
-                        <div class="chart-card-sub">Sats acumulados mes a mes</div>
-                    </div>
-                </div>
-                <canvas id="chart-btc-acum" height="200"></canvas>
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div>
-                        <div class="chart-card-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="3" width="4" height="18"/><rect x="9" y="8" width="4" height="13"/><rect x="16" y="13" width="4" height="8"/></svg>
-                            Resultado Mensal
-                        </div>
-                        <div class="chart-card-sub">Lucro/Prejuizo por mes (BRL)</div>
-                    </div>
-                    <select id="year-filter" onchange="renderMonthlyChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
-                </div>
-                <canvas id="chart-monthly" height="200"></canvas>
-            </div>
-        </div>
-        <!-- TWR — Retorno Ponderado pelo Tempo -->
-        <div class="chart-card" style="margin-bottom:1rem;">
-            <div class="chart-card-header">
-                <div>
-                    <div class="chart-card-title">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                        TWR — Retorno Ponderado pelo Tempo
-                    </div>
-                    <div class="chart-card-sub">% retorno mensal (barras) + TWR acumulado (linha)</div>
-                </div>
-                <select id="twr-year-filter" onchange="renderTWRChart()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:6px;padding:3px 7px;font-size:0.65rem;cursor:pointer;"></select>
-            </div>
-            <canvas id="chart-twr" height="180"></canvas>
-        </div>
-        <!-- ETH Acumulado + SOL Acumulado -->
-        <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div>
-                        <div class="chart-card-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#627EEA" stroke-width="2"><polygon points="12 2 2 7 12 22 22 7 12 2"/><line x1="12" y1="22" x2="12" y2="2"/><line x1="2" y1="7" x2="22" y2="7"/></svg>
-                            Acumulo ETH
-                        </div>
-                        <div class="chart-card-sub">ETH acumulado mes a mes</div>
-                    </div>
-                    <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.12);border:1px solid rgba(98,126,234,0.35);color:#627EEA;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                        Atualizar
-                    </button>
-                </div>
-                <canvas id="chart-eth-acum" height="200"></canvas>
-                <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo ETH para ver o grafico</span>
-                    <button onclick="addCompraAtivo('ETH')" style="display:flex;align-items:center;gap:4px;background:rgba(98,126,234,0.1);border:1px solid rgba(98,126,234,0.3);color:#627EEA;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        + ETH
-                    </button>
-                </div>
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div>
-                        <div class="chart-card-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9945FF" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            Acumulo SOL
-                        </div>
-                        <div class="chart-card-sub">SOL acumulado mes a mes</div>
-                    </div>
-                    <button onclick="renderCharts()" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.12);border:1px solid rgba(153,69,255,0.35);color:#9945FF;padding:4px 9px;border-radius:6px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-                        Atualizar
-                    </button>
-                </div>
-                <canvas id="chart-sol-acum" height="200"></canvas>
-                <div style="margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;">
-                    <span style="font-size:0.62rem;color:rgba(255,255,255,0.3);">Registre compras com ativo SOL para ver o grafico</span>
-                    <button onclick="addCompraAtivo('SOL')" style="display:flex;align-items:center;gap:4px;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.3);color:#9945FF;padding:3px 8px;border-radius:5px;font-size:0.62rem;font-weight:700;cursor:pointer;">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        + SOL
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ── COMPRAS ── -->
-    <div id="page-compras" class="page">
-        <div class="page-header">
-            <div class="page-title">Minhas Compras</div>
-            <div style="display:flex;gap:0.5rem;">
-                <button class="btn-secondary" onclick="exportCSV()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Exportar CSV
-                </button>
-                <button class="btn-primary" onclick="addCompra()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                    Nova Compra
-                </button>
-            </div>
-        </div>
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Ativo</th>
-                        <th>Plataforma</th>
-                        <th>Investido (R$)</th>
-                        <th>Preco (R$)</th>
-                        <th>Quantidade</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="compras-tbody">
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                <h3>Nenhuma compra registrada</h3>
-                                <p>Clique em "Nova Compra" para comecar seu DCA</p>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- ── ANALISE ── -->
-    <div id="page-analise" class="page">
-        <div class="page-header">
-            <div class="page-title">Analise do Portfolio</div>
-        </div>
-        <div class="analise-grid" id="analise-stats"></div>
-        <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div class="chart-card-title">Sats Acumulados por Mes</div>
-                </div>
-                <canvas id="chart-sats-monthly" height="220"></canvas>
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <div class="chart-card-title">Preco Medio de Compra vs BTC</div>
-                </div>
-                <canvas id="chart-preco-medio" height="220"></canvas>
-            </div>
-        </div>
-    </div>
-    <!-- ── VITRINE ── -->
-    <div id="page-vitrine" class="page">
-        <div class="page-header">
-            <div class="page-title">Minha Vitrine DCA</div>
-        </div>
-        <div class="vitrine-card">
-            <div class="vitrine-badge">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 4.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-                Clube DCA
-            </div>
-            <div class="vitrine-title" id="vitrine-name">Marcos</div>
-            <div class="vitrine-subtitle">Acumulando Bitcoin com disciplina</div>
-            <div class="vitrine-kpi-grid">
-                <div class="vitrine-kpi">
-                    <div class="vitrine-kpi-label">Total Investido</div>
-                    <div class="vitrine-kpi-value" id="vitrine-total">R$ 0</div>
-                </div>
-                <div class="vitrine-kpi">
-                    <div class="vitrine-kpi-label">BTC Acumulado</div>
-                    <div class="vitrine-kpi-value" id="vitrine-sats">0 sats</div>
-                </div>
-                <div class="vitrine-kpi">
-                    <div class="vitrine-kpi-label">Lucro/Prejuizo</div>
-                    <div class="vitrine-kpi-value" id="vitrine-pnl">0%</div>
-                </div>
-                <div class="vitrine-kpi">
-                    <div class="vitrine-kpi-label">Compras</div>
-                    <div class="vitrine-kpi-value" id="vitrine-compras">0</div>
-                </div>
-            </div>
-            <button class="vitrine-share-btn" onclick="shareVitrine()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                Compartilhar Vitrine
-            </button>
-        </div>
-    </div>
-    <!-- ── ADMIN ── -->
-    <div id="page-admin" class="page">
-        <div class="page-header">
-            <div class="page-title">Configuracoes</div>
-        </div>
-        <div style="display:grid;gap:1rem;max-width:480px;">
-            <!-- Google Drive Backup -->
-            <div class="chart-card" style="border-color:rgba(66,133,244,0.35);">
-                <div class="chart-card-title" style="margin-bottom:0.35rem;display:flex;align-items:center;gap:8px;">
-                    <svg width="15" height="13" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L28 48.1H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.45 0c-1.35.8-2.5 1.9-3.3 3.3L1.2 43.6C.4 45 0 46.55 0 48.1h28z" fill="#00ac47"/><path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75L86.1 57.6c.8-1.4 1.2-2.95 1.2-4.5H59.3l5.9 11.4z" fill="#ea4335"/><path d="M43.65 25L57.85 0H29.45L15.25 25z" fill="#00832d"/><path d="M59.3 48.1H87.3l-13.75-23.8-14.25-23.8-14.2 24.5z" fill="#2684fc"/></svg>
-                    Backup no Google Drive
-                </div>
-                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5;">Salve e restaure seus dados automaticamente no Google Drive — acesse de qualquer celular ou PC.</div>
-                <div id="drive-status" style="display:none;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:0.5rem 0.75rem;margin-bottom:0.75rem;font-size:0.72rem;color:var(--green);">
-                    <div class="live-dot"></div>
-                    <span id="drive-status-text">Conectado ao Google Drive</span>
-                </div>
-                <div style="display:grid;gap:0.5rem;">
-                    <button id="btn-drive-connect" onclick="driveConnect()" style="display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(135deg,#4285F4,#1a73e8);border:none;color:#fff;font-weight:800;font-size:0.78rem;padding:0.7rem;border-radius:8px;cursor:pointer;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                        Conectar com Google Drive
-                    </button>
-                    <div id="drive-actions" style="display:none;grid-template-columns:1fr 1fr;gap:0.5rem;">
-                        <button onclick="driveSave()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-                            Salvar no Drive
-                        </button>
-                        <button onclick="driveLoad()" style="display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(66,133,244,0.12);border:1px solid rgba(66,133,244,0.35);color:#60A5FA;font-weight:800;font-size:0.75rem;padding:0.6rem;border-radius:8px;cursor:pointer;">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Restaurar do Drive
-                        </button>
-                        <button onclick="driveDisconnect()" style="grid-column:1/-1;background:none;border:1px solid rgba(255,255,255,0.08);color:var(--text-faint);font-size:0.68rem;font-weight:600;padding:0.4rem;border-radius:8px;cursor:pointer;">
-                            Desconectar
-                        </button>
-                    </div>
-                </div>
-                <div id="drive-msg" style="margin-top:0.5rem;font-size:0.68rem;text-align:center;min-height:1.2rem;"></div>
-            </div>
-            <!-- Backup Local JSON -->
-            <div class="chart-card">
-                <div class="chart-card-title" style="margin-bottom:0.35rem;">Backup Local</div>
-                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Baixe seus dados como arquivo JSON para guardar no celular ou computador.</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-                    <button class="btn-secondary" onclick="exportJSON()">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Baixar JSON
-                    </button>
-                    <button class="btn-secondary" onclick="document.getElementById('json-import').click()">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        Restaurar JSON
-                    </button>
-                </div>
-                <input type="file" id="json-import" accept=".json" onchange="importJSON(event)" style="display:none;">
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-title" style="margin-bottom:1rem;">Seu Nome na Vitrine</div>
-                <div style="display:flex;gap:0.5rem;">
-                    <input class="form-input" id="admin-nome" placeholder="Ex: Marcos" style="flex:1;">
-                    <button class="btn-primary" onclick="saveNome()">Salvar</button>
-                </div>
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-title" style="margin-bottom:0.35rem;">Importar CSV</div>
-                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Formato: data,plataforma,brl,btc_preco</div>
-                <input type="file" id="csv-import" accept=".csv" onchange="importCSV(event)" style="font-size:0.78rem;color:var(--text-dim);">
-            </div>
-            <div class="chart-card">
-                <div class="chart-card-title" style="margin-bottom:0.35rem;color:var(--red);">Zona de Perigo</div>
-                <div style="font-size:0.72rem;color:var(--text-dim);margin-bottom:0.75rem;">Apaga todas as compras registradas.</div>
-                <button class="btn-secondary" style="border-color:rgba(239,68,68,0.3);color:var(--red);" onclick="clearAllData()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                    Apagar Todos os Dados
-                </button>
-            </div>
-        </div>
-    </div>
+
+    <!-- PÁGINAS (HTML SIMPLIFICADO - O CONTEÚDO DAS PÁGINAS É GERADO VIA JS) -->
+    <div id="page-dashboard" class="page active"></div>
+    <div id="page-compras" class="page"></div>
+    <div id="page-analise" class="page"></div>
+    <div id="page-vitrine" class="page"></div>
+    <div id="page-admin" class="page"></div>
+    <div id="page-cotacao" class="page"></div>
+    <div id="page-sinaisdefi" class="page"></div>
+    <div id="page-apoio" class="page"></div>
+    <div id="page-precojusto" class="page"></div>
+    <div id="page-poolsdefi" class="page"></div>
+    <div id="page-streaming" class="page"></div>
+    <div id="page-carteira2030" class="page"></div>
 </div>
-<!-- Page PrecoJusto -->
-<div id="page-cotacao" class="page" style="padding:1rem;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-        <div>
-            <div style="font-size:1rem;font-weight:900;">Cotacao BTC / Taxas</div>
-            <div style="font-size:11px;color:var(--text-dim);" id="cotacao-ultima-atualizacao">Atualizando...</div>
-        </div>
-        <button onclick="atualizarCotacoes()" style="background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 14px;font-size:11px;font-weight:800;color:#F59E0B;cursor:pointer;display:flex;align-items:center;gap:6px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-            Atualizar
-        </button>
-    </div>
-    <!-- Alerta de Arbitragem -->
-    <div id="arb-alert" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);border-radius:12px;padding:12px 14px;margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:900;color:#EF4444;margin-bottom:4px;">Oportunidade de Arbitragem detectada</div>
-        <div id="arb-detalhe" style="font-size:10px;color:#f87171;line-height:1.6;"></div>
-    </div>
-    <!-- Tabela de cotações -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Comparativo de Precos em Tempo Real</div>
-    <div style="overflow-x:auto;margin-bottom:16px;">
-        <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:520px;" id="cotacao-table">
-            <thead>
-                <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                    <th style="text-align:left;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Exchange</th>
-                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Preco BTC (USD)</th>
-                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Taxa Compra</th>
-                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Taxa Saque</th>
-                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Spread</th>
-                    <th style="text-align:right;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Custo Real</th>
-                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.4);font-weight:700;font-size:9px;text-transform:uppercase;">Badge</th>
-                </tr>
-            </thead>
-            <tbody id="cotacao-tbody">
-                <tr><td colspan="7" style="text-align:center;padding:24px;color:#555;"><div style="display:flex;align-items:center;justify-content:center;gap:8px;"><div style="width:16px;height:16px;border:2px solid rgba(245,158,11,.3);border-top-color:#F59E0B;border-radius:50%;animation:spin 1s linear infinite;"></div> Buscando cotacoes...</div></td></tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- Calculadora de custo real -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Calculadora — Qual Exchange Entrega Mais BTC?</div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px;margin-bottom:16px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-            <div style="flex:1;min-width:120px;">
-                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">VALOR (USD)</div>
-                <input id="calc-valor" type="number" value="500" min="10" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
-            </div>
-            <div style="flex:1;min-width:120px;">
-                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">REDE DE SAQUE</div>
-                <select id="calc-rede" style="width:100%;background:#1a1a1f;border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:12px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
-                    <option value="BTC">Bitcoin (BTC)</option>
-                    <option value="Lightning">Lightning Network</option>
-                    <option value="BEP20">BEP-20 (BSC)</option>
-                    <option value="ERC20">ERC-20 (ETH)</option>
-                </select>
-            </div>
-            <div style="display:flex;align-items:flex-end;">
-                <button onclick="calcularCustoReal()" style="background:linear-gradient(135deg,#F59E0B,#D97706);border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:900;color:#000;cursor:pointer;white-space:nowrap;">Calcular</button>
-            </div>
-        </div>
-        <div id="calc-resultado"></div>
-    </div>
-    <!-- Redes de saque -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Comparativo de Redes para Saque</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px;">
-        <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;">
-            <div style="font-size:10px;font-weight:900;color:#F59E0B;margin-bottom:6px;">Bitcoin (BTC)</div>
-            <div style="font-size:11px;color:#888;">Taxa: ~0.0002 BTC</div>
-            <div style="font-size:11px;color:#888;">Tempo: 20–40 min</div>
-            <div style="font-size:9px;color:#555;margin-top:4px;">Mais seguro</div>
-        </div>
-        <div style="background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:12px;">
-            <div style="font-size:10px;font-weight:900;color:#A855F7;margin-bottom:6px;">Lightning</div>
-            <div style="font-size:11px;color:#888;">Taxa: quase zero</div>
-            <div style="font-size:11px;color:#888;">Tempo: instantaneo</div>
-            <div style="font-size:9px;color:#555;margin-top:4px;">Melhor para pequenos</div>
-        </div>
-        <div style="background:rgba(234,179,8,.07);border:1px solid rgba(234,179,8,.2);border-radius:12px;padding:12px;">
-            <div style="font-size:10px;font-weight:900;color:#EAB308;margin-bottom:6px;">BEP-20 (BSC)</div>
-            <div style="font-size:11px;color:#888;">Taxa: ~$0,10</div>
-            <div style="font-size:11px;color:#888;">Tempo: 1–5 min</div>
-            <div style="font-size:9px;color:#555;margin-top:4px;">Mais barato</div>
-        </div>
-        <div style="background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:12px;">
-            <div style="font-size:10px;font-weight:900;color:#3B82F6;margin-bottom:6px;">ERC-20 (ETH)</div>
-            <div style="font-size:11px;color:#888;">Taxa: ~$2–5</div>
-            <div style="font-size:11px;color:#888;">Tempo: 5–15 min</div>
-            <div style="font-size:9px;color:#555;margin-top:4px;">Ampla compatibilidade</div>
-        </div>
-    </div>
-    <!-- Indice de Custo Real BTC -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Indice de Custo Real do Bitcoin (por $1.000 investido)</div>
-    <div id="indice-custo" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px;margin-bottom:8px;"><div style="text-align:center;color:#555;font-size:11px;">Aguardando cotacoes...</div></div>
-    <div style="font-size:9px;color:#444;text-align:right;margin-bottom:16px;">Custo real = preco × (1 + taxa%) + taxa_saque_usd</div>
-    <!-- ===================== RADAR DA REDE BITCOIN ===================== -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;margin-top:4px;">Radar da Rede Bitcoin — Mempool ao Vivo</div>
-    <!-- Semaforo + stats -->
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
-            <!-- Semaforo -->
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div id="mempool-semaforo" style="width:14px;height:14px;border-radius:50%;background:#555;box-shadow:0 0 8px #555;flex-shrink:0;transition:background .4s,box-shadow .4s;"></div>
-                <div>
-                    <div id="mempool-status-label" style="font-size:13px;font-weight:900;color:#888;">Carregando...</div>
-                    <div id="mempool-status-sub" style="font-size:9px;color:#555;margin-top:1px;">Consultando mempool.space</div>
-                </div>
-            </div>
-            <button onclick="atualizarMempool()" style="background:rgba(247,147,26,.1);border:1px solid rgba(247,147,26,.25);border-radius:8px;padding:6px 12px;font-size:10px;font-weight:800;color:#F7931A;cursor:pointer;display:flex;align-items:center;gap:5px;">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                Atualizar
-            </button>
-        </div>
-        <!-- Stats grid -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:7px;" id="mempool-stats-grid">
-            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
-                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Rapida</div>
-                <div id="mp-fee-fast" style="font-size:16px;font-weight:900;color:#EF4444;">—</div>
-                <div style="font-size:8px;color:#555;">sat/vB · ~10min</div>
-            </div>
-            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
-                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Media</div>
-                <div id="mp-fee-mid" style="font-size:16px;font-weight:900;color:#F59E0B;">—</div>
-                <div style="font-size:8px;color:#555;">sat/vB · ~30min</div>
-            </div>
-            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
-                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Economica</div>
-                <div id="mp-fee-econ" style="font-size:16px;font-weight:900;color:#22C55E;">—</div>
-                <div style="font-size:8px;color:#555;">sat/vB · ~2h</div>
-            </div>
-            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;text-align:center;">
-                <div style="font-size:9px;color:#555;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Pendentes</div>
-                <div id="mp-pending" style="font-size:16px;font-weight:900;color:#A855F7;">—</div>
-                <div style="font-size:8px;color:#555;">txs na mempool</div>
-            </div>
-        </div>
-        <div id="mempool-ts" style="font-size:8px;color:#333;text-align:right;margin-top:8px;">—</div>
-    </div>
-    <!-- Calculadora de taxa de saque -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Calculadora de Saque On-Chain</div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-            <div style="flex:1;min-width:110px;">
-                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:4px;">VALOR (BTC)</div>
-                <input id="saque-btc" type="number" value="0.01" step="0.001" min="0.0001" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
-            </div>
-            <div style="display:flex;align-items:flex-end;">
-                <button onclick="calcularSaque()" style="background:linear-gradient(135deg,#F7931A,#D97706);border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:900;color:#000;cursor:pointer;white-space:nowrap;">Calcular</button>
-            </div>
-        </div>
-        <div id="saque-resultado"></div>
-    </div>
-    <!-- Melhor horario -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Melhor Horario para Sacar Bitcoin</div>
-    <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px;margin-bottom:10px;">
-        <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;flex-shrink:0;"></div>
-                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#22C55E;">Madrugada (0h–6h BRT)</b> — menor concorrencia, taxas geralmente baixas</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;flex-shrink:0;"></div>
-                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#22C55E;">Domingo de madrugada</b> — historicamente a taxa mais baixa da semana</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:#F59E0B;box-shadow:0 0 6px #F59E0B;flex-shrink:0;"></div>
-                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#F59E0B;">Tarde BRT (14h–18h)</b> — coincide com hora de pico dos EUA, taxas medias</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-                <div style="width:10px;height:10px;border-radius:50%;background:#EF4444;box-shadow:0 0 6px #EF4444;flex-shrink:0;"></div>
-                <div style="flex:1;font-size:10px;color:#aaa;"><b style="color:#EF4444;">Dias uteis tarde NY (16h–20h ET)</b> — maior congestionamento, evitar</div>
-            </div>
-        </div>
-        <div style="margin-top:10px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);border-radius:8px;padding:8px 10px;">
-            <div style="font-size:9px;color:#22C55E;font-weight:700;" id="melhor-horario-agora">Carregando recomendacao...</div>
-        </div>
-    </div>
-    <!-- On-chain vs Lightning -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">On-Chain vs Lightning Network</div>
-    <div style="overflow-x:auto;margin-bottom:14px;">
-        <table style="width:100%;border-collapse:collapse;font-size:11px;min-width:320px;">
-            <thead>
-                <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                    <th style="text-align:left;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Rede</th>
-                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Taxa</th>
-                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Tempo</th>
-                    <th style="text-align:center;padding:7px 8px;color:rgba(255,255,255,.35);font-size:9px;font-weight:700;text-transform:uppercase;">Ideal para</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr style="border-bottom:1px solid rgba(255,255,255,.05);" id="onchain-row">
-                    <td style="padding:9px 8px;"><span style="font-weight:800;color:#F7931A;">Bitcoin On-Chain</span></td>
-                    <td style="padding:9px 8px;text-align:center;" id="ln-compare-onchain">—</td>
-                    <td style="padding:9px 8px;text-align:center;color:#888;">20–60 min</td>
-                    <td style="padding:9px 8px;text-align:center;font-size:9px;color:#888;">Valores altos</td>
-                </tr>
-                <tr>
-                    <td style="padding:9px 8px;"><span style="font-weight:800;color:#A855F7;">Lightning Network</span></td>
-                    <td style="padding:9px 8px;text-align:center;"><span style="color:#22C55E;font-weight:800;">~$0,01</span></td>
-                    <td style="padding:9px 8px;text-align:center;color:#22C55E;font-weight:700;">Instantaneo</td>
-                    <td style="padding:9px 8px;text-align:center;font-size:9px;color:#888;">Qualquer valor</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- ===================== /RADAR DA REDE BITCOIN ===================== -->
-    <!-- Lightning Friendly Exchanges -->
-    <div style="background:linear-gradient(135deg,rgba(139,92,246,.1),rgba(99,102,241,.05));border:1px solid rgba(139,92,246,.25);border-radius:16px;padding:14px;margin-bottom:16px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <div style="width:32px;height:32px;background:linear-gradient(135deg,#8B5CF6,#6366F1);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div>
-                <div style="font-size:12px;font-weight:900;color:#A855F7;">Lightning Friendly Exchanges</div>
-                <div style="font-size:9px;color:#666;">Ranking de suporte a Lightning Network</div>
-            </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-            <!-- Binance -->
-            <a href="https://www.binance.com/referral/earn-together/refer2earn-usdc/claim?hl=pt&ref=GRO_28502_X3ASN" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#F0B90B;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#F0B90B;">Binance</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Deposito LN</span>
-                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Saque LN</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22C55E" stroke="#22C55E" stroke-width="1"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- OKX -->
-            <a href="https://okx.com/pt-br/join/5126561" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#00B4D8;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#00B4D8;">OKX</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Deposito LN</span>
-                        <span style="background:rgba(139,92,246,.2);color:#A855F7;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Saque LN</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22C55E" stroke="#22C55E" stroke-width="1"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- Bybit -->
-            <a href="https://bybit.com/invite?ref=6MOOPN" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#F7A600;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#F7A600;">Bybit</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(234,179,8,.15);color:#EAB308;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Parcial</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- Coinbase -->
-            <a href="https://coinbase.com/join/U43LRXQ?src=android-whatsapp" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#0052FF;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#0052FF;">Coinbase</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(234,179,8,.15);color:#EAB308;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Coinbase One (pago)</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EAB308" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- Kraken -->
-            <a href="https://invite.kraken.com/JDNW/e5jtbd5m" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#5741D9;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#A78BFA;">Kraken</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- MB -->
-            <a href="https://conta.mercadobitcoin.com.br/cadastro?mgm_token=96636f12fbd09c554e2007eefd549d5d34824b79cac558f4dee57a093e1ab450&utm_campaign=mgm&utm_source=link-copy&utm_medium=app" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#F7931A;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#F7931A;">Mercado Bitcoin</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </div>
-                </div>
-            </a>
-            <!-- NovaDAX -->
-            <a href="https://www.novadax.com.br/sign?c=TAL7H3&s=1" target="_blank" style="text-decoration:none;">
-                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border-radius:10px;padding:9px 11px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <div style="width:7px;height:7px;border-radius:50%;background:#00C7B1;"></div>
-                        <span style="font-size:11px;font-weight:800;color:#00C7B1;">NovaDAX</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                        <span style="background:rgba(239,68,68,.12);color:#f87171;font-size:9px;font-weight:800;padding:2px 7px;border-radius:5px;">Nao suporta LN</span>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
-    <!-- Simulador de Saque Lightning -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Simulador de Saque Lightning</div>
-    <div style="background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.18);border-radius:14px;padding:14px;margin-bottom:16px;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end;">
-            <div style="flex:1;min-width:100px;">
-                <div style="font-size:9px;color:#666;font-weight:700;margin-bottom:5px;">VALOR PARA SACAR (BTC)</div>
-                <input id="ln-valor" type="number" value="0.01" step="0.001" min="0.0001" style="width:100%;background:rgba(255,255,255,.06);border:1px solid #333;border-radius:8px;padding:9px 11px;font-size:13px;font-weight:700;color:#fff;outline:none;box-sizing:border-box;">
-            </div>
-            <div>
-                <button onclick="simularSaqueLN()" style="background:linear-gradient(135deg,#8B5CF6,#6366F1);border:none;border-radius:8px;padding:10px 16px;font-size:12px;font-weight:900;color:#fff;cursor:pointer;">Simular</button>
-            </div>
-        </div>
-        <div id="ln-resultado">
-            <div style="font-size:10px;color:#666;">Clique em Simular para ver resultado.</div>
-        </div>
-    </div>
-    <!-- Carteiras Lightning recomendadas -->
-    <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Carteiras Lightning Recomendadas</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;margin-bottom:16px;">
-        <a href="https://www.walletofsatoshi.com" target="_blank" style="text-decoration:none;">
-            <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:12px;padding:12px;cursor:pointer;">
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <span style="font-size:11px;font-weight:900;color:#F59E0B;">Wallet of Satoshi</span>
-                </div>
-                <div style="font-size:9px;color:#888;line-height:1.5;">Mais simples do mercado. Ideal para iniciantes. Custodial.</div>
-                <div style="font-size:8px;color:#F59E0B;margin-top:4px;font-weight:
+
+<!-- Mobile Bottom Navigation -->
+<div class="mobile-bottom-nav" id="mobile-bottom-nav">
+    <div class="mobile-nav-inner" id="mobile-nav-inner"></div>
 </div>
+
+<script>
+    // ==================== CONSTANTES E VARIÁVEIS GLOBAIS ====================
+    let compras = [];
+    let btcPrice = 0;
+    let ethPrice = 0;
+    let solPrice = 0;
+    let usdBrl = 5.7;
+    let charts = {};
+    let userName = "Marcos";
+
+    // ==================== STORAGE ====================
+    function saveToLocalStorage() {
+        localStorage.setItem('dca_compras', JSON.stringify(compras));
+        localStorage.setItem('dca_userName', userName);
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('dca_compras');
+        if (saved) compras = JSON.parse(saved);
+        const savedName = localStorage.getItem('dca_userName');
+        if (savedName) userName = savedName;
+    }
+
+    // ==================== FUNÇÕES AUXILIARES ====================
+    function formatBRL(value) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+    }
+
+    function formatUSD(value) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+    }
+
+    function formatSats(btc) {
+        return Math.round(btc * 100000000).toLocaleString('pt-BR');
+    }
+
+    // ==================== ATUALIZAR COTAÇÕES ====================
+    async function atualizarCotacoes() {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd,brl');
+            const data = await response.json();
+            btcPrice = data.bitcoin.usd;
+            ethPrice = data.ethereum.usd;
+            solPrice = data.solana.usd;
+            usdBrl = data.bitcoin.brl / btcPrice;
+            
+            document.getElementById('btc-price-topbar').innerHTML = `BTC $${btcPrice.toLocaleString()}`;
+            document.getElementById('kpi-btc-usd').innerHTML = `$${btcPrice.toLocaleString()}`;
+            document.getElementById('kpi-usd-brl').innerHTML = `USD/BRL: ${usdBrl.toFixed(2)}`;
+            
+            renderDashboard();
+        } catch (error) {
+            console.error('Erro ao buscar cotações:', error);
+        }
+    }
+
+    // ==================== RENDER DASHBOARD ====================
+    function renderDashboard() {
+        if (compras.length === 0) {
+            document.getElementById('page-dashboard').innerHTML = `
+                <div class="kpi-grid">
+                    <div class="kpi-card orange"><div class="kpi-label">Total Investido</div><div class="kpi-value">R$ 0,00</div><div class="kpi-sub">0 compras</div></div>
+                    <div class="kpi-card orange"><div class="kpi-label">BTC Acumulado</div><div class="kpi-value btc">0 sats</div><div class="kpi-sub">0.00000000 BTC</div></div>
+                    <div class="kpi-card green"><div class="kpi-label">Valor Atual</div><div class="kpi-value">R$ 0,00</div><div class="kpi-sub">$ 0,00</div></div>
+                    <div class="kpi-card blue"><div class="kpi-label">Preco Medio de Compra</div><div class="kpi-value">R$ 0</div><div class="kpi-sub">BTC agora: R$ 0</div></div>
+                    <div class="kpi-card"><div class="kpi-label">Lucro / Prejuizo</div><div class="kpi-value">R$ 0,00</div><div class="kpi-badge">0.00%</div></div>
+                    <div class="kpi-card purple"><div class="kpi-label">BTC Agora (USD)</div><div class="kpi-value">$${btcPrice?.toLocaleString() || 0}</div><div class="kpi-sub">USD/BRL: ${usdBrl?.toFixed(2) || '...'}</div></div>
+                </div>
+                <div class="empty-state"><h3>Adicione suas compras para ver o dashboard</h3></div>
+            `;
+            return;
+        }
+
+        // Cálculos
+        let totalInvestido = 0;
+        let totalBTC = 0;
+        compras.forEach(c => {
+            totalInvestido += c.valor;
+            totalBTC += c.quantidade;
+        });
+        const valorAtual = totalBTC * btcPrice * usdBrl;
+        const precoMedio = totalInvestido / totalBTC;
+        const lucroBrl = valorAtual - totalInvestido;
+        const lucroPercent = (lucroBrl / totalInvestido) * 100;
+
+        document.getElementById('page-dashboard').innerHTML = `
+            <div class="kpi-grid">
+                <div class="kpi-card orange"><div class="kpi-label">Total Investido</div><div class="kpi-value">${formatBRL(totalInvestido)}</div><div class="kpi-sub">${compras.length} compras</div></div>
+                <div class="kpi-card orange"><div class="kpi-label">BTC Acumulado</div><div class="kpi-value btc">${formatSats(totalBTC)} sats</div><div class="kpi-sub">${totalBTC.toFixed(8)} BTC</div></div>
+                <div class="kpi-card green"><div class="kpi-label">Valor Atual</div><div class="kpi-value">${formatBRL(valorAtual)}</div><div class="kpi-sub">${formatUSD(valorAtual / usdBrl)}</div></div>
+                <div class="kpi-card blue"><div class="kpi-label">Preco Medio de Compra</div><div class="kpi-value">${formatBRL(precoMedio)}</div><div class="kpi-sub">BTC agora: ${formatBRL(btcPrice * usdBrl)}</div></div>
+                <div class="kpi-card ${lucroBrl >= 0 ? 'green' : 'red'}"><div class="kpi-label">Lucro / Prejuizo</div><div class="kpi-value">${formatBRL(lucroBrl)}</div><div class="kpi-badge ${lucroBrl >= 0 ? 'up' : 'down'}">${lucroPercent.toFixed(2)}%</div></div>
+                <div class="kpi-card purple"><div class="kpi-label">BTC Agora (USD)</div><div class="kpi-value">${formatUSD(btcPrice)}</div><div class="kpi-sub">USD/BRL: ${usdBrl.toFixed(2)}</div></div>
             </div>
-        </a>
-    </div>
-</div>
+            <canvas id="chart-equity" height="200" style="background:var(--bg-card);border-radius:12px;padding:1rem;"></canvas>
+        `;
+        
+        // Renderizar gráfico de equity
+        const sorted = [...compras].sort((a,b) => new Date(a.data) - new Date(b.data));
+        let acumulado = 0;
+        let btcAcum = 0;
+        const equityData = [];
+        const dates = [];
+        sorted.forEach(c => {
+            acumulado += c.valor;
+            btcAcum += c.quantidade;
+            const valorAtualEquity = btcAcum * btcPrice * usdBrl;
+            equityData.push(valorAtualEquity);
+            dates.push(new Date(c.data).toLocaleDateString('pt-BR'));
+        });
+        
+        const ctx = document.getElementById('chart-equity')?.getContext('2d');
+        if (ctx) {
+            if (charts.equity) charts.equity.destroy();
+            charts.equity = new Chart(ctx, {
+                type: 'line',
+                data: { labels: dates, datasets: [{ label: 'Valor do Portfólio', data: equityData, borderColor: '#10B981', tension: 0.3 }] },
+                options: { responsive: true, plugins: { legend: { labels: { color: '#fff' } } } }
+            });
+        }
+    }
+
+    // ==================== RENDER COMPRAS ====================
+    function renderCompras() {
+        if (compras.length === 0) {
+            document.getElementById('page-compras').innerHTML = `
+                <div class="page-header"><div class="page-title">Minhas Compras</div><button class="btn-primary" onclick="addCompra()">Nova Compra</button></div>
+                <div class="empty-state"><h3>Nenhuma compra registrada</h3><p>Clique em "Nova Compra" para comecar seu DCA</p></div>
+            `;
+            return;
+        }
+        
+        let html = `<div class="page-header"><div class="page-title">Minhas Compras</div><div style="display:flex;gap:0.5rem;"><button class="btn-secondary" onclick="exportCSV()">Exportar CSV</button><button class="btn-primary" onclick="addCompra()">Nova Compra</button></div></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Ativo</th><th>Plataforma</th><th>Investido (R$)</th><th>Preco (R$)</th><th>Quantidade</th><th></th></tr></thead><tbody>`;
+        
+        compras.forEach((c, i) => {
+            html += `<tr>
+                <td>${new Date(c.data).toLocaleDateString('pt-BR')}</td>
+                <td><span class="td-plat">${c.ativo || 'BTC'}</span></td>
+                <td>${c.plataforma}</td>
+                <td>${formatBRL(c.valor)}</td>
+                <td>${formatBRL(c.preco)}</td>
+                <td class="td-sats">${c.quantidade.toFixed(8)}</td>
+                <td><button class="td-delete" onclick="deleteCompra(${i})">🗑️</button></td>
+            </tr>`;
+        });
+        
+        html += `</tbody></table></div>`;
+        document.getElementById('page-compras').innerHTML = html;
+    }
+
+    // ==================== FUNÇÕES CRUD ====================
+    function addCompra() {
+        const data = prompt('Data (YYYY-MM-DD):', new Date().toISOString().split('T')[0]);
+        if (!data) return;
+        const valor = parseFloat(prompt('Valor investido (R$):', '100'));
+        if (isNaN(valor)) return;
+        const preco = parseFloat(prompt('Preço do BTC na compra (R$):', '300000'));
+        if (isNaN(preco)) return;
+        const quantidade = valor / preco;
+        const plataforma = prompt('Plataforma:', 'Binance');
+        
+        compras.push({ data, valor, preco, quantidade, plataforma, ativo: 'BTC' });
+        saveToLocalStorage();
+        renderCompras();
+        renderDashboard();
+    }
+    
+    function deleteCompra(index) {
+        if (confirm('Remover esta compra?')) {
+            compras.splice(index, 1);
+            saveToLocalStorage();
+            renderCompras();
+            renderDashboard();
+        }
+    }
+    
+    function clearAllData() {
+        if (confirm('ATENÇÃO: Isso apagará TODOS os seus dados! Continuar?')) {
+            compras = [];
+            saveToLocalStorage();
+            renderCompras();
+            renderDashboard();
+        }
+    }
+    
+    // ==================== EXPORT/IMPORT ====================
+    function exportCSV() {
+        let csv = "Data,Ativo,Plataforma,Valor,Preco,Quantidade\n";
+        compras.forEach(c => {
+            csv += `${c.data},${c.ativo || 'BTC'},${c.plataforma},${c.valor},${c.preco},${c.quantidade}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'dca_compras.csv';
+        link.click();
+    }
+    
+    function exportJSON() {
+        const data = { compras, userName };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'dca_backup.json';
+        link.click();
+    }
+    
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.compras) compras = data.compras;
+                if (data.userName) userName = data.userName;
+                saveToLocalStorage();
+                renderCompras();
+                renderDashboard();
+                alert('Dados restaurados com sucesso!');
+            } catch (err) {
+                alert('Erro ao importar arquivo');
+            }
+        };
+        reader.readAsText(file);
+    }
+    
+    function saveNome() {
+        const input = document.getElementById('admin-nome');
+        if (input) {
+            userName = input.value;
+            saveToLocalStorage();
+            alert('Nome salvo!');
+        }
+    }
+    
+    // ==================== NAVEGAÇÃO ====================
+    function showPage(pageId, element) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(`page-${pageId}`).classList.add('active');
+        document.querySelectorAll('.sidebar-nav-item').forEach(item => item.classList.remove('active'));
+        if (element) element.classList.add('active');
+        document.getElementById('topbar-title').innerHTML = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+        
+        // Renderizar página específica
+        if (pageId === 'dashboard') renderDashboard();
+        else if (pageId === 'compras') renderCompras();
+        else if (pageId === 'admin') {
+            document.getElementById('page-admin').innerHTML = `
+                <div class="page-header"><div class="page-title">Configuracoes</div></div>
+                <div class="chart-card"><div class="chart-card-title">Backup Local</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;"><button class="btn-secondary" onclick="exportJSON()">Baixar JSON</button><button class="btn-secondary" onclick="document.getElementById('json-import').click()">Restaurar JSON</button></div><input type="file" id="json-import" accept=".json" onchange="importJSON(event)" style="display:none;"></div>
+                <div class="chart-card"><div class="chart-card-title">Seu Nome na Vitrine</div><div style="display:flex;gap:0.5rem;"><input class="form-input" id="admin-nome" placeholder="Ex: Marcos" value="${userName}" style="flex:1;"><button class="btn-primary" onclick="saveNome()">Salvar</button></div></div>
+                <div class="chart-card"><div class="chart-card-title" style="color:var(--red);">Zona de Perigo</div><button class="btn-secondary" style="border-color:rgba(239,68,68,0.3);color:var(--red);" onclick="clearAllData()">Apagar Todos os Dados</button></div>
+            `;
+        } else if (pageId === 'vitrine') {
+            const totalInvestido = compras.reduce((acc, c) => acc + c.valor, 0);
+            const totalBTC = compras.reduce((acc, c) => acc + c.quantidade, 0);
+            const valorAtual = totalBTC * btcPrice * usdBrl;
+            const lucroPercent = totalInvestido > 0 ? ((valorAtual - totalInvestido) / totalInvestido * 100) : 0;
+            document.getElementById('page-vitrine').innerHTML = `
+                <div class="vitrine-card">
+                    <div class="vitrine-badge">Clube DCA</div>
+                    <div class="vitrine-title">${userName}</div>
+                    <div class="vitrine-subtitle">Acumulando Bitcoin com disciplina</div>
+                    <div class="vitrine-kpi-grid">
+                        <div class="vitrine-kpi"><div class="vitrine-kpi-label">Total Investido</div><div class="vitrine-kpi-value">${formatBRL(totalInvestido)}</div></div>
+                        <div class="vitrine-kpi"><div class="vitrine-kpi-label">BTC Acumulado</div><div class="vitrine-kpi-value">${formatSats(totalBTC)} sats</div></div>
+                        <div class="vitrine-kpi"><div class="vitrine-kpi-label">Lucro/Prejuizo</div><div class="vitrine-kpi-value">${lucroPercent.toFixed(2)}%</div></div>
+                        <div class="vitrine-kpi"><div class="vitrine-kpi-label">Compras</div><div class="vitrine-kpi-value">${compras.length}</div></div>
+                    </div>
+                    <button class="vitrine-share-btn" onclick="shareVitrine()">Compartilhar Vitrine</button>
+                </div>
+            `;
+        } else if (pageId === 'cotacao') {
+            document.getElementById('page-cotacao').innerHTML = `
+                <div style="padding:1rem;"><h3>Cotações BTC</h3>
+                <p>Bitcoin (BTC): ${formatUSD(btcPrice)}</p>
+                <p>Ethereum (ETH): ${formatUSD(ethPrice)}</p>
+                <p>Solana (SOL): ${formatUSD(solPrice)}</p>
+                <p>USD/BRL: ${usdBrl.toFixed(2)}</p>
+                <button onclick="atualizarCotacoes()" class="btn-primary" style="margin-top:1rem;">Atualizar</button>
+                </div>
+            `;
+        } else {
+            document.getElementById(`page-${pageId}`).innerHTML = `<div class="empty-state"><h3>${pageId.toUpperCase()}</h3><p>Conteúdo em desenvolvimento</p></div>`;
+        }
+    }
+    
+    function shareVitrine() {
+        const totalInvestido = compras.reduce((acc, c) => acc + c.valor, 0);
+        const totalBTC = compras.reduce((acc, c) => acc + c.quantidade, 0);
+        const text = `${userName} acumulou ${formatSats(totalBTC)} sats (${totalBTC.toFixed(8)} BTC) com DCA. Total investido: ${formatBRL(totalInvestido)}. Clube DCA Tracker`;
+        if (navigator.share) navigator.share({ title: 'Minha Vitrine DCA', text });
+        else alert('Copie o texto: ' + text);
+    }
+    
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.style.transform === 'translateX(0px)') sidebar.style.transform = 'translateX(-100%)';
+        else sidebar.style.transform = 'translateX(0px)';
+    }
+    
+    function closeSidebar() {
+        document.getElementById('sidebar').style.transform = 'translateX(-100%)';
+    }
+    
+    // ==================== INICIALIZAÇÃO ====================
+    loadFromLocalStorage();
+    atualizarCotacoes();
+    setInterval(atualizarCotacoes, 60000);
+    renderCompras();
+    
+    // Expor funções globalmente
+    window.showPage = showPage;
+    window.addCompra = addCompra;
+    window.deleteCompra = deleteCompra;
+    window.clearAllData = clearAllData;
+    window.exportCSV = exportCSV;
+    window.exportJSON = exportJSON;
+    window.importJSON = importJSON;
+    window.saveNome = saveNome;
+    window.shareVitrine = shareVitrine;
+    window.toggleSidebar = toggleSidebar;
+    window.closeSidebar = closeSidebar;
+    window.atualizarCotacoes = atualizarCotacoes;
+</script>
 </body>
 </html>
