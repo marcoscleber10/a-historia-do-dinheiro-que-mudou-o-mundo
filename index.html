@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>A História do Dinheiro que Mudou o Mundo | Bitcoin</title>
+    <title>A História do Dinheiro que Mudou o Mundo | Bitcoin para Todos</title>
+    <!-- html2pdf para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Font Awesome para ícones sociais -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -25,12 +29,15 @@
             --text-secondary: #5a4a3a;
             --accent: #f7931a;
             --accent-dark: #e67e22;
+            --accent-light: #fde6d2;
             --card-bg: #ffffff;
             --border: #e8dccc;
             --header-bg: #fef3d6;
             --footer-bg: #2c2418;
             --footer-text: #e8dccc;
             --shadow: rgba(0, 0, 0, 0.05);
+            --quiz-bg: #f5f0e6;
+            --favorite: #ff4444;
         }
 
         /* Modo Escuro */
@@ -41,12 +48,53 @@
             --text-secondary: #c0c0c0;
             --accent: #f7931a;
             --accent-dark: #ff9f2e;
+            --accent-light: #3a2a1a;
             --card-bg: #2a2a2a;
             --border: #404040;
             --header-bg: #222222;
             --footer-bg: #0a0a0a;
             --footer-text: #c0c0c0;
             --shadow: rgba(0, 0, 0, 0.3);
+            --quiz-bg: #2a2a2a;
+            --favorite: #ff6666;
+        }
+
+        /* Modo Criança */
+        body.kid-mode {
+            --bg-primary: #fff9e8;
+            --bg-secondary: #fff5e0;
+            --text-primary: #3a2c1a;
+            --text-secondary: #6b5a3e;
+            --accent: #ffaa33;
+            --accent-dark: #ff9933;
+            --accent-light: #fff0cc;
+            --card-bg: #ffffff;
+            --border: #ffdd99;
+            font-family: 'Comic Neue', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive;
+        }
+
+        /* Modo Leitura */
+        body.reading-mode {
+            --bg-primary: #faf7f0;
+            --bg-secondary: #fdfaf5;
+        }
+        
+        body.reading-mode .event-card {
+            box-shadow: none;
+            border: 1px solid var(--border);
+        }
+        
+        body.reading-mode .event-illustration,
+        body.reading-mode .audio-btn,
+        body.reading-mode .share-buttons,
+        body.reading-mode .favorite-btn,
+        body.reading-mode .timeline-section,
+        body.reading-mode .quiz,
+        body.reading-mode .chapter-nav,
+        body.reading-mode .header-buttons .theme-toggle,
+        body.reading-mode .header-buttons .lang-toggle,
+        body.reading-mode .header-buttons .kid-mode-toggle {
+            display: none;
         }
 
         body {
@@ -54,9 +102,8 @@
             color: var(--text-primary);
         }
 
-        /* Container principal */
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -65,7 +112,7 @@
         .header {
             background-color: var(--header-bg);
             border-bottom: 3px solid var(--accent);
-            padding: 20px 0;
+            padding: 16px 0;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -86,33 +133,135 @@
         }
 
         .logo h1 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: normal;
             letter-spacing: -0.5px;
         }
 
         .logo p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--accent);
             font-style: italic;
         }
 
-        /* Botão tema */
-        .theme-toggle {
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle, .lang-toggle, .audio-global-toggle, .kid-mode-toggle, .reading-mode-toggle, .pdf-download {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 40px;
-            padding: 8px 16px;
+            padding: 8px 14px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-primary);
             transition: all 0.2s;
         }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover, .lang-toggle:hover, .audio-global-toggle:hover, 
+        .kid-mode-toggle:hover, .reading-mode-toggle:hover, .pdf-download:hover {
             background: var(--accent);
             color: white;
             border-color: var(--accent);
+        }
+
+        /* Timeline Slider */
+        .timeline-section {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-section h3 {
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .timeline-slider {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-track {
+            position: relative;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 30px 0;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .timeline-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-mark {
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            padding: 4px;
+        }
+
+        .timeline-mark:hover {
+            color: var(--accent);
+        }
+
+        .timeline-mark.active {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .timeline-year {
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 20px 0;
+            -webkit-appearance: none;
+            background: var(--border);
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+        }
+
+        .timeline-event-preview {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
         }
 
         /* Navegação por capítulos */
@@ -145,6 +294,7 @@
             color: var(--text-primary);
             border: 1px solid var(--border);
             transition: all 0.2s;
+            cursor: pointer;
         }
 
         .chapter-link:hover {
@@ -190,11 +340,16 @@
             margin: 24px 0;
             border: 1px solid var(--border);
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
 
         .event-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 24px var(--shadow);
+        }
+
+        .event-card.favorite {
+            border-left: 4px solid var(--favorite);
         }
 
         .event-year {
@@ -209,9 +364,10 @@
         }
 
         .event-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             margin-bottom: 12px;
             font-weight: 500;
+            padding-right: 50px;
         }
 
         .event-story {
@@ -224,12 +380,133 @@
             margin-bottom: 16px;
         }
 
+        .event-illustration {
+            text-align: center;
+            font-size: 4rem;
+            margin: 20px 0;
+            background: var(--accent-light);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .event-illustration img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 12px;
+        }
+
+        .audio-btn, .share-btn, .favorite-btn {
+            background: var(--accent-light);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            margin-top: 16px;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-btn:hover, .share-btn:hover, .favorite-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .favorite-btn.active {
+            background: var(--favorite);
+            color: white;
+            border-color: var(--favorite);
+        }
+
+        .share-buttons {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         .quote {
             font-style: italic;
             border-left: 3px solid var(--accent);
             padding-left: 20px;
             margin: 20px 0;
             color: var(--accent);
+        }
+
+        /* Quiz */
+        .quiz {
+            background: var(--quiz-bg);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 40px 0;
+            border: 1px solid var(--border);
+        }
+
+        .quiz h3 {
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .quiz-question {
+            margin: 20px 0;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+        }
+
+        .quiz-question p {
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .quiz-option {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .quiz-option:hover {
+            background: var(--accent-light);
+        }
+
+        .quiz-option input {
+            margin-right: 10px;
+        }
+
+        .quiz-feedback {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .quiz-feedback.correct {
+            background: #4caf50;
+            color: white;
+        }
+
+        .quiz-feedback.wrong {
+            background: #f44336;
+            color: white;
+        }
+
+        .quiz-score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border-radius: 40px;
         }
 
         /* Glossário */
@@ -276,7 +553,7 @@
         }
 
         .footer-content {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -284,6 +561,10 @@
         .footer p {
             margin: 8px 0;
             font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--accent);
         }
 
         /* Botão voltar ao topo */
@@ -311,6 +592,27 @@
 
         .back-to-top:hover {
             background: var(--accent-dark);
+        }
+
+        /* Notificação */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            animation: fadeInOut 3s ease;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
         }
 
         /* Responsividade */
@@ -342,9 +644,18 @@
                 width: 44px;
                 height: 44px;
             }
+            
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .timeline-marks {
+                justify-content: center;
+                gap: 8px;
+            }
         }
 
-        /* Animações suaves */
         html {
             scroll-behavior: smooth;
         }
@@ -356,10 +667,31 @@
             margin: 40px 0;
         }
 
-        /* Destaque para números */
         .highlight {
             color: var(--accent);
             font-weight: bold;
+        }
+
+        .audio-playing {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* PDF Export */
+        @media print {
+            .header, .timeline-section, .chapter-nav, .quiz, .glossary, 
+            .footer, .back-to-top, .audio-btn, .share-buttons, .favorite-btn,
+            .header-buttons {
+                display: none;
+            }
+            .event-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            body {
+                background: white;
+                color: black;
+            }
         }
     </style>
 </head>
@@ -370,631 +702,52 @@
                 <h1>📖 A História do Dinheiro<br>que Mudou o Mundo</h1>
                 <p>A jornada do Bitcoin, de 1983 ao futuro</p>
             </div>
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo claro/escuro">🌙 Modo escuro</button>
+            <div class="header-buttons">
+                <button class="kid-mode-toggle" id="kidModeToggle" aria-label="Modo Criança">🧸 Modo Criança</button>
+                <button class="reading-mode-toggle" id="readingModeToggle" aria-label="Modo Leitura">📖 Modo Leitura</button>
+                <button class="pdf-download" id="pdfDownload" aria-label="Baixar como PDF">📄 Baixar PDF</button>
+                <button class="lang-toggle" id="langToggle" aria-label="Trocar idioma">🌐 English</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo claro/escuro">🌙 Modo escuro</button>
+                <button class="audio-global-toggle" id="audioGlobalToggle" aria-label="Parar todas as narrações">🔇 Parar áudio</button>
+            </div>
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" id="mainContent">
+        <!-- Linha do Tempo Interativa -->
+        <div class="timeline-section">
+            <h3>⏳ Explore a Linha do Tempo</h3>
+            <div class="timeline-slider">
+                <input type="range" id="timelineSlider" min="1983" max="2028" step="1" value="2009">
+                <div class="timeline-track">
+                    <div class="timeline-progress" id="timelineProgress"></div>
+                </div>
+                <div class="timeline-marks" id="timelineMarks"></div>
+                <div class="timeline-event-preview" id="timelinePreview">
+                    <p>🎯 Arraste o marcador para explorar a história ano a ano!</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Navegação rápida -->
         <div class="chapter-nav">
             <h3>📚 Navegue pela história</h3>
-            <div class="chapter-links">
-                <a href="#parte1" class="chapter-link">1. Os Sonhadores</a>
-                <a href="#parte2" class="chapter-link">2. O Nascimento</a>
-                <a href="#parte3" class="chapter-link">3. Primeiros Passos</a>
-                <a href="#parte4" class="chapter-link">4. Montanha-Russa</a>
-                <a href="#parte5" class="chapter-link">5. Dor e Renascimento</a>
-                <a href="#parte6" class="chapter-link">6. O Boom</a>
-                <a href="#parte7" class="chapter-link">7. O Inverno</a>
-                <a href="#parte8" class="chapter-link">8. Renascimento Institucional</a>
-                <a href="#parte9" class="chapter-link">9. Segundo Boom</a>
-                <a href="#parte10" class="chapter-link">10. O Colapso</a>
-                <a href="#parte11" class="chapter-link">11. Institucionalização</a>
-                <a href="#parte12" class="chapter-link">12. Presente e Futuro</a>
-            </div>
+            <div class="chapter-links" id="chapterLinks"></div>
         </div>
 
-        <!-- PARTE 1: OS SONHADORES -->
-        <section id="parte1" class="chapter">
-            <div class="chapter-number">Parte 1</div>
-            <h2 class="chapter-title">Os Sonhadores</h2>
-            <div class="chapter-subtitle">A Era dos Cypherpunks — 1983 a 2008</div>
-            
-            <div class="event-card">
-                <span class="event-year">1983</span>
-                <h3 class="event-title">A Primeira Semente: DigiCash</h3>
-                <div class="event-story">
-                    <p>No ano de 1983, um cientista da computação chamado <strong>David Chaum</strong> publicou um artigo que parecia ficção científica: ele descrevia um dinheiro eletrônico que podia ser gasto de forma anônima. Chamou sua invenção de <strong>DigiCash</strong>.</p>
-                    <p>Ninguém sabia ainda, mas aquela semente levaria mais de 25 anos para germinar.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">1991</span>
-                <h3 class="event-title">O Clube dos Sonhadores</h3>
-                <div class="event-story">
-                    <p>Em 1991, <strong>Eric Hughes, Timothy May e John Gilmore</strong> fundaram a <strong>Cypherpunk Mailing List</strong>. Era uma lista de e-mails onde hackers, criptógrafos e libertários discutiam como a criptografia poderia libertar as pessoas do controle dos governos e bancos.</p>
-                    <p>Eles acreditavam que o código poderia ser uma forma de poder.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">22 Nov 1992</span>
-                <h3 class="event-title">O Manifesto Criptoanarquista</h3>
-                <div class="event-story">
-                    <p>Em 22 de novembro de 1992, <strong>Timothy C. May</strong> escreveu algo que se tornaria um texto sagrado para aquela comunidade: <strong>O Manifesto Criptoanarquista</strong>.</p>
-                    <div class="quote">"Assim como a imprensa a vapor e a impressão de livros alteraram o poder das guildas medievais, a criptografia transformará a natureza das corporações e do governo."</div>
-                    <p>Ele estava certo. Só que ninguém sabia ainda.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Mar 1997</span>
-                <h3 class="event-title">HashCash — A Invenção que Satoshi Usaria</h3>
-                <div class="event-story">
-                    <p>Em março de 1997, um programador chamado <strong>Adam Back</strong> criou o <strong>HashCash</strong>. Era um sistema para combater spam: antes de enviar um e-mail, seu computador precisava resolver um pequeno problema matemático.</p>
-                    <p>Era a primeira vez que alguém usava o conceito de <strong>prova de trabalho</strong> — o mesmo mecanismo que, 11 anos depois, Satoshi usaria para criar Bitcoins.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Nov 1998</span>
-                <h3 class="event-title">b-money — Wei Dai</h3>
-                <div class="event-story">
-                    <p>Em novembro de 1998, <strong>Wei Dai</strong> propôs o <strong>b-money</strong>: um dinheiro eletrônico anônimo e distribuído, onde as moedas seriam criadas por provas de trabalho. Satoshi citaria este trabalho em seu whitepaper.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Dez 1998</span>
-                <h3 class="event-title">Bit Gold — Nick Szabo</h3>
-                <div class="event-story">
-                    <p>Também em 1998, <strong>Nick Szabo</strong> criou o <strong>Bit Gold</strong> — o projeto mais próximo do Bitcoin: uma corrente de provas de trabalho encadeadas, onde cada bloco validava o anterior.</p>
-                    <p>Nick Szabo chegou perto. Muito perto. Mas ainda faltava algo.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Ago 2004</span>
-                <h3 class="event-title">RPOW — Hal Finney</h3>
-                <div class="event-story">
-                    <p>Em agosto de 2004, <strong>Hal Finney</strong>, um dos primeiros cypherpunks, criou o <strong>RPOW</strong> — Provas de Trabalho Reutilizáveis. Era o primeiro sistema de dinheiro digital baseado em prova de trabalho que realmente funcionava.</p>
-                    <p>Hal não sabia, mas seu nome entraria para a história logo em seguida.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 2: O NASCIMENTO -->
-        <section id="parte2" class="chapter">
-            <div class="chapter-number">Parte 2</div>
-            <h2 class="chapter-title">O Nascimento</h2>
-            <div class="chapter-subtitle">2008 — O Documento que Mudou o Mundo</div>
-
-            <div class="event-card">
-                <span class="event-year">31 Out 2008</span>
-                <h3 class="event-title">O Whitepaper do Bitcoin</h3>
-                <div class="event-story">
-                    <p>Em 31 de outubro de 2008, em meio ao colapso financeiro global, um documento de 9 páginas apareceu em uma lista de e-mails de criptografia.</p>
-                    <p>O título era: <strong>"Bitcoin: um sistema de dinheiro eletrônico ponto a ponto"</strong>.</p>
-                    <p>O autor se chamava <strong>Satoshi Nakamoto</strong>. Ninguém sabia quem era. Ninguém nunca saberia.</p>
-                    <p>Aquelas 9 páginas explicavam algo que ninguém havia conseguido fazer antes: um dinheiro digital que não precisava de um banco central, não precisava de confiança em terceiros, e funcionava apenas com a força de uma rede de computadores espalhada pelo mundo.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">3 Jan 2009</span>
-                <h3 class="event-title">Genesis Block — Bitcoin é Nascido</h3>
-                <div class="event-story">
-                    <p>Dois meses após publicar o whitepaper, Satoshi colocou a ideia em prática.</p>
-                    <p>No dia <strong>3 de janeiro de 2009</strong>, ele minerou o <strong>Bloco Gênese</strong> — o primeiro bloco da blockchain do Bitcoin.</p>
-                    <p>Dentro dele, deixou uma mensagem, como uma cápsula do tempo:</p>
-                    <div class="quote">"Chancellor on brink of second bailout for banks"</div>
-                    <p>Era a manchete do jornal <em>The Times</em> daquele dia. Enquanto os bancos eram salvos mais uma vez pelo dinheiro dos contribuintes, ali nascia uma alternativa.</p>
-                    <p>A recompensa pelo primeiro bloco foi de <strong>50 Bitcoins</strong>. Naquele momento, valiam zero. Existia apenas uma ideia.</p>
-                    <p>Mas aquela ideia era poderosa.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">12 Jan 2009</span>
-                <h3 class="event-title">A Primeira Transação</h3>
-                <div class="event-story">
-                    <p>Nove dias após o nascimento do Bitcoin, <strong>Satoshi enviou 10 Bitcoins para Hal Finney</strong>.</p>
-                    <p>Hal, que anos antes havia criado o RPOW, tornou-se a primeira pessoa a receber Bitcoins de Satoshi.</p>
-                    <p>Foi o primeiro movimento de dinheiro na história do Bitcoin. Uma transferência entre duas pessoas, sem banco, sem taxas, sem intermediários.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 3: PRIMEIROS PASSOS -->
-        <section id="parte3" class="chapter">
-            <div class="chapter-number">Parte 3</div>
-            <h2 class="chapter-title">Os Primeiros Passos</h2>
-            <div class="chapter-subtitle">2010 — O Ano em que o Bitcoin Ganhou Preço e Personalidade</div>
-
-            <div class="event-card">
-                <span class="event-year">22 Mai 2010</span>
-                <h3 class="event-title">🍕 Bitcoin Pizza Day</h3>
-                <div class="event-story">
-                    <p>Em maio de 2010, um programador chamado <strong>Laszlo Hanyecz</strong> fez algo que parecia loucura: ele pagou <strong class="highlight">10.000 Bitcoins por duas pizzas</strong>.</p>
-                    <p>Na época, os Bitcoins valiam centavos. Ele só queria provar que dava para comprar algo real com aquela moeda digital.</p>
-                    <p>Ele postou no fórum do Bitcoin: <em>"Pago 10.000 Bitcoins por duas pizzas — de preferência grandes."</em></p>
-                    <p>Alguém aceitou. As pizzas foram entregues.</p>
-                    <p>Hoje, aqueles 10.000 Bitcoins valem mais de <strong>1 bilhão de dólares</strong>.</p>
-                    <p>Aquele dia ficou conhecido como <strong>Bitcoin Pizza Day</strong> — uma celebração anual de como algo que parece sem valor pode, um dia, se tornar inestimável.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jul 2010</span>
-                <h3 class="event-title">Mt. Gox — O Primeiro Grande Mercado</h3>
-                <div class="event-story">
-                    <p>Em julho de 2010, um jovem programador chamado <strong>Jed McCaleb</strong> criou um site onde as pessoas podiam comprar e vender Bitcoins. Chamou de <strong>Mt. Gox</strong>.</p>
-                    <p>O que começou como um pequeno mercado se tornaria o maior exchange do mundo, processando <strong>70% de todas as transações de Bitcoin</strong> em seu auge.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Dez 2010</span>
-                <h3 class="event-title">Satoshi Desaparece</h3>
-                <div class="event-story">
-                    <p>No final de 2010, algo misterioso aconteceu.</p>
-                    <p><strong>Satoshi Nakamoto parou de se comunicar.</strong></p>
-                    <p>Ele passou o controle do código para <strong>Gavin Andresen</strong>, um desenvolvedor que havia se juntado ao projeto, e simplesmente... sumiu.</p>
-                    <p>Seus e-mails pararam. Seus posts no fórum cessaram. Até hoje, ninguém sabe quem era Satoshi. Podia ser um homem, uma mulher, um grupo. Talvez até alguém que já tenha falecido.</p>
-                    <p>Sua última mensagem foi simples: <em>"Passei para outras coisas."</em></p>
-                    <p>O mistério Satoshi Nakamoto é até hoje um dos maiores enigmas da história da tecnologia.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 4: MONTANHA-RUSSA -->
-        <section id="parte4" class="chapter">
-            <div class="chapter-number">Parte 4</div>
-            <h2 class="chapter-title">A Montanha-Russa</h2>
-            <div class="chapter-subtitle">2011 a 2013 — Primeiras Altas, Primeiras Quedas</div>
-
-            <div class="event-card">
-                <span class="event-year">Abr 2011</span>
-                <h3 class="event-title">Bitcoin Alcança US$ 1</h3>
-                <div class="event-story">
-                    <p>Em abril de 2011, o Bitcoin alcançou <strong>US$ 1,00</strong> pela primeira vez.</p>
-                    <p>Parecia um marco pequeno, mas era gigante. Dois anos antes, não valia nada. Agora, um Bitcoin valia um dólar. As pessoas começaram a prestar atenção.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jun 2011</span>
-                <h3 class="event-title">Silk Road — O Lado Sombrio</h3>
-                <div class="event-story">
-                    <p>Em junho de 2011, a revista <em>Forbes</em> publicou uma matéria sobre um site chamado <strong>Silk Road</strong> — uma espécie de Amazon anônima onde se podia comprar de tudo, inclusive coisas ilegais, usando Bitcoin.</p>
-                    <p>O site, criado por <strong>Ross Ulbricht</strong>, mostrou ao mundo o lado sombrio do Bitcoin: ele podia ser usado para qualquer coisa, boa ou ruim.</p>
-                    <p>O FBI fecharia a Silk Road em 2013, prendendo Ulbricht. Mas o Bitcoin já havia ganhado fama — e notoriedade.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Out 2011</span>
-                <h3 class="event-title">Litecoin — Nasce um Concorrente</h3>
-                <div class="event-story">
-                    <p>Em outubro de 2011, <strong>Charlie Lee</strong>, um engenheiro do Google, lançou o <strong>Litecoin</strong>.</p>
-                    <p>Era uma versão mais rápida do Bitcoin, com blocos quatro vezes mais rápidos. Foi o primeiro "altcoin" — uma alternativa ao Bitcoin. Depois dele, centenas surgiriam.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">28 Nov 2012</span>
-                <h3 class="event-title">O Primeiro Halving</h3>
-                <div class="event-story">
-                    <p>Em novembro de 2012, aconteceu o <strong>primeiro halving</strong> do Bitcoin.</p>
-                    <p>O halving é um evento programado no código: a cada 210 mil blocos (cerca de quatro anos), a recompensa por minerar um bloco cai pela metade.</p>
-                    <p>Naquele dia, a recompensa caiu de <strong>50 para 25 Bitcoins</strong>.</p>
-                    <p>Ninguém sabia ainda, mas cada halving seria seguido por um grande aumento no preço. Escassez, combinada com demanda, criava valor.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Abr 2013</span>
-                <h3 class="event-title">Bitcoin Surpassa US$ 100</h3>
-                <div class="event-story">
-                    <p>Em abril de 2013, o Bitcoin rompeu a barreira dos <strong>US$ 100</strong>.</p>
-                    <p>A crise em Chipre — onde o governo confiscou dinheiro das contas bancárias — fez as pessoas buscarem alternativas. O Bitcoin era uma delas.</p>
-                    <p>A mídia começou a falar. O mundo começou a olhar.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Nov 2013</span>
-                <h3 class="event-title">Bitcoin Alcança US$ 1.000</h3>
-                <div class="event-story">
-                    <p>Em novembro de 2013, o Bitcoin atingiu <strong>US$ 1.000</strong> pela primeira vez.</p>
-                    <p>O Senado dos Estados Unidos realizou audiências sobre o Bitcoin. O tom foi surpreendentemente positivo. O preço disparou.</p>
-                    <p>Mas o que sobe rápido, desce rápido. Após o pico, o Bitcoin caiu <strong>80%</strong> nos meses seguintes.</p>
-                    <p>Foi a primeira lição para os novatos: no mundo do Bitcoin, a montanha-russa é a regra.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 5: DOR E RENASCIMENTO -->
-        <section id="parte5" class="chapter">
-            <div class="chapter-number">Parte 5</div>
-            <h2 class="chapter-title">Dor e Renascimento</h2>
-            <div class="chapter-subtitle">2014 a 2016 — Colapsos e a Chegada dos Contratos Inteligentes</div>
-
-            <div class="event-card">
-                <span class="event-year">Fev 2014</span>
-                <h3 class="event-title">A Queda do Mt. Gox</h3>
-                <div class="event-story">
-                    <p>O Mt. Gox, a maior exchange do mundo, parou de processar saques. Dias depois, declarou falência.</p>
-                    <p><strong>850.000 Bitcoins</strong> haviam desaparecido. Na época, valiam <strong>US$ 450 milhões</strong>. Hoje, valeriam dezenas de bilhões.</p>
-                    <p>Foi o maior escândalo da história do Bitcoin até então. O preço caiu 50% em semanas.</p>
-                    <p>A confiança foi abalada. Mas a rede continuou funcionando. Bloco após bloco, ininterruptamente.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jul 2015</span>
-                <h3 class="event-title">Nasce o Ethereum</h3>
-                <div class="event-story">
-                    <p>Em julho de 2015, uma nova plataforma foi lançada: <strong>Ethereum</strong>.</p>
-                    <p>Criada por <strong>Vitalik Buterin</strong>, um jovem prodígio de apenas 19 anos, o Ethereum não era apenas uma moeda — era um computador mundial. Uma plataforma onde as pessoas podiam criar programas chamados <strong>contratos inteligentes</strong>.</p>
-                    <p>O ETH era vendido a menos de <strong>US$ 3</strong> no lançamento. Quem comprou naquela época faria uma fortuna nos anos seguintes.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">9 Jul 2016</span>
-                <h3 class="event-title">Segundo Halving</h3>
-                <div class="event-story">
-                    <p>Em julho de 2016, ocorreu o <strong>segundo halving</strong> do Bitcoin. A recompensa caiu de <strong>25 para 12,5 Bitcoins</strong>.</p>
-                    <p>Assim como no primeiro halving, o preço começou a subir nos meses seguintes.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jun 2016</span>
-                <h3 class="event-title">O Roubo do DAO</h3>
-                <div class="event-story">
-                    <p>Em junho de 2016, um projeto chamado <strong>DAO</strong> (Organização Autônoma Descentralizada) levantou mais de US$ 150 milhões em Ether — o maior crowdfunding da história.</p>
-                    <p>Um hacker explorou uma falha no código e roubou <strong>US$ 60 milhões em Ether</strong>.</p>
-                    <p>A comunidade do Ethereum se dividiu: voltar no tempo e reverter o roubo (um hard fork) ou aceitar o código como lei?</p>
-                    <p>A maioria escolheu reverter. O Ethereum se dividiu em duas blockchains: <strong>Ethereum (ETH)</strong> e <strong>Ethereum Classic (ETC)</strong>.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 6: O BOOM -->
-        <section id="parte6" class="chapter">
-            <div class="chapter-number">Parte 6</div>
-            <h2 class="chapter-title">O Boom</h2>
-            <div class="chapter-subtitle">2017 — O Ano em que o Mundo Acordou</div>
-
-            <div class="event-card">
-                <span class="event-year">Jan 2017</span>
-                <h3 class="event-title">A Febre das ICOs</h3>
-                <div class="event-story">
-                    <p>No início de 2017, uma nova mania tomou conta do mundo cripto: as <strong>ICOs</strong> (Ofertas Iniciais de Moedas).</p>
-                    <p>Qualquer projeto podia criar um token no Ethereum e vender para o público. Empresas levantavam milhões em minutos.</p>
-                    <p>A maioria era promessa vazia. Muitos eram golpes. Mas algo importante estava nascendo: a tokenização.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Ago 2017</span>
-                <h3 class="event-title">A Guerra dos Blocos — Bitcoin Cash</h3>
-                <div class="event-story">
-                    <p>O Bitcoin enfrentou uma crise interna: parte da comunidade queria aumentar o tamanho dos blocos para processar mais transações; outra parte queria manter os blocos pequenos para preservar a descentralização.</p>
-                    <p>A briga terminou em um <strong>hard fork</strong>: nasceu o <strong>Bitcoin Cash</strong>, com blocos 8 vezes maiores.</p>
-                    <p>O Bitcoin original seguiu seu caminho, com a ativação do <strong>SegWit</strong> (Testemunha Segregada), uma atualização que aumentava a capacidade da rede e abria caminho para o <strong>Lightning Network</strong>.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Dez 2017</span>
-                <h3 class="event-title">US$ 20.000 — A Loucura</h3>
-                <div class="event-story">
-                    <p>Em dezembro de 2017, o Bitcoin atingiu <strong>US$ 20.000</strong>.</p>
-                    <p>Foi a loucura. Todo mundo falava de Bitcoin. Avós perguntavam aos netos como comprar. Táxis em Nova York exibiam gráficos de preço.</p>
-                    <p>A bolha estourou logo depois. Nos meses seguintes, o Bitcoin caiu para <strong>US$ 3.200</strong> — uma queda de 85%.</p>
-                    <p>O que veio depois foi chamado de <strong>Crypto Winter</strong>. Um longo, frio e desolador inverno cripto.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 7: O INVERNO -->
-        <section id="parte7" class="chapter">
-            <div class="chapter-number">Parte 7</div>
-            <h2 class="chapter-title">O Inverno</h2>
-            <div class="chapter-subtitle">2018 — Quando Tudo Parecia Acabado</div>
-
-            <div class="event-card">
-                <span class="event-year">2018</span>
-                <h3 class="event-title">Crypto Winter — 85% de Queda</h3>
-                <div class="event-story">
-                    <p>O ano de 2018 foi cruel.</p>
-                    <p>Bitcoin: de US$ 20 mil para US$ 3.200.<br>
-                    Ethereum: de US$ 1.400 para US$ 80.<br>
-                    Centenas de ICOs foram a zero.</p>
-                    <p>Os empregos sumiram. Os projetos fecharam. A mídia declarou o Bitcoin morto — mais uma vez.</p>
-                    <p>Mas quem ficou, plantou sementes que floresceriam mais tarde.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 8: RENASCIMENTO INSTITUCIONAL -->
-        <section id="parte8" class="chapter">
-            <div class="chapter-number">Parte 8</div>
-            <h2 class="chapter-title">O Renascimento Institucional</h2>
-            <div class="chapter-subtitle">2020 — A Volta dos Gigantes</div>
-
-            <div class="event-card">
-                <span class="event-year">Mai 2020</span>
-                <h3 class="event-title">Terceiro Halving</h3>
-                <div class="event-story">
-                    <p>Em maio de 2020, ocorreu o <strong>terceiro halving</strong>. A recompensa caiu de <strong>12,5 para 6,25 Bitcoins</strong>.</p>
-                    <p>Como nos ciclos anteriores, um novo bull run começou a se formar.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Ago 2020</span>
-                <h3 class="event-title">MicroStrategy — A Primeira Empresa</h3>
-                <div class="event-story">
-                    <p>Uma empresa chamada <strong>MicroStrategy</strong>, liderada por <strong>Michael Saylor</strong>, fez algo que nenhuma empresa pública havia feito antes: comprou <strong>US$ 250 milhões em Bitcoin</strong> como reserva de tesouraria.</p>
-                    <p>Saylor explicou: "O dólar está perdendo valor. O Bitcoin é o melhor ativo para proteger nosso dinheiro."</p>
-                    <p>Foi o primeiro dominó. Outras empresas seguiriam.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jun 2020</span>
-                <h3 class="event-title">DeFi Summer — O Verão das Finanças Descentralizadas</h3>
-                <div class="event-story">
-                    <p>No verão de 2020, um novo movimento explodiu: <strong>DeFi</strong> (Finanças Descentralizadas).</p>
-                    <p>Projetos como <strong>Uniswap, Compound, Aave e Yearn</strong> permitiam que as pessoas emprestassem, tomassem emprestado e negociassem sem bancos.</p>
-                    <p>Em semanas, bilhões de dólares entraram nesses protocolos. Era a promessa do Bitcoin aplicada a todos os serviços financeiros.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Out 2020</span>
-                <h3 class="event-title">PayPal Entra no Jogo</h3>
-                <div class="event-story">
-                    <p>Em outubro de 2020, o <strong>PayPal</strong> anunciou que seus <strong>346 milhões de usuários</strong> poderiam comprar, vender e gastar Bitcoin.</p>
-                    <p>Era um sinal claro: o mundo tradicional estava abrindo as portas.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 9: SEGUNDO BOOM -->
-        <section id="parte9" class="chapter">
-            <div class="chapter-number">Parte 9</div>
-            <h2 class="chapter-title">O Segundo Boom</h2>
-            <div class="chapter-subtitle">2021 — O Ano que Virou a Chave</div>
-
-            <div class="event-card">
-                <span class="event-year">Fev 2021</span>
-                <h3 class="event-title">Tesla e Elon Musk</h3>
-                <div class="event-story">
-                    <p>Em fevereiro de 2021, <strong>Elon Musk</strong>, o homem mais rico do mundo, anunciou que a <strong>Tesla</strong> havia comprado <strong>US$ 1,5 bilhão em Bitcoin</strong> e que aceitaria Bitcoin como pagamento.</p>
-                    <p>O Bitcoin disparou para <strong>US$ 58.000</strong>.</p>
-                    <p>Meses depois, Musk recuou, citando preocupações ambientais. O Bitcoin caiu 50%. O mercado aprendeu que as palavras de bilionários podiam mover montanhas.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Mar 2021</span>
-                <h3 class="event-title">A Explosão dos NFTs</h3>
-                <div class="event-story">
-                    <p>Em março de 2021, o artista <strong>Beeple</strong> vendeu uma obra digital no <strong>Christie's</strong>, uma das casas de leilão mais tradicionais do mundo.</p>
-                    <p>O preço: <strong>US$ 69 milhões</strong>. A obra era um <strong>NFT</strong> — um token que prova propriedade de um item digital.</p>
-                    <p>De repente, arte, memes, personagens de macaco (Bored Apes) e os famosos CryptoPunks estavam valendo fortunas.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Jun 2021</span>
-                <h3 class="event-title">El Salvador — Um País Abraça o Bitcoin</h3>
-                <div class="event-story">
-                    <p>Em junho de 2021, <strong>El Salvador</strong> se tornou o <strong>primeiro país do mundo a adotar o Bitcoin como moeda legal</strong>.</p>
-                    <p>O presidente <strong>Nayib Bukele</strong> anunciou que todo cidadão poderia usar Bitcoin para pagar impostos, comprar produtos e receber salários.</p>
-                    <p>Foi um momento histórico. Pela primeira vez, uma nação inteira abraçava o dinheiro que mudou o mundo.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Mai 2021</span>
-                <h3 class="event-title">China Expulsa os Mineradores</h3>
-                <div class="event-story">
-                    <p>Em maio de 2021, a <strong>China</strong>, que abrigava mais da metade da mineração de Bitcoin do mundo, proibiu a atividade.</p>
-                    <p>O <strong>hash rate</strong> (poder de processamento da rede) caiu 50% da noite para o dia.</p>
-                    <p>Mineradores fugiram para os Estados Unidos, Cazaquistão, Rússia e outros países. A rede saiu mais descentralizada do que nunca.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">14 Nov 2021</span>
-                <h3 class="event-title">Taproot — A Maior Atualização do Bitcoin</h3>
-                <div class="event-story">
-                    <p>Em novembro de 2021, o Bitcoin ativou o <strong>Taproot</strong> — sua maior atualização desde o SegWit em 2017.</p>
-                    <p>O Taproot melhorou a privacidade e permitiu contratos inteligentes mais complexos no Bitcoin. Uma atualização silenciosa, mas profunda.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Nov 2021</span>
-                <h3 class="event-title">US$ 69.000 — Novo Recorde</h3>
-                <div class="event-story">
-                    <p>Em novembro de 2021, o Bitcoin atingiu um novo recorde: <strong>US$ 69.000</strong>.</p>
-                    <p>O mercado total de criptomoedas ultrapassou <strong>US$ 3 trilhões</strong>. O Ethereum chegou a <strong>US$ 4.800</strong>.</p>
-                    <p>Tudo parecia possível. Ninguém sabia que um inverno ainda mais rigoroso se aproximava.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 10: O COLAPSO -->
-        <section id="parte10" class="chapter">
-            <div class="chapter-number">Parte 10</div>
-            <h2 class="chapter-title">O Colapso</h2>
-            <div class="chapter-subtitle">2022 — Quando o Castelo de Areia Desabou</div>
-
-            <div class="event-card">
-                <span class="event-year">Mai 2022</span>
-                <h3 class="event-title">O Colapso da Terra/Luna</h3>
-                <div class="event-story">
-                    <p>Em maio de 2022, um dos projetos mais promissores do mundo cripto, <strong>Terra</strong>, desabou.</p>
-                    <p>A <strong>TerraUSD</strong> (UST), uma "stablecoin" que prometia valer sempre US$ 1, perdeu seu valor. O mecanismo que a sustentava quebrou.</p>
-                    <p>Em dias, <strong>US$ 60 bilhões</strong> evaporaram. O token <strong>LUNA</strong>, que valia US$ 80, foi a zero. Milhões de pessoas perderam tudo.</p>
-                    <p>Foi o maior colapso da história das criptomoedas até então.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">15 Set 2022</span>
-                <h3 class="event-title">The Merge — Ethereum Vira Proof-of-Stake</h3>
-                <div class="event-story">
-                    <p>Em meio ao caos, o Ethereum fez algo extraordinário: no dia <strong>15 de setembro de 2022</strong>, realizou <strong>The Merge</strong> (A Fusão).</p>
-                    <p>A rede migrou do sistema de <strong>prova de trabalho</strong> (mineração) para <strong>prova de participação</strong> (stake). O consumo de energia caiu <strong>99,95%</strong>.</p>
-                    <p>Foi a maior atualização da história do Ethereum. Um feito técnico impressionante.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Nov 2022</span>
-                <h3 class="event-title">FTX — A Queda do Império</h3>
-                <div class="event-story">
-                    <p>Em novembro de 2022, o maior escândalo da história das criptomoedas veio à tona.</p>
-                    <p><strong>Sam Bankman-Fried (SBF)</strong>, o fundador da <strong>FTX</strong>, uma das maiores exchanges do mundo, foi acusado de desviar <strong>US$ 8 bilhões</strong> em fundos de clientes.</p>
-                    <p>A FTX colapsou em dias. SBF foi preso, julgado e condenado a <strong>25 anos de prisão</strong>.</p>
-                    <p>O Bitcoin atingiu o fundo do poço em <strong>US$ 15.760</strong> em 21 de novembro de 2022 — uma queda de 77% em relação ao pico de 2021.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 11: INSTITUCIONALIZAÇÃO -->
-        <section id="parte11" class="chapter">
-            <div class="chapter-number">Parte 11</div>
-            <h2 class="chapter-title">A Institucionalização</h2>
-            <div class="chapter-subtitle">2024 — O Ano em que Wall Street Abraçou o Bitcoin</div>
-
-            <div class="event-card">
-                <span class="event-year">10 Jan 2024</span>
-                <h3 class="event-title">ETF do Bitcoin — A Porta se Abre</h3>
-                <div class="event-story">
-                    <p>Em 10 de janeiro de 2024, a <strong>SEC dos Estados Unidos</strong> aprovou os primeiros <strong>ETFs de Bitcoin à vista</strong> (spot).</p>
-                    <p><strong>BlackRock, Fidelity, Franklin Templeton</strong> — os maiores gestores de ativos do mundo — agora podiam oferecer Bitcoin em corretoras tradicionais, como ações.</p>
-                    <p>Foi o maior evento de adoção institucional da história. Bilhões de dólares entraram em semanas.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">20 Abr 2024</span>
-                <h3 class="event-title">Quarto Halving</h3>
-                <div class="event-story">
-                    <p>Em 20 de abril de 2024, ocorreu o <strong>quarto halving</strong>. A recompensa caiu de <strong>6,25 para 3,125 Bitcoins</strong>.</p>
-                    <p>Pela primeira vez, um halving acontecia após a aprovação de ETFs. O cenário era diferente de tudo que já havia ocorrido antes.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Mai 2024</span>
-                <h3 class="event-title">ETF do Ethereum Aprovado</h3>
-                <div class="event-story">
-                    <p>Em maio de 2024, a SEC aprovou os <strong>ETFs de Ethereum à vista</strong> — o segundo maior ativo cripto ganhando o mesmo acesso institucional que o Bitcoin.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">Dez 2024</span>
-                <h3 class="event-title">Bitcoin Ultrapassa US$ 100.000</h3>
-                <div class="event-story">
-                    <p>Em dezembro de 2024, após a vitória eleitoral de Donald Trump e suas promessas de criar uma <strong>reserva estratégica de Bitcoin</strong> para os Estados Unidos, o Bitcoin rompeu a barreira dos <strong>US$ 100.000</strong>.</p>
-                    <p>O que parecia impossível apenas alguns anos antes era agora realidade. O Bitcoin estava consolidado como um ativo global.</p>
-                </div>
-            </div>
-        </section>
-
-        <hr>
-
-        <!-- PARTE 12: PRESENTE E FUTURO -->
-        <section id="parte12" class="chapter">
-            <div class="chapter-number">Parte 12</div>
-            <h2 class="chapter-title">O Presente e o Futuro</h2>
-            <div class="chapter-subtitle">2025 — Novos Recordes e o Amanhã</div>
-
-            <div class="event-card">
-                <span class="event-year">6 Out 2025</span>
-                <h3 class="event-title">Bitcoin Alcança US$ 126.296</h3>
-                <div class="event-story">
-                    <p>Em 6 de outubro de 2025, o Bitcoin atingiu um novo recorde histórico: <strong>US$ 126.296</strong>.</p>
-                    <p>O mercado estava diferente. ETFs movimentavam bilhões diariamente. Empresas de todos os portes mantinham Bitcoin em seus balanços. Países discutiam reservas estratégicas.</p>
-                    <p>O dinheiro que mudou o mundo agora era parte do sistema financeiro global.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">2028</span>
-                <h3 class="event-title">O Quinto Halving</h3>
-                <div class="event-story">
-                    <p>O próximo halving está programado para <strong>2028</strong>. A recompensa cairá de <strong>3,125 para 1,5625 Bitcoins</strong>.</p>
-                    <p>No Bitcoin, há duas certezas: os impostos cobrados pelo Estado... e os 210 mil blocos que formam cada era do Bitcoin.</p>
-                </div>
-            </div>
-
-            <div class="event-card">
-                <span class="event-year">∞</span>
-                <h3 class="event-title">Epílogo</h3>
-                <div class="event-story">
-                    <p>A história do Bitcoin não terminou. Ela continua sendo escrita, bloco após bloco, a cada dez minutos, 24 horas por dia, 7 dias por semana, sem parar.</p>
-                    <p>Começou com um sonho em uma lista de e-mails nos anos 1990. Ganhou forma em 9 páginas escritas por um fantasma chamado Satoshi. Foi comprada com pizzas, usada em mercados ilegais, sobreviveu a colapsos, proibições, guerras de blocos, invernos rigorosos.</p>
-                    <p>Hoje, é um ativo que movimenta trilhões, abrigado nos maiores fundos de investimento do mundo, reconhecido por governos e bancos centrais.</p>
-                    <p>Mas sua essência continua sendo a mesma descrita no primeiro bloco, em 3 de janeiro de 2009: um dinheiro que não depende de bancos, não depende de governos, e pertence a qualquer pessoa com acesso à internet.</p>
-                    <p><strong>O dinheiro que mudou o mundo.</strong></p>
-                </div>
-            </div>
-        </section>
+        <div id="chaptersContainer"></div>
 
         <!-- Glossário -->
-        <div class="glossary">
-            <h3>📖 Glossário — Palavrinhas para entender melhor</h3>
-            <div class="glossary-grid">
-                <div class="glossary-item"><span class="glossary-term">Bloco Gênese</span><br>O primeiro bloco da blockchain do Bitcoin, minerado em 3 de janeiro de 2009.</div>
-                <div class="glossary-item"><span class="glossary-term">Blockchain</span><br>Um livro-caixa gigante e público que registra todas as transações. Ninguém pode apagar ou alterar o que foi escrito.</div>
-                <div class="glossary-item"><span class="glossary-term">Halving</span><br>Evento que reduz pela metade a recompensa dos mineradores. Acontece a cada 4 anos.</div>
-                <div class="glossary-item"><span class="glossary-term">Minerar</span><br>Processo onde computadores ajudam a rede do Bitcoin a funcionar e ganham Bitcoins como recompensa.</div>
-                <div class="glossary-item"><span class="glossary-term">Satoshi Nakamoto</span><br>O criador misterioso do Bitcoin. Nunca se soube quem realmente é — homem, mulher ou grupo.</div>
-                <div class="glossary-item"><span class="glossary-term">Prova de Trabalho (PoW)</span><br>Mecanismo que exige que computadores resolvam problemas matemáticos para validar transações.</div>
-                <div class="glossary-item"><span class="glossary-term">ETF</span><br>Fundo de investimento negociado em bolsa. Permite que pessoas invistam em Bitcoin sem precisar comprar a moeda diretamente.</div>
-                <div class="glossary-item"><span class="glossary-term">Smart Contract</span><br>Contrato inteligente — um programa que executa automaticamente acordos sem necessidade de intermediários.</div>
-            </div>
-        </div>
+        <div class="glossary" id="glossary"></div>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
             <p>📖 <strong>A História do Dinheiro que Mudou o Mundo</strong></p>
-            <p>Baseado na linha do tempo de <a href="https://chaintimeline.com" target="_blank" style="color: var(--accent);">Chain Timeline</a></p>
+            <p>Baseado na linha do tempo de <a href="https://chaintimeline.com" target="_blank">Chain Timeline</a></p>
             <p>Uma narrativa acessível para todos — crianças, adultos, avós e avôs</p>
+            <p>🎧 Clique no botão de áudio em cada evento para ouvir a história!</p>
+            <p>⭐ Favoritos são salvos automaticamente no seu navegador</p>
             <p>Bitcoin: bloco após bloco, desde 2009</p>
         </div>
     </footer>
@@ -1002,46 +755,479 @@
     <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">↑</button>
 
     <script>
-        // Toggle tema claro/escuro
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        // Verificar preferência salva
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            body.classList.remove('light');
-            body.classList.add('dark');
-            themeToggle.textContent = '☀️ Modo claro';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            if (body.classList.contains('light')) {
-                body.classList.remove('light');
-                body.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.textContent = '☀️ Modo claro';
-            } else {
-                body.classList.remove('dark');
-                body.classList.add('light');
-                localStorage.setItem('theme', 'light');
-                themeToggle.textContent = '🌙 Modo escuro';
-            }
-        });
-
-        // Botão voltar ao topo
-        const backToTop = document.getElementById('backToTop');
+        // ============================================
+        // DADOS COMPLETOS DA HISTÓRIA COM VERSÕES TRADUZIDAS
+        // ============================================
         
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTop.classList.add('visible');
-            } else {
-                backToTop.classList.remove('visible');
-            }
-        });
+        // Dados principais com versões para crianças e traduções
+        const eventsData = [
+            // Parte 1: Os Sonhadores
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1983, title: "A Primeira Semente: DigiCash", illustration: "🔐💰", imgUrl: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=200&h=150&fit=crop", story: "No ano de 1983, um cientista da computação chamado David Chaum publicou um artigo que parecia ficção científica: ele descrevia um dinheiro eletrônico que podia ser gasto de forma anônima. Chamou sua invenção de DigiCash. Ninguém sabia ainda, mas aquela semente levaria mais de 25 anos para germinar.", storyKid: "Em 1983, um homem inteligente chamado David Chaum teve uma ideia incrível: criar um dinheiro que ninguém soubesse que você estava usando! Ele chamou de DigiCash. Foi como plantar uma sementinha que só cresceria muitos anos depois.", storyEn: "In 1983, computer scientist David Chaum published a paper that seemed like science fiction: he described electronic money that could be spent anonymously. He called his invention DigiCash. No one knew it yet, but that seed would take over 25 years to germinate.", storyEs: "En 1983, el científico informático David Chaum publicó un artículo que parecía ciencia ficción: describía un dinero electrónico que podía gastarse de forma anónima. Llamó a su invención DigiCash. Nadie lo sabía aún, pero esa semilla tardaría más de 25 años en germinar." },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1991, title: "O Clube dos Sonhadores", illustration: "✉️🔒", imgUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&h=150&fit=crop", story: "Em 1991, Eric Hughes, Timothy May e John Gilmore fundaram a Cypherpunk Mailing List. Era uma lista de e-mails onde hackers, criptógrafos e libertários discutiam como a criptografia poderia libertar as pessoas do controle dos governos e bancos.", storyKid: "Em 1991, três amigos criaram um clube secreto na internet. Eles conversavam sobre como usar códigos secretos para proteger as pessoas e o dinheiro. Era como um clube de super-heróis da computação!", storyEn: "In 1991, Eric Hughes, Timothy May and John Gilmore founded the Cypherpunk Mailing List. It was an email list where hackers, cryptographers and libertarians discussed how cryptography could free people from the control of governments and banks.", storyEs: "En 1991, Eric Hughes, Timothy May y John Gilmore fundaron la Cypherpunk Mailing List. Era una lista de correo donde hackers, criptógrafos y libertarios discutían cómo la criptografía podría liberar a las personas del control de gobiernos y bancos." },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1992, title: "O Manifesto Criptoanarquista", illustration: "📜⚡", imgUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=200&h=150&fit=crop", story: "Em 22 de novembro de 1992, Timothy C. May escreveu O Manifesto Criptoanarquista. Ele previa que a criptografia transformaria a natureza das corporações e do governo, assim como a imprensa a vapor alterou o poder das guildas medievais.", storyKid: "Em 1992, Timothy May escreveu um texto importante dizendo que os códigos secretos iriam mudar o mundo, assim como as máquinas a vapor mudaram tudo antigamente. Ele estava certo!", storyEn: "On November 22, 1992, Timothy C. May wrote The Crypto Anarchist Manifesto. He predicted that cryptography would transform the nature of corporations and government, just as the printing press changed the power of medieval guilds.", storyEs: "El 22 de noviembre de 1992, Timothy C. May escribió El Manifiesto Criptoanarquista. Predijo que la criptografía transformaría la naturaleza de las corporaciones y los gobiernos, así como la imprenta cambió el poder de los gremios medievales." },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1997, title: "HashCash — A Prova de Trabalho", illustration: "⛏️💻", imgUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=200&h=150&fit=crop", story: "Em março de 1997, Adam Back criou o HashCash. Era um sistema para combater spam: antes de enviar um e-mail, seu computador precisava resolver um pequeno problema matemático. Foi a primeira vez que alguém usou o conceito de prova de trabalho.", storyKid: "Em 1997, Adam Back inventou um jeito de parar e-mails chatos: o computador tinha que resolver um probleminha de matemática antes de mandar. Essa ideia seria usada mais tarde para criar o Bitcoin!", storyEn: "In March 1997, Adam Back created HashCash. It was a system to fight spam: before sending an email, your computer had to solve a small math problem. It was the first time someone used the concept of proof of work.", storyEs: "En marzo de 1997, Adam Back creó HashCash. Era un sistema para combatir el spam: antes de enviar un correo, tu computadora tenía que resolver un pequeño problema matemático. Fue la primera vez que alguien usó el concepto de prueba de trabajo." },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1998, title: "b-money — Wei Dai", illustration: "💎🌐", imgUrl: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=200&h=150&fit=crop", story: "Em novembro de 1998, Wei Dai propôs o b-money: um dinheiro eletrônico anônimo e distribuído, onde as moedas seriam criadas por provas de trabalho. Satoshi citaria este trabalho em seu whitepaper.", storyKid: "Em 1998, Wei Dai imaginou um dinheiro eletrônico que qualquer pessoa poderia criar com um pouquinho de trabalho de computador. Essa ideia foi tão boa que Satoshi usou ela depois!", storyEn: "In November 1998, Wei Dai proposed b-money: an anonymous, distributed electronic cash system where coins would be created through proof of work. Satoshi would cite this work in his whitepaper.", storyEs: "En noviembre de 1998, Wei Dai propuso b-money: un sistema de efectivo electrónico anónimo y distribuido donde las monedas se crearían mediante prueba de trabajo. Satoshi citaría este trabajo en su whitepaper." },
+            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 2004, title: "RPOW — Hal Finney", illustration: "🔄💡", imgUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=200&h=150&fit=crop", story: "Em agosto de 2004, Hal Finney criou o RPOW — Provas de Trabalho Reutilizáveis. Era o primeiro sistema de dinheiro digital baseado em prova de trabalho que realmente funcionava. Hal se tornaria a primeira pessoa a receber Bitcoins de Satoshi.", storyKid: "Em 2004, Hal Finney fez um dinheiro digital que funcionava de verdade! Mais tarde, ele seria a primeira pessoa a ganhar Bitcoins do misterioso Satoshi.", storyEn: "In August 2004, Hal Finney created RPOW — Reusable Proofs of Work. It was the first working digital cash system based on proof of work. Hal would later become the first person to receive Bitcoins from Satoshi.", storyEs: "En agosto de 2004, Hal Finney creó RPOW — Pruebas de Trabajo Reutilizables. Fue el primer sistema de efectivo digital funcional basado en prueba de trabajo. Hal se convertiría en la primera persona en recibir Bitcoins de Satoshi." },
+            // Parte 2: O Nascimento
+            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2008, title: "O Whitepaper do Bitcoin", illustration: "📄✨", imgUrl: "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?w=200&h=150&fit=crop", story: "Em 31 de outubro de 2008, em meio ao colapso financeiro global, um documento de 9 páginas apareceu. O título era 'Bitcoin: um sistema de dinheiro eletrônico ponto a ponto'. O autor se chamava Satoshi Nakamoto. Ninguém sabia quem era. Aquelas 9 páginas explicavam um dinheiro digital sem banco central.", storyKid: "Em 2008, durante uma grande crise dos bancos, alguém misterioso chamado Satoshi Nakamoto publicou um documento de 9 páginas na internet. Ele explicava como criar um dinheiro novo que não precisava de banco! Era a receita do Bitcoin.", storyEn: "On October 31, 2008, amid the global financial collapse, a 9-page document appeared. The title was 'Bitcoin: A Peer-to-Peer Electronic Cash System'. The author was Satoshi Nakamoto. No one knew who it was. Those 9 pages explained digital money without a central bank.", storyEs: "El 31 de octubre de 2008, en medio del colapso financiero global, apareció un documento de 9 páginas. El título era 'Bitcoin: Un Sistema de Efectivo Electrónico Peer-to-Peer'. El autor era Satoshi Nakamoto. Nadie sabía quién era. Esas 9 páginas explicaban un dinero digital sin banco central." },
+            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "Genesis Block — Bitcoin é Nascido", illustration: "🏛️🔨", imgUrl: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=200&h=150&fit=crop", story: "No dia 3 de janeiro de 2009, Satoshi minerou o Bloco Gênese — o primeiro bloco do Bitcoin. Dentro, deixou a mensagem: 'Chancellor on brink of second bailout for banks'. Era uma crítica aos bancos. A recompensa foi de 50 Bitcoins. Na época, valiam zero. Existia apenas uma ideia.", storyKid: "No dia 3 de janeiro de 2009, Satoshi criou o primeiro bloco do Bitcoin. Ele colocou uma mensagem secreta dentro: uma manchete de jornal que falava sobre o resgate dos bancos. Era o jeito dele dizer: 'Agora vocês têm uma escolha'. Ele ganhou 50 Bitcoins, que na época não valiam nada.", storyEn: "On January 3, 2009, Satoshi mined the Genesis Block — Bitcoin's first block. Inside, he left the message: 'Chancellor on brink of second bailout for banks'. It was a critique of banks. The reward was 50 Bitcoins. At the time, they were worth zero. Only an idea existed.", storyEs: "El 3 de enero de 2009, Satoshi minó el Bloque Génesis — el primer bloque de Bitcoin. Dentro, dejó el mensaje: 'Chancellor on brink of second bailout for banks'. Era una crítica a los bancos. La recompensa fue de 50 Bitcoins. En ese momento, valían cero. Solo existía una idea." },
+            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "A Primeira Transação", illustration: "📤💸", imgUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=150&fit=crop", story: "Nove dias após o nascimento do Bitcoin, Satoshi enviou 10 Bitcoins para Hal Finney. Foi o primeiro movimento de dinheiro na história do Bitcoin. Uma transferência entre duas pessoas, sem banco, sem taxas, sem intermediários.", storyKid: "Nove dias depois de criar o Bitcoin, Satoshi mandou 10 Bitcoins para seu amigo Hal Finney. Foi a primeira vez que alguém transferiu esse dinheiro novo. Sem banco, sem taxas — só de pessoa para pessoa!", storyEn: "Nine days after Bitcoin's birth, Satoshi sent 10 Bitcoins to Hal Finney. It was the first movement of money in Bitcoin's history. A transfer between two people, without a bank, without fees, without intermediaries.", storyEs: "Nueve días después del nacimiento de Bitcoin, Satoshi envió 10 Bitcoins a Hal Finney. Fue el primer movimiento de dinero en la historia de Bitcoin. Una transferencia entre dos personas, sin banco, sin comisiones, sin intermediarios." },
+            // Parte 3: Primeiros Passos
+            { chapter: "parte3", chapterNum: 3, chapterTitle: "Os Primeiros Passos", year: 2010, title: "🍕 Bitcoin Pizza Day", illustration: "🍕💰", imgUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=150&fit=crop", story: "Em 22 de maio de 2010, Laszlo Hanyecz pagou 10.000 Bitcoins por duas pizzas. Na época, os Bitcoins valiam centavos. Hoje, aqueles 10.000 Bitcoins valeriam mais de 1 bilhão de dólares. O dia ficou conhecido como Bitcoin Pizza Day.", storyKid: "Em 2010, um programador chamado Laszlo comprou duas pizzas usando 10.000 Bitcoins! Na época, os Bitcoins valiam pouquinho. Hoje, esses mesmos Bitcoins valeriam mais de 1 bilhão de dólares. Ele fez as pizzas mais caras do mundo!", storyEn: "On May 22, 2010, Laszlo Hanyecz paid 10,000 Bitcoins for two pizzas. At the time, Bitcoins were worth pennies. Today, those 10,000 Bitcoins would be worth over $1 billion. The day became known as Bitcoin Pizza Day.", storyEs: "El 22 de mayo de 2010, Laszlo Hanyecz pagó 10,000 Bitcoins por dos pizzas. En ese momento, los Bitcoins valían centavos. Hoy, esos 10,000 Bitcoins valdrían más de mil millones de dólares. El día se conoció como Bitcoin Pizza Day." },
+            { chapter: "parte3", chapterNum: 3, chapterTitle: "Os Primeiros Passos", year: 2010, title: "Satoshi Desaparece", illustration: "👻❓", imgUrl: "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?w=200&h=150&fit=crop", story: "No final de 2010, Satoshi Nakamoto parou de se comunicar. Passou o controle do código para Gavin Andresen e sumiu. Seus e-mails pararam. Até hoje, ninguém sabe quem era Satoshi. Sua última mensagem: 'Passei para outras coisas.'", storyKid: "No final de 2010, o misterioso Satoshi Nakamoto desapareceu! Ele passou o controle do Bitcoin para um amigo e nunca mais ninguém ouviu falar dele. Até hoje é um mistério: quem era Satoshi? Ninguém sabe!", storyEn: "At the end of 2010, Satoshi Nakamoto stopped communicating. He passed control of the code to Gavin Andresen and vanished. His emails stopped. To this day, no one knows who Satoshi was. His last message: 'I've moved on to other things.'", storyEs: "A finales de 2010, Satoshi Nakamoto dejó de comunicarse. Pasó el control del código a Gavin Andresen y desapareció. Sus correos cesaron. Hasta hoy, nadie sabe quién era Satoshi. Su último mensaje: 'Pasé a otras cosas'." }
+        ];
 
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
+        // Expandir eventos para todos os capítulos (adicionando os eventos restantes)
+        const allEvents = [...eventsData];
+        
+        // Adicionar eventos faltantes para completar a história
+        const additionalEvents = [
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2011, title: "Bitcoin Alcança US$ 1", illustration: "💵📈", imgUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=150&fit=crop", story: "Em abril de 2011, o Bitcoin alcançou US$ 1,00 pela primeira vez. Dois anos antes, não valia nada. As pessoas começaram a prestar atenção.", storyKid: "Em 2011, o Bitcoin chegou a valer 1 dólar! Dois anos antes não valia nada. Foi a primeira vez que as pessoas viram que aquele dinheiro digital tinha valor.", storyEn: "In April 2011, Bitcoin reached $1.00 for the first time. Two years earlier, it was worth nothing. People started paying attention.", storyEs: "En abril de 2011, Bitcoin alcanzó $1.00 por primera vez. Dos años antes, no valía nada. La gente empezó a prestar atención." },
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2012, title: "O Primeiro Halving", illustration: "✂️📉", imgUrl: "https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=200&h=150&fit=crop", story: "Em 28 de novembro de 2012, aconteceu o primeiro halving do Bitcoin. A recompensa caiu de 50 para 25 Bitcoins. A cada halving, a escassez aumenta.", storyKid: "Em 2012, aconteceu o primeiro 'halving' do Bitcoin. É quando a recompensa dos mineradores cai pela metade. Foi como se a produção de Bitcoins ficasse mais difícil, para eles ficarem mais raros.", storyEn: "On November 28, 2012, Bitcoin's first halving occurred. The reward dropped from 50 to 25 Bitcoins. With each halving, scarcity increases.", storyEs: "El 28 de noviembre de 2012, ocurrió el primer halving de Bitcoin. La recompensa cayó de 50 a 25 Bitcoins. Con cada halving, la escasez aumenta." },
+            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2013, title: "Bitcoin Alcança US$ 1.000", illustration: "💰🎉", imgUrl: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=200&h=150&fit=crop", story: "Em novembro de 2013, o Bitcoin atingiu US$ 1.000 pela primeira vez. O Senado dos EUA realizou audiências positivas. Depois veio uma queda de 80%.", storyKid: "Em 2013, o Bitcoin chegou a valer 1.000 dólares! Todo mundo queria ter um pouco. Depois, o preço caiu bastante, mas isso faz parte da história.", storyEn: "In November 2013, Bitcoin reached $1,000 for the first time. The US Senate held positive hearings. Then came an 80% drop.", storyEs: "En noviembre de 2013, Bitcoin alcanzó los $1,000 por primera vez. El Senado de EE.UU. realizó audiencias positivas. Luego vino una caída del 80%." },
+            { chapter: "parte5", chapterNum: 5, chapterTitle: "Dor e Renascimento", year: 2014, title: "A Queda do Mt. Gox", illustration: "💥🏦", imgUrl: "https://images.unsplash.com/photo-1639762681057-408e52192e55?w=200&h=150&fit=crop", story: "Em fevereiro de 2014, o Mt. Gox, maior exchange da época, declarou falência. 850.000 Bitcoins desapareceram. Foi o maior escândalo até então.", storyKid: "Em 2014, a maior loja de Bitcoins do mundo quebrou e 850.000 Bitcoins sumiram. Foi um susto enorme, mas o Bitcoin continuou funcionando.", storyEn: "In February 2014, Mt. Gox, the largest exchange at the time, declared bankruptcy. 850,000 Bitcoins vanished. It was the biggest scandal to date.", storyEs: "En febrero de 2014, Mt. Gox, el mayor exchange de la época, declaró bancarrota. 850,000 Bitcoins desaparecieron. Fue el mayor escándalo hasta entonces." },
+            { chapter: "parte5", chapterNum: 5, chapterTitle: "Dor e Renascimento", year: 2015, title: "Nasce o Ethereum", illustration: "⟠💡", imgUrl: "https://images.unsplash.com/photo-1622630998471-5a176c74e0ed?w=200&h=150&fit=crop", story: "Em julho de 2015, Vitalik Buterin, de 19 anos, lançou o Ethereum — uma plataforma para contratos inteligentes. ETH era vendido a menos de US$ 3.", storyKid: "Em 2015, um jovem de 19 anos chamado Vitalik inventou o Ethereum. Era um computador mundial onde as pessoas podiam criar programas automáticos. O Ethereum custava menos de 3 dólares.", storyEn: "In July 2015, 19-year-old Vitalik Buterin launched Ethereum — a platform for smart contracts. ETH was sold for less than $3.", storyEs: "En julio de 2015, Vitalik Buterin, de 19 años, lanzó Ethereum — una plataforma para contratos inteligentes. ETH se vendía por menos de $3." },
+            { chapter: "parte6", chapterNum: 6, chapterTitle: "O Boom", year: 2017, title: "US$ 20.000 — A Loucura", illustration: "🌕📈", imgUrl: "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=200&h=150&fit=crop", story: "Em dezembro de 2017, o Bitcoin atingiu US$ 20.000. Todo mundo falava de Bitcoin. Depois veio o inverno: Bitcoin caiu para US$ 3.200.", storyKid: "Em 2017, o Bitcoin explodiu para 20.000 dólares! Todo mundo queria ter. Depois, o preço caiu bastante, e veio um 'inverno' para o Bitcoin.", storyEn: "In December 2017, Bitcoin reached $20,000. Everyone was talking about Bitcoin. Then came the winter: Bitcoin fell to $3,200.", storyEs: "En diciembre de 2017, Bitcoin alcanzó los $20,000. Todo el mundo hablaba de Bitcoin. Luego llegó el invierno: Bitcoin cayó a $3,200." },
+            { chapter: "parte8", chapterNum: 8, chapterTitle: "O Renascimento Institucional", year: 2020, title: "MicroStrategy — A Primeira Empresa", illustration: "🏢💰", imgUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=200&h=150&fit=crop", story: "Em agosto de 2020, a MicroStrategy comprou US$ 250 milhões em Bitcoin como reserva. Foi a primeira empresa pública a fazer isso. Outras seguiram.", storyKid: "Em 2020, uma grande empresa comprou 250 milhões de dólares em Bitcoin para guardar como dinheiro de reserva. Foi a primeira vez que uma empresa grande fez isso!", storyEn: "In August 2020, MicroStrategy bought $250 million in Bitcoin as treasury reserve. It was the first public company to do so. Others followed.", storyEs: "En agosto de 2020, MicroStrategy compró $250 millones en Bitcoin como reserva de tesorería. Fue la primera empresa pública en hacerlo. Otras siguieron." },
+            { chapter: "parte9", chapterNum: 9, chapterTitle: "O Segundo Boom", year: 2021, title: "El Salvador — Um País Abraça o Bitcoin", illustration: "🇸🇻🏛️", imgUrl: "https://images.unsplash.com/photo-1582653291997-079a1b04e6a1?w=200&h=150&fit=crop", story: "Em junho de 2021, El Salvador se tornou o primeiro país a adotar Bitcoin como moeda legal. Cidadãos podem pagar impostos e receber salários em Bitcoin.", storyKid: "Em 2021, um país chamado El Salvador decidiu usar Bitcoin como dinheiro oficial! Foi a primeira vez que um país inteiro fez isso.", storyEn: "In June 2021, El Salvador became the first country to adopt Bitcoin as legal tender. Citizens can pay taxes and receive salaries in Bitcoin.", storyEs: "En junio de 2021, El Salvador se convirtió en el primer país en adoptar Bitcoin como moneda de curso legal. Los ciudadanos pueden pagar impuestos y recibir salarios en Bitcoin." },
+            { chapter: "parte10", chapterNum: 10, chapterTitle: "O Colapso", year: 2022, title: "FTX — A Queda do Império", illustration: "⚰️👨‍⚖️", imgUrl: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=200&h=150&fit=crop", story: "Em novembro de 2022, a FTX colapsou. Sam Bankman-Fried desviou US$ 8 bilhões. Foi preso e condenado a 25 anos. Bitcoin caiu para US$ 15.760.", storyKid: "Em 2022, uma das maiores empresas de Bitcoin quebrou e seu dono foi preso. Foi um susto, mas o Bitcoin continuou firme.", storyEn: "In November 2022, FTX collapsed. Sam Bankman-Fried misappropriated $8 billion. He was arrested and sentenced to 25 years. Bitcoin fell to $15,760.", storyEs: "En noviembre de 2022, FTX colapsó. Sam Bankman-Fried desvió $8 mil millones. Fue arrestado y condenado a 25 años. Bitcoin cayó a $15,760." },
+            { chapter: "parte11", chapterNum: 11, chapterTitle: "A Institucionalização", year: 2024, title: "ETF do Bitcoin — A Porta se Abre", illustration: "📈🏦", imgUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=200&h=150&fit=crop", story: "Em 10 de janeiro de 2024, a SEC aprovou os ETFs de Bitcoin à vista. BlackRock, Fidelity e outros agora oferecem Bitcoin como ações.", storyKid: "Em 2024, o governo dos Estados Unidos aprovou um jeito novo de investir em Bitcoin através da bolsa de valores. Agora qualquer pessoa pode comprar Bitcoin como se fosse uma ação.", storyEn: "On January 10, 2024, the SEC approved spot Bitcoin ETFs. BlackRock, Fidelity and others now offer Bitcoin like stocks.", storyEs: "El 10 de enero de 2024, la SEC aprobó los ETF de Bitcoin al contado. BlackRock, Fidelity y otros ahora ofrecen Bitcoin como acciones." },
+            { chapter: "parte12", chapterNum: 12, chapterTitle: "O Presente e o Futuro", year: 2025, title: "Bitcoin Alcança US$ 126.296", illustration: "🏆📈", imgUrl: "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=200&h=150&fit=crop", story: "Em 6 de outubro de 2025, Bitcoin atingiu novo recorde: US$ 126.296. ETFs movimentam bilhões. Empresas e países mantêm Bitcoin.", storyKid: "Em 2025, o Bitcoin chegou a 126 mil dólares! Nunca tinha valido tanto. Muitas empresas e até países agora têm Bitcoin.", storyEn: "On October 6, 2025, Bitcoin reached a new record: $126,296. ETFs move billions. Companies and countries hold Bitcoin.", storyEs: "El 6 de octubre de 2025, Bitcoin alcanzó un nuevo récord: $126,296. Los ETF mueven miles de millones. Empresas y países tienen Bitcoin." },
+            { chapter: "parte12", chapterNum: 12, chapterTitle: "O Presente e o Futuro", year: 2028, title: "O Quinto Halving", illustration: "✂️🔮", imgUrl: "https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=200&h=150&fit=crop", story: "O próximo halving está programado para 2028. A recompensa cairá para 1,5625 Bitcoins. No Bitcoin, há duas certezas: os impostos... e os 210 mil blocos.", storyKid: "Em 2028, vai acontecer o quinto halving do Bitcoin. A recompensa dos mineradores vai cair pela metade de novo. É uma das certezas do Bitcoin!", storyEn: "The next halving is scheduled for 2028. The reward will drop to 1.5625 Bitcoins. In Bitcoin, there are two certainties: taxes... and the 210,000 blocks.", storyEs: "El próximo halving está programado para 2028. La recompensa caerá a 1.5625 Bitcoins. En Bitcoin, hay dos certezas: los impuestos... y los 210,000 bloques." }
+        ];
+        
+        // Combinar todos os eventos
+        allEvents.push(...additionalEvents);
+        
+        // Ordenar por ano
+        allEvents.sort((a,b) => a.year - b.year);
+        
+        // Glossário
+        const glossaryData = [
+            { term: "Bloco Gênese", definition: "O primeiro bloco da blockchain do Bitcoin, minerado em 3 de janeiro de 2009." },
+            { term: "Blockchain", definition: "Um livro-caixa gigante e público que registra todas as transações. Ninguém pode apagar ou alterar o que foi escrito." },
+            { term: "Halving", definition: "Evento que reduz pela metade a recompensa dos mineradores. Acontece a cada 4 anos." },
+            { term: "Minerar", definition: "Processo onde computadores ajudam a rede do Bitcoin a funcionar e ganham Bitcoins como recompensa." },
+            { term: "Satoshi Nakamoto", definition: "O criador misterioso do Bitcoin. Nunca se soube quem realmente é — homem, mulher ou grupo." },
+            { term: "Prova de Trabalho (PoW)", definition: "Mecanismo que exige que computadores resolvam problemas matemáticos para validar transações." },
+            { term: "ETF", definition: "Fundo de investimento negociado em bolsa. Permite investir em Bitcoin sem comprar a moeda diretamente." },
+            { term: "Smart Contract", definition: "Contrato inteligente — um programa que executa automaticamente acordos sem intermediários." },
+            { term: "NFT", definition: "Token único que prova propriedade de um item digital, como arte, música ou colecionáveis." },
+            { term: "DeFi", definition: "Finanças Descentralizadas — serviços financeiros sem bancos, usando blockchain." }
+        ];
+
+        // Estado do app
+        let currentAudio = null;
+        let currentLanguage = 'pt';
+        let kidMode = false;
+        let favorites = JSON.parse(localStorage.getItem('bitcoinFavorites') || '[]');
+        
+        // Função para salvar favoritos
+        function saveFavorites() {
+            localStorage.setItem('bitcoinFavorites', JSON.stringify(favorites));
+        }
+        
+        function toggleFavorite(eventId, btnElement) {
+            const index = favorites.indexOf(eventId);
+            if (index === -1) {
+                favorites.push(eventId);
+                btnElement.classList.add('active');
+                showToast('⭐ Adicionado aos favoritos!');
+            } else {
+                favorites.splice(index, 1);
+                btnElement.classList.remove('active');
+                showToast('⭐ Removido dos favoritos');
+            }
+            saveFavorites();
+        }
+        
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        // Função de narração
+        function speakText(text, element) {
+            if (currentAudio) {
+                window.speechSynthesis.cancel();
+                currentAudio = null;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            
+            utterance.onend = () => {
+                currentAudio = null;
+                if (element) element.classList.remove('audio-playing');
+            };
+            
+            currentAudio = utterance;
+            if (element) element.classList.add('audio-playing');
+            window.speechSynthesis.speak(utterance);
+        }
+        
+        function stopAllAudio() {
+            if (currentAudio) {
+                window.speechSynthesis.cancel();
+                currentAudio = null;
+            }
+            document.querySelectorAll('.audio-playing').forEach(el => {
+                el.classList.remove('audio-playing');
+            });
+        }
+        
+        // Compartilhamento
+        function shareEvent(title, story) {
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: story.substring(0, 200),
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(`${title}\n\n${story.substring(0, 200)}...\n\nFonte: A História do Dinheiro que Mudou o Mundo`);
+                showToast('📋 Texto copiado para compartilhar!');
+            }
+        }
+        
+        // Gerar conteúdo
+        function generateContent() {
+            const container = document.getElementById('chaptersContainer');
+            const chaptersMap = new Map();
+            
+            // Agrupar por capítulo
+            allEvents.forEach(event => {
+                if (!chaptersMap.has(event.chapter)) {
+                    chaptersMap.set(event.chapter, {
+                        id: event.chapter,
+                        number: event.chapterNum,
+                        title: event.chapterTitle,
+                        events: []
+                    });
+                }
+                chaptersMap.get(event.chapter).events.push(event);
+            });
+            
+            let html = '';
+            for (const [_, chapter] of chaptersMap) {
+                html += `
+                    <section id="${chapter.id}" class="chapter">
+                        <div class="chapter-number">Parte ${chapter.number}</div>
+                        <h2 class="chapter-title">${chapter.title}</h2>
+                        <div class="chapter-subtitle">Eventos marcantes</div>
+                `;
+                
+                chapter.events.forEach((event, idx) => {
+                    const eventId = `${event.chapter}_${event.year}_${idx}`;
+                    const isFavorite = favorites.includes(eventId);
+                    let storyText = event.story;
+                    if (kidMode) storyText = event.storyKid || event.story;
+                    if (currentLanguage === 'en') storyText = event.storyEn || event.story;
+                    if (currentLanguage === 'es') storyText = event.storyEs || event.story;
+                    
+                    html += `
+                        <div class="event-card ${isFavorite ? 'favorite' : ''}" data-event-id="${eventId}">
+                            <span class="event-year">${event.year}</span>
+                            <h3 class="event-title">${event.title}</h3>
+                            <div class="event-illustration">
+                                ${event.imgUrl ? `<img src="${event.imgUrl}" alt="${event.title}" loading="lazy">` : event.illustration}
+                            </div>
+                            <div class="event-story" id="story_${eventId}">
+                                <p>${storyText}</p>
+                            </div>
+                            <div class="share-buttons">
+                                <button class="audio-btn" data-story="${storyText.replace(/"/g, '&quot;')}">
+                                    🎧 Ouvir
+                                </button>
+                                <button class="share-btn" onclick="shareEvent('${event.title}', '${storyText.replace(/'/g, "\\'")}')">
+                                    📤 Compartilhar
+                                </button>
+                                <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${eventId}', this)">
+                                    ⭐ ${isFavorite ? 'Favorito' : 'Favoritar'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                // Quiz com 5 perguntas
+                html += `
+                    <div class="quiz" id="quiz_${chapter.id}">
+                        <h3>📝 Teste seus conhecimentos</h3>
+                        <div class="quiz-question">
+                            <p>1. Quem criou o Bitcoin?</p>
+                            <label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="a"> Vitalik Buterin</label>
+                            <label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="b"> Satoshi Nakamoto</label>
+                            <label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="c"> Elon Musk</label>
+                            <div class="quiz-feedback" id="q1_fb_${chapter.id}"></div>
+                        </div>
+                        <div class="quiz-question">
+                            <p>2. O que é o Halving?</p>
+                            <label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="a"> O preço do Bitcoin dobra</label>
+                            <label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="b"> A recompensa dos mineradores cai pela metade</label>
+                            <label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="c"> A rede do Bitcoin é desligada</label>
+                            <div class="quiz-feedback" id="q2_fb_${chapter.id}"></div>
+                        </div>
+                        <div class="quiz-question">
+                            <p>3. O que foi o Bitcoin Pizza Day?</p>
+                            <label class="quiz-option"><input type="radio" name="q3_${chapter.id}" value="a"> Um evento onde todos ganharam pizza grátis</label>
+                            <label class="quiz-option"><input type="radio" name="q3_${chapter.id}" value="b"> A primeira compra real com Bitcoin (duas pizzas por 10.000 BTC)</label>
+                            <label class="quiz-option"><input type="radio" name="q3_${chapter.id}" value="c"> Uma pizzaria que aceitava Bitcoin</label>
+                            <div class="quiz-feedback" id="q3_fb_${chapter.id}"></div>
+                        </div>
+                        <div class="quiz-question">
+                            <p>4. O que é blockchain?</p>
+                            <label class="quiz-option"><input type="radio" name="q4_${chapter.id}" value="a"> Um tipo de corrente física</label>
+                            <label class="quiz-option"><input type="radio" name="q4_${chapter.id}" value="b"> Um livro-caixa público onde todas as transações são registradas</label>
+                            <label class="quiz-option"><input type="radio" name="q4_${chapter.id}" value="c"> Um aplicativo de banco</label>
+                            <div class="quiz-feedback" id="q4_fb_${chapter.id}"></div>
+                        </div>
+                        <div class="quiz-question">
+                            <p>5. Em que ano o Bitcoin foi criado?</p>
+                            <label class="quiz-option"><input type="radio" name="q5_${chapter.id}" value="a"> 2005</label>
+                            <label class="quiz-option"><input type="radio" name="q5_${chapter.id}" value="b"> 2008</label>
+                            <label class="quiz-option"><input type="radio" name="q5_${chapter.id}" value="c"> 2009</label>
+                            <div class="quiz-feedback" id="q5_fb_${chapter.id}"></div>
+                        </div>
+                        <button class="audio-btn" onclick="checkQuiz('${chapter.id}')">✅ Verificar respostas</button>
+                        <div class="quiz-score" id="score_${chapter.id}" style="display: none;"></div>
+                    </div>
+                `;
+                
+                html += `</section><hr>`;
+            }
+            
+            container.innerHTML = html;
+            
+            // Adicionar eventos de áudio
+            document.querySelectorAll('.audio-btn[data-story]').forEach(btn => {
+                const story = btn.getAttribute('data-story');
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    speakText(story, btn);
+                });
+            });
+        }
+        
+        function checkQuiz(chapterId) {
+            let score = 0;
+            const answers = [
+                { name: 'q1', correct: 'b' },
+                { name: 'q2', correct: 'b' },
+                { name: 'q3', correct: 'b' },
+                { name: 'q4', correct: 'b' },
+                { name: 'q5', correct: 'c' }
+            ];
+            
+            answers.forEach((ans, idx) => {
+                const selected = document.querySelector(`input[name="${ans.name}_${chapterId}"]:checked`);
+                const fb = document.getElementById(`${ans.name}_fb_${chapterId}`);
+                if (selected && selected.value === ans.correct) {
+                    fb.textContent = '✅ Correto!';
+                    fb.className = 'quiz-feedback correct';
+                    score++;
+                } else if (selected) {
+                    fb.textContent = '❌ Resposta errada.';
+                    fb.className = 'quiz-feedback wrong';
+                } else {
+                    fb.textContent = '⚠️ Selecione uma resposta.';
+                    fb.className = 'quiz-feedback';
+                }
+            });
+            
+            const scoreDiv = document.getElementById(`score_${chapterId}`);
+            scoreDiv.textContent = `🎉 Você acertou ${score} de 5 perguntas!`;
+            scoreDiv.style.display = 'block';
+        }
+        
+        function generateGlossary() {
+            const glossaryContainer = document.getElementById('glossary');
+            let html = '<h3>📖 Glossário — Palavrinhas para entender melhor</h3><div class="glossary-grid">';
+            glossaryData.forEach(item => {
+                html += `<div class="glossary-item"><span class="glossary-term">${item.term}</span><br>${item.definition}</div>`;
+            });
+            html += '</div>';
+            glossaryContainer.innerHTML = html;
+        }
+        
+        function generateChapterLinks() {
+            const linksContainer = document.getElementById('chapterLinks');
+            const chapters = [...new Set(allEvents.map(e => ({ id: e.chapter, num: e.chapterNum, title: e.chapterTitle })))];
+            chapters.sort((a,b) => a.num - b.num);
+            let html = '';
+            chapters.forEach(ch => {
+                html += `<a class="chapter-link" onclick="document.getElementById('${ch.id}').scrollIntoView({behavior: 'smooth'})">${ch.num}. ${ch.title}</a>`;
+            });
+            linksContainer.innerHTML = html;
+        }
+        
+        function generateTimeline() {
+            const marksContainer = document.getElementById('timelineMarks');
+            const slider = document.getElementById('timelineSlider');
+            const progress = document.getElementById('timelineProgress');
+            const preview = document.getElementById('timelinePreview');
+            
+            const years = [...new Set(allEvents.map(e => e.year))].sort((a,b) => a-b);
+            
+            let marksHtml = '';
+            years.forEach(year => {
+                marksHtml += `<div class="timeline-mark" onclick="document.getElementById('timelineSlider').value = ${year}; updateTimeline(${year})"><span class="timeline-year">${year}</span></div>`;
+            });
+            marksContainer.innerHTML = marksHtml;
+            
+            function updateTimeline(year) {
+                const percent = (year - 1983) / (2028 - 1983) * 100;
+                progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+                
+                const eventFound = allEvents.find(e => e.year === year);
+                if (eventFound) {
+                    let storyText = eventFound.story;
+                    if (kidMode) storyText = eventFound.storyKid || eventFound.story;
+                    preview.innerHTML = `
+                        <strong>${eventFound.year}</strong><br>
+                        ${eventFound.illustration} ${eventFound.title}<br>
+                        <small>${storyText.substring(0, 150)}...</small>
+                    `;
+                } else {
+                    preview.innerHTML = `<strong>${year}</strong><br>🎯 Explore os anos marcados na linha do tempo!`;
+                }
+            }
+            
+            window.updateTimeline = updateTimeline;
+            slider.addEventListener('input', (e) => updateTimeline(parseInt(e.target.value)));
+            updateTimeline(2009);
+        }
+        
+        // Configurar modos
+        function setupTheme() {
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.remove('light');
+                document.body.classList.add('dark');
+                themeToggle.textContent = '☀️ Modo claro';
+            }
+            themeToggle.addEventListener('click', () => {
+                if (document.body.classList.contains('light')) {
+                    document.body.classList.remove('light');
+                    document.body.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.textContent = '☀️ Modo claro';
+                } else {
+                    document.body.classList.remove('dark');
+                    document.body.classList.add('light');
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.textContent = '🌙 Modo escuro';
+                }
+            });
+        }
+        
+        function setupKidMode() {
+            const kidBtn = document.getElementById('kidModeToggle');
+            kidBtn.addEventListener('click', () => {
+                kidMode = !kidMode;
+                if (kidMode) {
+                    document.body.classList.add('kid-mode');
+                    kidBtn.textContent = '🧑 Modo Adulto';
+                    showToast('🧸 Modo Criança ativado! Histórias mais simples e divertidas.');
+                } else {
+                    document.body.classList.remove('kid-mode');
+                    kidBtn.textContent = '🧸 Modo Criança';
+                    showToast('🧑 Modo Adulto ativado.');
+                }
+                generateContent(); // Recarregar com novo modo
+                generateTimeline();
+            });
+        }
+        
+        function setupReadingMode() {
+            const readingBtn = document.getElementById('readingModeToggle');
+            readingBtn.addEventListener('click', () => {
+                document.body.classList.toggle('reading-mode');
+                if (document.body.classList.contains('reading-mode')) {
+                    readingBtn.textContent = '📖 Sair do Modo Leitura';
+                    showToast('📖 Modo Leitura ativado! Apenas o texto principal.');
+                } else {
+                    readingBtn.textContent = '📖 Modo Leitura';
+                    showToast('📖 Modo Leitura desativado.');
+                }
+            });
+        }
+        
+        function setupPDF() {
+            const pdfBtn = document.getElementById('pdfDownload');
+            pdfBtn.addEventListener('click', () => {
+                const element = document.getElementById('mainContent');
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'historia_bitcoin.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, letterRendering: true },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                showToast('📄 Gerando PDF...');
+                html2pdf().set(opt).from(element).save();
+            });
+        }
+        
+        function setupLangToggle() {
+            const langBtn = document.getElementById('langToggle');
+            langBtn.addEventListener('click', () => {
+                if (currentLanguage === 'pt') {
+                    currentLanguage = 'en';
+                    langBtn.textContent = '🌐 Português';
+                    showToast('🌐 English mode activated!');
+                } else if (currentLanguage === 'en') {
+                    currentLanguage = 'es';
+                    langBtn.textContent = '🌐 English';
+                    showToast('🌐 Modo español activado!');
+                } else {
+                    currentLanguage = 'pt';
+                    langBtn.textContent = '🌐 Español';
+                    showToast('🌐 Modo português ativado!');
+                }
+                generateContent();
+                generateTimeline();
+            });
+        }
+        
+        function setupAudioGlobal() {
+            const audioBtn = document.getElementById('audioGlobalToggle');
+            audioBtn.addEventListener('click', stopAllAudio);
+        }
+        
+        function setupBackToTop() {
+            const backToTop = document.getElementById('backToTop');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) backToTop.classList.add('visible');
+                else backToTop.classList.remove('visible');
+            });
+            backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
+        
+        // Inicialização
+        generateContent();
+        generateGlossary();
+        generateChapterLinks();
+        generateTimeline();
+        setupTheme();
+        setupKidMode();
+        setupReadingMode();
+        setupPDF();
+        setupLangToggle();
+        setupAudioGlobal();
+        setupBackToTop();
+        
+        // Expor funções globalmente
+        window.toggleFavorite = toggleFavorite;
+        window.checkQuiz = checkQuiz;
+        window.shareEvent = shareEvent;
+        window.speakText = speakText;
     </script>
 </body>
 </html>
