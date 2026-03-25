@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>A História do Dinheiro que Mudou o Mundo | Bitcoin para Todos</title>
+    <title>Bitcoin para Todas as Idades | Curso + História do Bitcoin</title>
     
     <!-- SEO META TAGS -->
-    <meta name="description" content="A história completa do Bitcoin explicada de forma simples, com linha do tempo interativa, missões, quizzes e conteúdo educativo. Ideal para crianças, adultos e educadores.">
-    <meta name="keywords" content="Bitcoin, história do Bitcoin, blockchain, educação financeira, Bitcoin nas escolas, missões Bitcoin, Bitinho">
+    <meta name="description" content="Curso completo de Bitcoin para crianças, adultos, idosos e avançado. História interativa, missões, simulações e certificados. Inspirado em Mi Primer Bitcoin.">
+    <meta name="keywords" content="Bitcoin, curso Bitcoin, educação financeira, Bitcoin para crianças, Mi Primer Bitcoin, história do Bitcoin">
     <meta name="author" content="Bitcoin para Todos">
     <meta name="robots" content="index, follow">
-    <meta property="og:title" content="A História do Dinheiro que Mudou o Mundo">
-    <meta property="og:description" content="Descubra a jornada completa do Bitcoin, desde 1983 até o futuro. Conteúdo gratuito e acessível para todos.">
+    <meta property="og:title" content="Bitcoin para Todas as Idades | Curso Gratuito">
+    <meta property="og:description" content="Aprenda Bitcoin de forma lúdica e acessível. Curso completo com certificados.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     
@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ========== ESTILOS EXISTENTES (MANTIDOS) ========== */
+        /* ========== ESTILOS BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -53,6 +53,7 @@
             --favorite: #ff4444;
             --success: #2ecc71;
             --warning: #f39c12;
+            --danger: #e74c3c;
         }
 
         /* Modo Escuro */
@@ -74,6 +75,7 @@
             --favorite: #ff6666;
             --success: #27ae60;
             --warning: #e67e22;
+            --danger: #e74c3c;
         }
 
         /* Modo Criança */
@@ -90,32 +92,15 @@
             font-family: 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive;
         }
 
-        body.kid-mode .bitinho-message {
-            font-family: 'Comic Neue', 'Comic Sans MS', cursive;
-        }
-
         /* Modo Leitura */
-        body.reading-mode {
-            --bg-primary: #faf7f0;
-            --bg-secondary: #fdfaf5;
-        }
-        
-        body.reading-mode .event-illustration,
-        body.reading-mode .audio-btn,
-        body.reading-mode .share-buttons,
-        body.reading-mode .favorite-btn,
-        body.reading-mode .timeline-section,
-        body.reading-mode .quiz,
-        body.reading-mode .chapter-nav,
-        body.reading-mode .header-buttons,
-        body.reading-mode .school-section,
-        body.reading-mode .cta-section,
-        body.reading-mode .dashboard-section,
-        body.reading-mode .badges-section,
-        body.reading-mode .viral-share-section,
+        body.reading-mode .course-section,
         body.reading-mode .missions-section,
         body.reading-mode .simulator-kid-section,
-        body.reading-mode #bitinho {
+        body.reading-mode .badges-section,
+        body.reading-mode .viral-share-section,
+        body.reading-mode .dashboard-section,
+        body.reading-mode #bitinho,
+        body.reading-mode .about-section {
             display: none;
         }
 
@@ -130,7 +115,7 @@
             padding: 0 24px;
         }
 
-        /* Header (mantido) */
+        /* Header */
         .header {
             background-color: var(--header-bg);
             border-bottom: 3px solid var(--accent);
@@ -184,270 +169,280 @@
             border-color: var(--accent);
         }
 
-        /* Botão Modo História */
-        .story-mode-btn {
-            background: var(--accent);
-            color: white !important;
-        }
-
-        .story-mode-btn:hover {
-            background: var(--accent-dark) !important;
-        }
-
-        /* ========== NOVOS ESTILOS: MISSÕES ========== */
-        .missions-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
-        }
-
-        .missions-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .missions-header h3 {
-            color: var(--accent);
-            font-size: 1.3rem;
-        }
-
-        .level-badge {
-            background: var(--accent);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-        }
-
-        .mission {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .mission.done {
-            border-left: 4px solid var(--success);
-            opacity: 0.8;
-        }
-
-        .mission-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .mission-icon {
-            font-size: 1.5rem;
-        }
-
-        .mission-text {
-            font-size: 0.95rem;
-        }
-
-        .mission-xp {
-            font-size: 0.8rem;
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        .xp-bar-container {
-            margin-top: 20px;
-        }
-
-        .xp-bar {
-            height: 12px;
-            background: var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .xp-fill {
-            height: 100%;
-            width: 0%;
-            background: var(--accent);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .xp-text {
-            font-size: 0.8rem;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        /* ========== SIMULADOR INFANTIL ========== */
-        .simulator-kid-section {
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            padding: 24px;
-            margin: 30px 0;
-            border: 1px solid var(--border);
-        }
-
-        .simulator-kid-section h3 {
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        .kid-simulator {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .kid-simulator input, .kid-simulator select {
-            padding: 12px;
-            margin: 10px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-size: 1rem;
-        }
-
-        .simulator-result-kid {
-            margin-top: 20px;
-            padding: 15px;
-            background: var(--accent-light);
-            border-radius: 12px;
-            font-size: 1.1rem;
-        }
-
-        .share-parents-btn {
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        /* ========== PERSONAGEM BITINHO ========== */
-        #bitinho {
+        /* Modal */
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            cursor: pointer;
-            transition: transform 0.2s;
+            justify-content: center;
+            align-items: center;
         }
 
-        #bitinho:hover {
-            transform: scale(1.05);
-        }
-
-        .bitinho-avatar {
-            font-size: 55px;
-            animation: float 2s infinite ease-in-out;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .bitinho-message {
+        .modal-content {
             background: var(--card-bg);
-            padding: 12px 18px;
             border-radius: 20px;
-            max-width: 220px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            border: 2px solid var(--accent);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             position: relative;
-            transition: opacity 0.3s;
+            border: 2px solid var(--accent);
         }
 
-        .bitinho-message::before {
-            content: '';
+        .modal-close {
             position: absolute;
-            left: -12px;
-            bottom: 15px;
-            width: 0;
-            height: 0;
-            border: 10px solid transparent;
-            border-right-color: var(--accent);
-            border-left: 0;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
         }
 
-        /* ========== DESAFIO FINAL ========== */
-        .final-challenge-section {
-            background: linear-gradient(135deg, var(--accent-light) 0%, var(--bg-secondary) 100%);
+        /* ========== SEÇÃO DO CURSO ========== */
+        .course-section {
+            background: var(--bg-secondary);
             border-radius: 24px;
             padding: 32px;
             margin: 40px 0;
             border: 2px solid var(--accent);
+        }
+
+        .course-header {
             text-align: center;
+            margin-bottom: 30px;
         }
 
-        .final-challenge-section h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
+        .course-header h2 {
+            font-size: 1.8rem;
             color: var(--accent);
+            margin-bottom: 10px;
         }
 
-        .challenge-question {
+        /* Tabs */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Aulas */
+        .lesson-card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin: 15px 0;
-            text-align: left;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
         }
 
-        .certificate-download {
-            margin-top: 20px;
-            display: none;
+        .lesson-card:hover {
+            transform: translateX(5px);
         }
 
-        /* ========== ESTILOS EXISTENTES (RESUMO) ========== */
-        .dashboard-section, .viral-share-section, .badges-section, .timeline-section,
-        .chapter-nav, .chapter, .event-card, .quiz, .glossary, .school-section, .cta-section,
-        .footer, .back-to-top, .toast {
-            /* mantidos do código anterior */
+        .lesson-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 10px;
         }
 
-        /* Animações */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        .lesson-content {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
         }
 
-        .pizza-animation {
-            animation: bounce 0.5s ease;
+        .lesson-activity {
+            background: var(--accent-light);
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .container { padding: 0 16px; }
-            .chapter-title { font-size: 1.6rem; }
-            .header-buttons { width: 100%; justify-content: center; }
-            .bitinho-message { max-width: 160px; font-size: 0.75rem; }
-            .bitinho-avatar { font-size: 45px; }
-        }
-
-        .audio-playing {
+        .btn-certificate, .btn-modal {
             background: var(--accent);
             color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            margin-right: 10px;
+            font-size: 1rem;
         }
+
+        .btn-download-material {
+            background: var(--card-bg);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 0.85rem;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        /* Simulador Impermanent Loss */
+        .simulator-il {
+            background: var(--accent-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+
+        .simulator-il input, .simulator-il select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        /* Golpe Simulator */
+        .scam-simulator {
+            background: var(--accent-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .scam-option {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 40px;
+            cursor: pointer;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+        }
+
+        .scam-option.correct {
+            background: var(--success);
+            color: white;
+        }
+
+        .scam-option.wrong {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* About Section */
+        .about-section {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+        }
+
+        .about-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .about-header h3 {
+            color: var(--accent);
+            font-size: 1.3rem;
+        }
+
+        .about-content {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .about-content.show {
+            display: block;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: var(--accent-light);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 40px 0 30px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 99;
+        }
+
+        .back-to-top.visible { opacity: 1; }
 
         .toast {
             position: fixed;
@@ -467,14 +462,51 @@
             85% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-20px); }
         }
+
+        #bitinho {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .bitinho-avatar {
+            font-size: 55px;
+            animation: float 2s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .bitinho-message {
+            background: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 220px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border: 2px solid var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .tabs { justify-content: center; }
+            .tab-btn { padding: 8px 16px; font-size: 0.85rem; }
+            .bitinho-message { max-width: 160px; font-size: 0.75rem; }
+        }
     </style>
 </head>
 <body class="light">
     <header class="header">
         <div class="container header-content">
             <div class="logo">
-                <h1>📖 A História do Dinheiro<br>que Mudou o Mundo</h1>
-                <p>A jornada do Bitcoin, de 1983 ao futuro</p>
+                <h1>📖 Bitcoin para Todas as Idades</h1>
+                <p>Curso + História Interativa | Inspirado em Mi Primer Bitcoin</p>
             </div>
             <div class="header-buttons">
                 <button class="story-mode-btn" id="storyModeBtn">▶️ Modo História</button>
@@ -484,727 +516,287 @@
                 <button class="lang-toggle" id="langToggle">🌐 English</button>
                 <button class="theme-toggle" id="themeToggle">🌙 Modo escuro</button>
                 <button class="audio-global-toggle" id="audioGlobalToggle">🔇 Parar áudio</button>
+                <button class="about-btn" id="aboutBtn">ℹ️ Sobre</button>
             </div>
         </div>
     </header>
 
     <main class="container" id="mainContent">
-        <!-- DASHBOARD (mantido) -->
-        <div class="dashboard-section">
-            <div class="dashboard-header">
-                <h3>📊 Dashboard Cripto</h3>
-                <div>
-                    <button class="refresh-btn" id="refreshDashboard">🔄 Atualizar</button>
-                    <div class="last-update" id="lastUpdateTime">Carregando...</div>
-                </div>
-            </div>
-            <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                <div class="dashboard-card">
-                    <i class="fab fa-bitcoin" style="font-size: 2rem; color: var(--accent);"></i>
-                    <div class="btc-price" id="btcPrice">R$ --</div>
-                    <div class="btc-change" id="btcChange"></div>
-                    <small>Preço em tempo real (CoinGecko)</small>
-                </div>
-                <div class="dashboard-card">
-                    <h4>😨 FEAR & GREED INDEX</h4>
-                    <div class="fear-index" id="fearIndex">--</div>
-                    <div class="fear-label" id="fearLabel">Carregando...</div>
-                    <small>Índice de medo/ganância do mercado</small>
-                </div>
-                <div class="dashboard-card">
-                    <h4>💵 COMPARAÇÕES (2010-2025)</h4>
-                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Dólar (USD)</span><span class="comparison-value" id="dolarReturn">+180%</span></div>
-                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Ibovespa</span><span class="comparison-value" id="ibovReturn">+280%</span></div>
-                    <div class="comparison-item" style="display: flex; justify-content: space-between;"><span>Bitcoin</span><span class="comparison-value" id="btcReturn">+1.262.960.000%</span></div>
-                </div>
-            </div>
-            <div class="dashboard-card" style="margin-top: 20px;">
-                <h4>🍔 ÍNDICE BIG MAC</h4>
-                <div class="bigmac-comparison">
-                    <div>Em <strong>2010</strong>: 1 BTC = <strong>2.800 BIG MACS</strong></div>
-                    <div style="margin: 10px 0;">⬇️</div>
-                    <div>Hoje <strong id="currentYear">2025</strong>:</div>
-                    <div class="bigmac-number" id="bigMacToday">1 BTC = 14.000.000 BIG MACS</div>
-                    <small>📈 Valorização: +500.000%</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- NOVA SEÇÃO: MISSÕES DO BITINHO -->
-        <div class="missions-section">
-            <div class="missions-header">
-                <h3>🎯 Missões do Bitinho</h3>
-                <div class="level-badge" id="levelBadge">🥉 Iniciante</div>
-            </div>
-            <div id="missionsList"></div>
-            <div class="xp-bar-container">
-                <div class="xp-bar">
-                    <div class="xp-fill" id="xpFill"></div>
-                </div>
-                <div class="xp-text" id="xpText">XP: 0 / 100</div>
-            </div>
-        </div>
-
-        <!-- NOVA SEÇÃO: SIMULADOR INFANTIL -->
-        <div class="simulator-kid-section">
-            <h3>💸 E se você tivesse Bitcoin?</h3>
-            <div class="kid-simulator">
-                <p>💡 Imagine se você tivesse comprado Bitcoin no passado...</p>
-                <div>
-                    <input type="number" id="kidAmount" placeholder="Valor em R$" value="100" step="10">
-                    <select id="kidYear">
-                        <option value="2010">Em 2010 (BTC a R$ 0,05)</option>
-                        <option value="2015">Em 2015 (BTC a R$ 500)</option>
-                        <option value="2020">Em 2020 (BTC a R$ 30.000)</option>
-                    </select>
-                </div>
-                <button class="audio-btn" id="simulateKidBtn">📈 Ver resultado</button>
-                <div class="simulator-result-kid" id="kidSimulatorResult">
-                    Clique no botão para descobrir!
-                </div>
-                <button class="share-parents-btn" id="shareParentsBtn">📤 Mostrar para meus pais</button>
-            </div>
-        </div>
-
-        <!-- VIRAL SHARE (mantido) -->
-        <div class="viral-share-section">
-            <h3>🚀 Compartilhe e viralize!</h3>
-            <p>Clique no botão abaixo e compartilhe essa imagem impressionante:</p>
-            <div class="share-image-preview" style="background: linear-gradient(135deg, #f7931a 0%, #e67e22 100%); border-radius: 20px; padding: 20px; margin: 20px 0;">
-                <canvas id="shareCanvas" width="500" height="400" style="width:100%; height:auto; max-width:500px;"></canvas>
-            </div>
-            <button class="btn-share-viral" id="viralShareBtn">📤 Compartilhar imagem</button>
-            <button class="btn-share-viral" id="viralCopyTextBtn">📋 Copiar texto viral</button>
-        </div>
-
-        <!-- GAMIFICAÇÃO (badges mantido) -->
-        <div class="badges-section">
-            <h3>🏆 Suas Conquistas</h3>
-            <div class="badges-grid" id="badgesGrid"></div>
-            <p style="text-align: center; margin-top: 15px; font-size: 0.8rem;">✨ Complete as missões para ganhar badges!</p>
-        </div>
-
-        <!-- LINHA DO TEMPO VISUAL (mantida) -->
-        <div class="timeline-section">
-            <h3>⏳ Explore a Linha do Tempo</h3>
-            <div class="timeline-slider">
-                <input type="range" id="timelineSlider" min="1983" max="2025" step="1" value="2009">
-                <div class="timeline-track">
-                    <div class="timeline-progress" id="timelineProgress"></div>
-                </div>
-                <div class="timeline-marks" id="timelineMarks"></div>
-                <div class="timeline-event-preview" id="timelinePreview">
-                    <p>🎯 Arraste o marcador ou clique nos anos para explorar!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navegação por Capítulos -->
-        <div class="chapter-nav">
-            <h3>📚 Navegue pela história</h3>
-            <div class="chapter-links" id="chapterLinks"></div>
-        </div>
-
-        <div id="chaptersContainer"></div>
-
-        <!-- DESAFIO FINAL -->
-        <div class="final-challenge-section" id="finalChallenge">
-            <h3>🔥 PROVA DO MESTRE DO BITCOIN</h3>
-            <p>Responda as 5 perguntas e ganhe seu certificado!</p>
-            <div id="challengeQuestions"></div>
-            <button class="btn-cta" id="submitChallenge">✅ Finalizar desafio</button>
-            <div class="certificate-download" id="certificateDownload">
-                <button class="btn-material" id="downloadCertificate">🎓 Baixar Certificado</button>
-            </div>
-        </div>
-
-        <!-- BITCOIN NAS ESCOLAS (mantido) -->
-        <div class="school-section">
-            <span class="school-badge">🌟 INOVAÇÃO EDUCACIONAL</span>
-            <h2 style="margin-bottom: 15px;">🏫 Bitcoin nas Escolas</h2>
-            <p style="font-size: 1.1rem;">Inspirado no programa <strong>Mi Primer Bitcoin</strong> (El Salvador)</p>
-            
-            <div class="school-steps" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
-                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">1️⃣</div><h4>Aula Teórica</h4><p>O que é dinheiro?</p></div>
-                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">2️⃣</div><h4>Jogo Interativo</h4><p>Simulação com Bitcoin</p></div>
-                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">3️⃣</div><h4>Prática</h4><p>Carteira simulada</p></div>
-                <div class="step-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center;"><div class="step-number" style="font-size: 2rem;">4️⃣</div><h4>Certificado</h4><p>Aluno formado</p></div>
-            </div>
-
-            <div class="school-form" style="background: var(--card-bg); border-radius: 16px; padding: 24px; margin: 20px 0;">
-                <h4>📄 Gerar proposta personalizada para sua cidade</h4>
-                <input type="text" id="cityName" placeholder="Nome da cidade" value="Sua Cidade" style="width:100%; padding:12px; margin:10px 0;">
-                <input type="text" id="schoolName" placeholder="Nome da escola" value="Escola Municipal" style="width:100%; padding:12px; margin:10px 0;">
-                <input type="text" id="secretaryName" placeholder="Nome do secretário(a)" style="width:100%; padding:12px; margin:10px 0;">
-                <button class="btn-generate-pdf" id="generateSchoolPdf">📥 Gerar proposta em PDF</button>
-            </div>
-
-            <div class="testimonial-card" style="background: var(--card-bg); border-radius: 16px; padding: 20px; margin: 15px 0;">
-                <p>"Aprendi que dinheiro não é só papel. Hoje ajudo meus pais!"</p>
-                <strong>— Mateo, 9 anos, El Salvador</strong>
+        <!-- SEÇÃO DO CURSO COMPLETA -->
+        <div class="course-section" id="courseSection">
+            <div class="course-header">
+                <h2>🎓 CURSO: BITCOIN PARA TODAS AS IDADES</h2>
+                <p>Inspirado em Mi Primer Bitcoin (El Salvador) | Projeto independente</p>
             </div>
             
-            <div class="material-buttons" style="display: flex; flex-wrap: wrap; gap: 12px;">
-                <button class="btn-material" id="downloadKidBook">📘 Cartilha "Bitcoin para Crianças"</button>
-                <button class="btn-material" id="downloadTeacherGuide">📗 Guia do Professor</button>
-                <button class="btn-material" id="downloadExercises">📙 Exercícios Práticos</button>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="kids">👶 Infantil (8-14 anos)</button>
+                <button class="tab-btn" data-tab="adults">🧑 Adultos Iniciantes</button>
+                <button class="tab-btn" data-tab="seniors">👴 Idosos</button>
+                <button class="tab-btn" data-tab="advanced">🏆 Avançado / DeFi</button>
+            </div>
+
+            <!-- MÓDULO INFANTIL -->
+            <div class="tab-content active" id="tab-kids">
+                <h3>👶 Módulo Infantil (8–14 anos)</h3>
+                
+                <div class="lesson-card"><div class="lesson-title">🧸 Aula 1 – O que é Dinheiro?</div><div class="lesson-content">Troca (escambo) → Dinheiro de papel → Banco → Dinheiro digital → Bitcoin como “dinheiro da internet”</div><div class="lesson-activity">🎮 Atividade: Simulação com figurinhas ou pontos.</div></div>
+                <div class="lesson-card"><div class="lesson-title">💸 Aula 2 – Mesada Inteligente</div><div class="lesson-content">Estratégia 3 potes: 🟢 Gastar | 🔵 Guardar | 🟠 Bitcoin. Exemplo: R$ 100 → R$ 50 gastar, R$ 30 guardar, R$ 20 em Bitcoin.</div></div>
+                <div class="lesson-card"><div class="lesson-title">📱 Aula 3 – Como Comprar com os Pais</div><div class="lesson-content">Passo a passo: corretora → PIX → comprar fração. “Você não precisa comprar 1 Bitcoin inteiro.”</div></div>
+                <div class="lesson-card"><div class="lesson-title">💳 Aula 4 – Cartão Cripto</div><div class="lesson-content">Cartão que converte Bitcoin em reais automaticamente. ⚠️ Riscos: taxas, variação de preço.</div></div>
+                <div class="lesson-card"><div class="lesson-title">🚨 Aula 5 – O que é golpe?</div><div class="lesson-content">"Se alguém promete dobrar seu Bitcoin, é golpe." Nunca compartilhe suas senhas. Desconfie de ofertas milagrosas.</div>
+                    <div class="lesson-activity" id="scamGame">
+                        <p><strong>🎮 Simulação: Escolha a opção segura!</strong></p>
+                        <p>"Você recebe uma mensagem: Seu Bitcoin vai dobrar se você enviar agora!"</p>
+                        <button class="scam-option" onclick="checkScam('send')">📤 Enviar Bitcoin</button>
+                        <button class="scam-option" onclick="checkScam('ignore')">🚫 Ignorar e bloquear</button>
+                        <div id="scamResult"></div>
+                    </div>
+                </div>
+                <div class="lesson-card"><div class="lesson-title">🎮 Missão Final Infantil</div><div class="lesson-content">Simular: "Se você investir R$ 10 por semana durante 2 anos…" Ensinar: paciência, tempo, juros compostos.</div>
+                    <div class="lesson-activity"><button class="btn-download-material" onclick="simulateKidsMission()">📊 Simular</button><div id="kidsMissionResult"></div></div>
+                </div>
+                <button class="btn-certificate" onclick="generateCertificate('kids')">🎓 Gerar Certificado Infantil</button>
+                <button class="btn-download-material" onclick="downloadMaterial('kids')">📘 Baixar Cartilha Infantil</button>
+            </div>
+
+            <!-- MÓDULO ADULTO INICIANTE -->
+            <div class="tab-content" id="tab-adults">
+                <h3>🧑 Módulo Adulto Iniciante</h3>
+                <div class="lesson-card"><div class="lesson-title">Aula 1 – Fundamentos</div><div class="lesson-content">Blockchain, Satoshi Nakamoto, escassez (21 milhões).</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 2 – Abrindo Conta e Comprando</div><div class="lesson-content">Checklist: corretora confiável, 2FA, PIX, comprar BTC.</div>
+                    <button class="btn-download-material" onclick="openModal('buy')">📘 Como comprar Bitcoin (modal)</button>
+                </div>
+                <div class="lesson-card"><div class="lesson-title">Aula 3 – Carteira (Wallet)</div><div class="lesson-content">Seed phrase: nunca fotografar, nunca enviar para ninguém.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 4 – Uso no Dia a Dia</div><div class="lesson-content">Pagamentos P2P, Lightning Network, cartão cripto.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 5 – Estratégia Simples (DCA)</div><div class="lesson-content">Comprar valor fixo semanalmente, ignorar notícias emocionais, foco longo prazo.</div></div>
+                <button class="btn-certificate" onclick="generateCertificate('adults')">🎓 Gerar Certificado Adulto</button>
+                <button class="btn-download-material" onclick="downloadMaterial('adults')">📘 Baixar Guia Adulto</button>
+            </div>
+
+            <!-- MÓDULO IDOSO -->
+            <div class="tab-content" id="tab-seniors">
+                <h3>👴 Módulo Idoso (Simples e Seguro)</h3>
+                <div class="lesson-card"><div class="lesson-title">Aula 1 – O que é e por que existe</div><div class="lesson-content">Comparar com: Ouro, Inflação, Poupança.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 2 – Segurança</div><div class="lesson-content">Regras: Nunca enviar para desconhecidos, desconfiar de promessas de rendimento garantido.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 3 – Compra Assistida</div><div class="lesson-content">Compra pequena, teste de envio, registro manual em caderno.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 4 – Planejamento</div><div class="lesson-content">Percentual depende do perfil de risco individual. Consulte um profissional financeiro.</div></div>
+                <div class="lesson-card"><div class="lesson-title">📞 Aula Extra – Golpes por Telefone</div><div class="lesson-content">⚠️ Exemplos: "Seu filho sofreu acidente, mande Bitcoin." "Sou da Receita Federal." Nunca envie Bitcoin para desconhecidos.</div>
+                    <div class="lesson-activity"><button class="btn-download-material" onclick="showToast('📞 Nunca envie Bitcoin para quem ligar pedindo!')">🔊 Ouvir exemplo de golpe</button></div>
+                </div>
+                <button class="btn-certificate" onclick="generateCertificate('seniors')">🎓 Gerar Certificado Idoso</button>
+                <button class="btn-download-material" onclick="downloadMaterial('seniors')">📘 Baixar Guia Segurança Idoso</button>
+            </div>
+
+            <!-- MÓDULO AVANÇADO -->
+            <div class="tab-content" id="tab-advanced">
+                <h3>🏆 Nível Avançado – Rentabilidade</h3>
+                <p>⚠️ Risco envolvido. Este conteúdo é educacional, não recomendação.</p>
+                <div class="lesson-card"><div class="lesson-title">Aula 1 – Investir vs Especular</div><div class="lesson-content">Longo prazo vs Curto prazo. Alavancagem (alerta de risco).</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 2 – Pools de Liquidez</div><div class="lesson-content">Fornecer liquidez (ex: WBTC/USDC). Impermanent loss. Risco de bridge. Bitcoin nativo vs Wrapped (WBTC, cbBTC).</div>
+                    <div class="simulator-il" id="ilSimulator"><strong>🧮 Simulador de Impermanent Loss</strong><br>
+                        <input type="number" id="ilAmount" placeholder="Valor depositado (US$)" value="1000">
+                        <select id="ilVolatility"><option value="20">Variação pequena (±20%)</option><option value="50">Variação média (±50%)</option><option value="100">Variação alta (±100%)</option></select>
+                        <button class="btn-download-material" onclick="simulateIL()">📊 Simular</button>
+                        <div id="ilResult"></div>
+                    </div>
+                </div>
+                <div class="lesson-card"><div class="lesson-title">Aula 3 – Staking e Yield</div><div class="lesson-content">Bitcoin não tem staking nativo. DeFi envolve risco maior. Rendimento nunca é garantido.</div></div>
+                <div class="lesson-card"><div class="lesson-title">Aula 4 – Mentalidade</div><div class="lesson-content">Controle emocional, não entrar por hype, pensar em ciclos de mercado.</div></div>
+                <button class="btn-certificate" onclick="generateCertificate('advanced')">🎓 Gerar Certificado Avançado</button>
+                <button class="btn-download-material" onclick="downloadMaterial('advanced')">📘 Baixar Guia DeFi</button>
             </div>
         </div>
 
-        <!-- Glossário (mantido) -->
-        <div class="glossary" id="glossary"></div>
+        <!-- MODAL (COMPRA) -->
+        <div id="modalBuy" class="modal">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <h3>📘 Como comprar Bitcoin</h3>
+                <p><strong>KYC (Conheça seu cliente):</strong> Corretoras pedem documentos (RG, CPF, selfie). É normal e obrigatório no Brasil.</p>
+                <p><strong>Diferenças:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>🏦 <strong>Corretora:</strong> Prática para iniciantes, mas você não tem a chave privada.</li>
+                    <li>🔄 <strong>P2P:</strong> Compra direta com outra pessoa. Mais privado.</li>
+                    <li>🔐 <strong>Carteira própria:</strong> Você controla seus Bitcoins. Seed phrase é sua responsabilidade.</li>
+                </ul>
+                <p><strong>Taxas e Spread:</strong> Cada corretora cobra uma taxa. Compare antes de escolher. O spread é a diferença entre compra e venda.</p>
+                <p><strong>⚠️ Nunca compre com pressão. Estude primeiro.</strong></p>
+                <button class="btn-download-material" onclick="closeModal()">Entendi, fechar</button>
+            </div>
+        </div>
 
-        <!-- CTA FINAL (e-mail opcional) -->
-        <div class="cta-section">
-            <h3>🎓 Quer aprender mais?</h3>
-            <p>Cadastre-se e receba GRÁTIS o curso completo de Bitcoin para iniciantes + PDF da história!</p>
-            <form class="cta-form" id="leadForm" style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
-                <input type="email" id="leadEmail" placeholder="Digite seu e-mail" required style="padding:14px 20px; border-radius:50px;">
-                <button type="submit" class="btn-cta">📩 Quero meu curso gratuito</button>
-            </form>
+        <!-- SEÇÃO SOBRE EXPANSÍVEL -->
+        <div class="about-section" id="aboutSection">
+            <div class="about-header" onclick="toggleAbout()">
+                <h3>ℹ️ Sobre o Projeto</h3>
+                <span class="about-toggle" id="aboutToggle">▼</span>
+            </div>
+            <div class="about-content" id="aboutContent">
+                <p><strong>🏫 Missão:</strong> Democratizar o conhecimento sobre Bitcoin de forma acessível, lúdica e gratuita.</p>
+                <p><strong>👥 Projeto independente:</strong> Inspirado em iniciativas educacionais como <strong>Mi Primer Bitcoin (El Salvador)</strong>. Não somos afiliados oficialmente a nenhuma instituição.</p>
+                <p><strong>🎯 Objetivo:</strong> Preparar a próxima geração para o futuro do dinheiro com conteúdo educativo e seguro.</p>
+                <p><strong>🔗 Fontes:</strong> Chain Timeline, Mi Primer Bitcoin, dados históricos, APIs CoinGecko e Alternative.me.</p>
+                <p><strong>📧 Contato:</strong> <a href="mailto:contato@bitcoinparatodos.org">contato@bitcoinparatodos.org</a></p>
+            </div>
+        </div>
+
+        <!-- BITCOIN NAS ESCOLAS com PDF Institucional -->
+        <div class="school-section" style="background: var(--bg-secondary); border-radius: 20px; padding: 24px; margin: 30px 0;">
+            <h3>🏫 Bitcoin nas Escolas</h3>
+            <p>Projeto piloto inspirado em El Salvador. Baixe o material institucional:</p>
+            <button class="btn-download-material" onclick="downloadSchoolPDF()">📥 Baixar Projeto Piloto para Escolas</button>
+            <button class="btn-download-material" onclick="downloadSchoolPresentation()">📊 Baixar Apresentação para Vereadores</button>
+        </div>
+
+        <!-- GLOSSÁRIO RESUMIDO -->
+        <div class="glossary" style="background: var(--bg-secondary); border-radius: 20px; padding: 24px; margin: 30px 0;">
+            <h3>📖 Glossário</h3>
+            <div class="glossary-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+                <div class="glossary-item"><strong>Bloco Gênese</strong><br>Primeiro bloco do Bitcoin (03/01/2009)</div>
+                <div class="glossary-item"><strong>Halving</strong><br>Redução da recompensa dos mineradores a cada 4 anos</div>
+                <div class="glossary-item"><strong>Seed Phrase</strong><br>Palavras que recuperam sua carteira. Nunca compartilhe!</div>
+                <div class="glossary-item"><strong>Impermanent Loss</strong><br>Perda temporária ao fornecer liquidez</div>
+            </div>
         </div>
     </main>
 
     <footer class="footer">
         <div class="footer-content">
-            <p>📖 <strong>A História do Dinheiro que Mudou o Mundo</strong></p>
-            <p>Conteúdo gratuito e acessível para todos — crianças, adultos, educadores</p>
-            <p>🍔 1 BTC = 14 MILHÕES de Big Macs | 🎯 Complete as missões do Bitinho!</p>
+            <p>📖 <strong>Bitcoin para Todas as Idades</strong> | Curso + História Interativa</p>
+            <p>Projeto independente inspirado em Mi Primer Bitcoin (El Salvador)</p>
+            <div class="disclaimer">
+                ⚠️ <strong>DISCLAIMER EDUCACIONAL:</strong> Este conteúdo é exclusivamente educacional. Não constitui recomendação de investimento. Bitcoin e criptomoedas são voláteis. Invista com cautela.
+            </div>
         </div>
     </footer>
 
     <button class="back-to-top" id="backToTop">↑</button>
 
-    <!-- PERSONAGEM BITINHO -->
     <div id="bitinho">
         <div class="bitinho-avatar">🟠</div>
-        <div class="bitinho-message" id="bitinhoMessage">
-            👋 Olá! Eu sou o Bitinho! Vamos aprender sobre Bitcoin?
-        </div>
+        <div class="bitinho-message" id="bitinhoMessage">👋 Olá! Sou o Bitinho! Vamos aprender?</div>
     </div>
 
     <script>
-        // ========== DADOS DA HISTÓRIA (MANTIDOS) ==========
-        const allEvents = [
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1983, title: "🔐 DigiCash", illustration: "🔐💰", story: "David Chaum criou o primeiro dinheiro eletrônico anônimo.", storyKid: "David Chaum teve a ideia de criar um dinheiro secreto!" },
-            { chapter: "parte1", chapterNum: 1, chapterTitle: "Os Sonhadores", year: 1991, title: "✉️ Cypherpunks", illustration: "✉️🔒", story: "Grupo que sonhava com liberdade digital.", storyKid: "Um clube de amigos que usavam códigos secretos!" },
-            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2008, title: "📄 Whitepaper do Bitcoin", illustration: "📄✨", story: "Satoshi Nakamoto publica o documento que mudaria o mundo.", storyKid: "Satoshi escreveu a receita do Bitcoin!" },
-            { chapter: "parte2", chapterNum: 2, chapterTitle: "O Nascimento", year: 2009, title: "🏛️ Genesis Block", illustration: "🏛️🔨", story: "Primeiro bloco do Bitcoin é minerado.", storyKid: "O primeiro bloquinho do Bitcoin nasceu!" },
-            { chapter: "parte3", chapterNum: 3, chapterTitle: "Primeiros Passos", year: 2010, title: "🍕 Bitcoin Pizza Day", illustration: "🍕💰", story: "Laszlo paga 10.000 BTC por duas pizzas.", storyKid: "O dia que alguém comprou pizza com Bitcoin!" },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2011, title: "💵 Bitcoin atinge US$ 1", illustration: "💵📈", story: "Primeira vez que Bitcoin atinge 1 dólar.", storyKid: "Bitcoin chegou a valer 1 dólar!" },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2012, title: "✂️ Primeiro Halving", illustration: "✂️📉", story: "Recompensa dos mineradores cai pela metade.", storyKid: "Os Bitcoins ficaram mais raros!" },
-            { chapter: "parte4", chapterNum: 4, chapterTitle: "A Montanha-Russa", year: 2013, title: "💰 Bitcoin atinge US$ 1.000", illustration: "💰🎉", story: "Bitcoin chega a US$ 1.000 pela primeira vez.", storyKid: "Bitcoin chegou a 1.000 dólares!" },
-            { chapter: "parte9", chapterNum: 9, chapterTitle: "O Segundo Boom", year: 2021, title: "🇸🇻 El Salvador Adota Bitcoin", illustration: "🇸🇻🏛️", story: "Primeiro país a adotar Bitcoin como moeda legal.", storyKid: "Um país inteiro adotou o Bitcoin!" }
-        ];
-
-        const glossaryData = [
-            { term: "Bloco Gênese", definition: "Primeiro bloco do Bitcoin, minerado em 3 de janeiro de 2009." },
-            { term: "Halving", definition: "Evento que reduz a recompensa dos mineradores a cada 4 anos." },
-            { term: "Satoshi Nakamoto", definition: "Criador misterioso do Bitcoin." }
-        ];
-
-        // ========== SISTEMA DE MISSÕES E XP ==========
-        let xp = parseInt(localStorage.getItem('btc_xp') || '0');
-        const missions = [
-            { id: 'satoshi', text: '🔍 Descobrir quem é Satoshi', xp: 20, icon: '🕵️' },
-            { id: 'pizza', text: '🍕 Encontrar o evento da pizza', xp: 20, icon: '🍕' },
-            { id: 'quiz', text: '📝 Completar um quiz', xp: 30, icon: '📝' },
-            { id: 'favorite', text: '⭐ Favoritar 3 eventos', xp: 30, icon: '⭐' }
-        ];
-        let completedMissions = JSON.parse(localStorage.getItem('btc_missions') || '[]');
-
-        function saveMissions() {
-            localStorage.setItem('btc_missions', JSON.stringify(completedMissions));
-            localStorage.setItem('btc_xp', xp);
-        }
-
-        function getLevel() {
-            if (xp >= 70) return { name: "🥇 Mestre do Bitcoin", emoji: "🏆" };
-            if (xp >= 30) return { name: "🥈 Explorador", emoji: "🗺️" };
-            return { name: "🥉 Iniciante", emoji: "🌱" };
-        }
-
-        function updateLevelBadge() {
-            const level = getLevel();
-            document.getElementById('levelBadge').innerHTML = `${level.emoji} ${level.name}`;
-        }
-
-        function renderMissions() {
-            const container = document.getElementById('missionsList');
-            let html = '';
-            missions.forEach(m => {
-                const done = completedMissions.includes(m.id);
-                html += `
-                    <div class="mission ${done ? 'done' : ''}">
-                        <div class="mission-info">
-                            <span class="mission-icon">${m.icon}</span>
-                            <span class="mission-text">${m.text}</span>
-                        </div>
-                        <span class="mission-xp">+${m.xp} XP ${done ? '✅' : ''}</span>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-            updateXPBar();
-            updateLevelBadge();
-        }
-
-        function updateXPBar() {
-            const percent = Math.min((xp / 100) * 100, 100);
-            document.getElementById('xpFill').style.width = percent + '%';
-            document.getElementById('xpText').innerHTML = `XP: ${xp} / 100 | ${getLevel().name}`;
-        }
-
-        function completeMission(id) {
-            if (!completedMissions.includes(id)) {
-                const mission = missions.find(m => m.id === id);
-                completedMissions.push(id);
-                xp += mission.xp;
-                saveMissions();
-                renderMissions();
-                showToast(`🎉 Missão concluída: ${mission.text} +${mission.xp} XP!`);
-                canvasConfetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                talkBitinho(`🎉 Parabéns! Você ganhou ${mission.xp} XP! Continue assim!`);
-                updateBadgesFromXP();
-            }
-        }
-
-        function updateBadgesFromXP() {
-            if (xp >= 30 && !earnedBadges.includes('explorer')) {
-                earnedBadges.push('explorer');
-                saveBadges();
-                updateBadgesUI();
-                showToast('🏆 Nova conquista: Explorador!');
-            }
-            if (xp >= 70 && !earnedBadges.includes('master')) {
-                earnedBadges.push('master');
-                saveBadges();
-                updateBadgesUI();
-                showToast('🏆 Nova conquista: Mestre do Bitcoin!');
-            }
-        }
-
-        // ========== PERSONAGEM BITINHO ==========
-        const bitinhoMessages = [
-            "💡 Sabia que o Bitcoin nasceu em 2009?",
-            "🍕 Já viu a pizza de 10.000 BTC? É a mais cara do mundo!",
-            "🚀 Quanto antes você aprende, melhor!",
-            "🔐 Bitcoin não precisa de banco!",
-            "📈 O tempo é o maior aliado do investidor!",
-            "🎯 Complete as missões para ganhar XP!",
-            "⭐ Não esqueça de favoritar seus eventos preferidos!"
-        ];
-
-        function talkBitinho(msg = null) {
-            const el = document.getElementById('bitinhoMessage');
-            el.innerText = msg || bitinhoMessages[Math.floor(Math.random() * bitinhoMessages.length)];
-            el.style.opacity = '0';
-            setTimeout(() => { el.style.opacity = '1'; }, 200);
-        }
-
-        // ========== SIMULADOR INFANTIL ==========
-        function simulateKid() {
-            const amount = parseFloat(document.getElementById('kidAmount').value);
-            const year = document.getElementById('kidYear').value;
-            const prices = { '2010': 0.05, '2015': 500, '2020': 30000 };
-            const price = prices[year];
-            const btc = amount / price;
-            const todayPrice = 385000;
-            const todayValue = btc * todayPrice;
-            const bigMacs = Math.floor(todayValue / 25);
-            document.getElementById('kidSimulatorResult').innerHTML = `
-                💰 Se você tivesse comprado <strong>R$ ${amount.toLocaleString()}</strong> em ${year === '2010' ? '2010' : year === '2015' ? '2015' : '2020'},<br>
-                hoje você teria <strong>R$ ${todayValue.toLocaleString()}</strong>!<br>
-                🍔 Isso daria para comprar <strong>${bigMacs.toLocaleString()} Big Macs</strong>! 🚀
-            `;
-        }
-
-        function shareWithParents() {
-            const amount = parseFloat(document.getElementById('kidAmount').value);
-            const year = document.getElementById('kidYear').value;
-            const prices = { '2010': 0.05, '2015': 500, '2020': 30000 };
-            const price = prices[year];
-            const btc = amount / price;
-            const todayValue = btc * 385000;
-            const text = `👨‍👩‍👧 Pai/Mãe, sabia que se tivéssemos comprado R$ ${amount} em Bitcoin em ${year === '2010' ? '2010' : year === '2015' ? '2015' : '2020'}, hoje teríamos R$ ${Math.round(todayValue).toLocaleString()}? 😲\n\nAprenda mais em: ${window.location.href}`;
-            navigator.clipboard.writeText(text);
-            showToast('📋 Texto copiado! Envie para seus pais no WhatsApp!');
-        }
-
-        // ========== DESAFIO FINAL ==========
-        const challengeQuestions = [
-            { text: "1. Quem criou o Bitcoin?", options: ["Vitalik Buterin", "Satoshi Nakamoto", "Elon Musk"], correct: 1 },
-            { text: "2. Em que ano o Bitcoin foi criado?", options: ["2005", "2008", "2009"], correct: 2 },
-            { text: "3. O que é o Halving?", options: ["O preço dobra", "Recompensa dos mineradores cai pela metade", "A rede é desligada"], correct: 1 },
-            { text: "4. O que foi o Bitcoin Pizza Day?", options: ["Pizza grátis", "Primeira compra com Bitcoin", "Uma pizzaria famosa"], correct: 1 },
-            { text: "5. Qual país adotou Bitcoin como moeda legal?", options: ["Brasil", "Estados Unidos", "El Salvador"], correct: 2 }
-        ];
-
-        function renderChallenge() {
-            const container = document.getElementById('challengeQuestions');
-            let html = '';
-            challengeQuestions.forEach((q, idx) => {
-                html += `<div class="challenge-question"><p><strong>${q.text}</strong></p>`;
-                q.options.forEach((opt, optIdx) => {
-                    html += `<label class="quiz-option"><input type="radio" name="challenge_q${idx}" value="${optIdx}"> ${opt}</label><br>`;
-                });
-                html += `<div class="quiz-feedback" id="challenge_fb${idx}"></div></div>`;
-            });
-            container.innerHTML = html;
-        }
-
-        function submitChallenge() {
-            let score = 0;
-            challengeQuestions.forEach((q, idx) => {
-                const selected = document.querySelector(`input[name="challenge_q${idx}"]:checked`);
-                const fb = document.getElementById(`challenge_fb${idx}`);
-                if (selected && parseInt(selected.value) === q.correct) {
-                    score++;
-                    fb.innerHTML = '✅ Correto!';
-                    fb.className = 'quiz-feedback correct';
-                } else {
-                    fb.innerHTML = '❌ Resposta errada.';
-                    fb.className = 'quiz-feedback wrong';
-                }
-            });
-            if (score === 5) {
-                showToast('🎉 Parabéns! Você é um Mestre do Bitcoin!');
-                canvasConfetti({ particleCount: 200, spread: 100, origin: { y: 0.5 } });
-                document.getElementById('certificateDownload').style.display = 'block';
-                talkBitinho('🔥 Incrível! Você é um verdadeiro Mestre do Bitcoin!');
-                completeMission('quiz');
-            } else {
-                showToast(`Você acertou ${score} de 5. Tente novamente!`);
-            }
-        }
-
-        function downloadCertificate() {
-            const name = prompt("Digite seu nome para o certificado:", "Estudante Bitcoin");
-            if (name) {
-                const content = `<div style="text-align:center; padding:40px; font-family:Arial;"><h1>🎓 CERTIFICADO</h1><h2>Mestre do Bitcoin</h2><p>Este certificado é concedido a <strong>${name}</strong></p><p>por completar o Desafio Final da História do Bitcoin.</p><p>${new Date().toLocaleDateString()}</p><p>🔗 ${window.location.href}</p></div>`;
-                html2pdf().set({ margin: 0.5, filename: `certificado_bitcoin_${name}.pdf` }).from(content).save();
-                showToast('📜 Certificado gerado!');
-            }
-        }
-
-        // ========== MODO HISTÓRIA ==========
-        let storyPlaying = false;
-        let storyInterval = null;
-
-        function startStoryMode() {
-            if (storyPlaying) {
-                stopStoryMode();
-                return;
-            }
-            storyPlaying = true;
-            document.getElementById('storyModeBtn').innerHTML = '⏸️ Pausar História';
-            const chapters = document.querySelectorAll('.chapter');
-            let idx = 0;
-            function playNext() {
-                if (idx >= chapters.length) {
-                    stopStoryMode();
-                    talkBitinho('🎉 Parabéns! Você completou a história!');
-                    return;
-                }
-                chapters[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
-                const audioBtn = chapters[idx].querySelector('.audio-btn');
-                if (audioBtn) audioBtn.click();
-                idx++;
-            }
-            playNext();
-            storyInterval = setInterval(() => {
-                if (idx < chapters.length) {
-                    playNext();
-                } else {
-                    stopStoryMode();
-                }
-            }, 15000);
-        }
-
-        function stopStoryMode() {
-            if (storyInterval) clearInterval(storyInterval);
-            storyPlaying = false;
-            document.getElementById('storyModeBtn').innerHTML = '▶️ Modo História';
-            if (window.speechSynthesis) window.speechSynthesis.cancel();
-        }
-
-        // ========== FUNÇÕES EXISTENTES (RESUMO) ==========
-        let currentAudio = null;
-        let kidMode = false;
-        let favorites = JSON.parse(localStorage.getItem('bitcoinFavorites') || '[]');
-        let earnedBadges = JSON.parse(localStorage.getItem('bitcoinBadges') || '["pioneer"]');
-        let btcPriceData = { price: 385000, change: 2.3 };
-        let fearGreedData = { value: 72, classification: "Ganância Extrema" };
-
+        // ========== FUNÇÕES DE UTILIDADE ==========
         function showToast(msg) {
             const toast = document.createElement('div'); toast.className = 'toast'; toast.textContent = msg;
             document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000);
         }
 
-        function saveFavorites() { localStorage.setItem('bitcoinFavorites', JSON.stringify(favorites)); }
-        function saveBadges() { localStorage.setItem('bitcoinBadges', JSON.stringify(earnedBadges)); }
-
-        function updateBadgesUI() {
-            const container = document.getElementById('badgesGrid');
-            const allBadges = [
-                { id: 'pioneer', name: 'Pioneiro', icon: '🌱' },
-                { id: 'explorer', name: 'Explorador', icon: '🗺️' },
-                { id: 'master', name: 'Mestre', icon: '🏆' },
-                { id: 'pizza', name: 'Amante de Pizza', icon: '🍕' },
-                { id: 'bigMac', name: 'Big Mac', icon: '🍔' }
-            ];
-            let html = '';
-            allBadges.forEach(badge => {
-                const earned = earnedBadges.includes(badge.id);
-                html += `<div class="badge ${earned ? 'earned' : ''}"><span class="badge-icon">${badge.icon}</span><span class="badge-name">${badge.name}${earned ? ' ✓' : ''}</span></div>`;
-            });
-            container.innerHTML = html;
+        function talkBitinho(msg) {
+            const el = document.getElementById('bitinhoMessage');
+            if (el) { el.innerText = msg || "💡 Sabia que o Bitcoin nasceu em 2009?"; }
         }
 
-        async function fetchBitcoinPrice() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl&include_24hr_change=true');
-                const data = await response.json();
-                btcPriceData.price = data.bitcoin.brl;
-                btcPriceData.change = data.bitcoin.brl_24h_change;
-                document.getElementById('btcPrice').innerHTML = `R$ ${btcPriceData.price.toLocaleString()}`;
-                const changeEl = document.getElementById('btcChange');
-                changeEl.innerHTML = `${btcPriceData.change >= 0 ? '▲' : '▼'} ${Math.abs(btcPriceData.change).toFixed(2)}% (24h)`;
-                changeEl.className = `btc-change ${btcPriceData.change >= 0 ? 'positive' : 'negative'}`;
-                document.getElementById('lastUpdateTime').innerHTML = `Última atualização: ${new Date().toLocaleTimeString()}`;
-            } catch(e) { console.log('Erro ao buscar preço'); }
+        // ========== CERTIFICADOS ==========
+        function generateCertificate(level) {
+            const name = prompt("Digite seu nome completo:", "Estudante Bitcoin");
+            if (!name) return;
+            const levelNames = { kids: "Módulo Infantil", adults: "Módulo Adulto", seniors: "Módulo Idoso", advanced: "Nível Avançado" };
+            const content = `<div style="text-align:center; padding:40px; border:10px solid #f7931a;"><h1>🎓 CERTIFICADO</h1><h2>${levelNames[level]}</h2><p>${name}</p><p>Concluiu o curso Bitcoin para Todas as Idades</p><p>${new Date().toLocaleDateString()}</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: `certificado_${level}_${name}.pdf` }).from(content).save();
+            showToast(`🎓 Certificado gerado para ${name}!`);
+            canvasConfetti({ particleCount: 100, spread: 70 });
         }
 
-        async function fetchFearGreed() {
-            try {
-                const response = await fetch('https://api.alternative.me/fng/?limit=1');
-                const data = await response.json();
-                fearGreedData.value = parseInt(data.data[0].value);
-                fearGreedData.classification = data.data[0].value_classification;
-                document.getElementById('fearIndex').innerHTML = fearGreedData.value;
-                const fearLabel = document.getElementById('fearLabel');
-                fearLabel.innerHTML = fearGreedData.classification;
-            } catch(e) { console.log('Erro ao buscar Fear & Greed'); }
+        function downloadMaterial(type) {
+            const materials = { kids: "Cartilha Infantil: Bitcoin é divertido!", adults: "Guia Adulto: Comece com segurança", seniors: "Guia Idoso: Cuidados e segurança", advanced: "Guia DeFi: Riscos e oportunidades" };
+            const blob = new Blob([materials[type]], { type: 'text/plain' });
+            const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${type}_guia.txt`; link.click();
+            showToast(`📘 Baixando: ${materials[type]}`);
         }
 
-        function generateShareImage() {
-            const canvas = document.getElementById('shareCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 500; canvas.height = 400;
-            const gradient = ctx.createLinearGradient(0, 0, 500, 400);
-            gradient.addColorStop(0, '#f7931a'); gradient.addColorStop(1, '#e67e22');
-            ctx.fillStyle = gradient; ctx.fillRect(0, 0, 500, 400);
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 24px "Segoe UI"';
-            ctx.fillText('🚀 SE VOCÊ TIVESSE INVESTIDO', 20, 50);
-            ctx.font = 'bold 32px "Segoe UI"';
-            ctx.fillText('R$ 100 EM BITCOIN', 20, 100);
-            ctx.font = 'bold 28px "Segoe UI"';
-            ctx.fillText('EM 2010...', 20, 150);
-            ctx.font = 'bold 36px "Segoe UI"';
-            const valor = (100 / 0.05) * btcPriceData.price;
-            ctx.fillStyle = '#FFD700';
-            ctx.fillText(`R$ ${Math.round(valor).toLocaleString()}`, 20, 210);
-            ctx.fillStyle = 'white';
-            ctx.font = '20px "Segoe UI"';
-            ctx.fillText(`🍔 ou ${Math.floor(valor / 25).toLocaleString()} Big Macs!`, 20, 260);
-            ctx.font = '14px "Segoe UI"';
-            ctx.fillStyle = 'rgba(255,255,255,0.8)';
-            ctx.fillText('📖 Aprenda a história completa:', 20, 330);
-            ctx.fillText(window.location.href, 20, 350);
+        // ========== MÓDULO INFANTIL ==========
+        function checkScam(choice) {
+            const resultDiv = document.getElementById('scamResult');
+            if (choice === 'send') { resultDiv.innerHTML = '<span style="color:red;">❌ Errado! Você perdeu seus Bitcoins. Nunca envie para promessas milagrosas.</span>'; talkBitinho("🚨 Golpe! Nunca envie Bitcoin para quem promete dobrar."); }
+            else { resultDiv.innerHTML = '<span style="color:green;">✅ Correto! Você identificou um golpe e protegeu seus Bitcoins.</span>'; talkBitinho("🎉 Muito bem! Você é esperto e seguro!"); canvasConfetti({ particleCount: 50, spread: 50 }); }
         }
 
-        function viralShare() {
-            generateShareImage();
-            const canvas = document.getElementById('shareCanvas');
-            canvas.toBlob((blob) => {
-                const file = new File([blob], 'bitcoin_share.png', { type: 'image/png' });
-                if (navigator.share) navigator.share({ title: 'Bitcoin', files: [file] });
-                else { const link = document.createElement('a'); link.download = 'bitcoin_share.png'; link.href = URL.createObjectURL(blob); link.click(); showToast('📸 Imagem salva!'); }
-            });
+        function simulateKidsMission() {
+            document.getElementById('kidsMissionResult').innerHTML = "💰 R$10/semana por 2 anos = R$1.040. Com paciência, esse valor pode crescer! ⏳";
+            talkBitinho("🎯 Missão: Guardar aos poucos faz a diferença!");
         }
 
-        function copyViralText() {
-            const valor = (100 / 0.05) * btcPriceData.price;
-            const text = `🚀 SE VOCÊ TIVESSE INVESTIDO R$100 EM BITCOIN EM 2010:\n\nHoje você teria R$ ${Math.round(valor).toLocaleString()}\n(ou ${Math.floor(valor / 25).toLocaleString()} Big Macs 🍔)\n\n📖 Aprenda a história completa: ${window.location.href}\n\n#Bitcoin #EducaçãoFinanceira`;
-            navigator.clipboard.writeText(text);
-            showToast('📋 Texto copiado!');
+        // ========== MODAL ==========
+        function openModal() { document.getElementById('modalBuy').style.display = 'flex'; }
+        function closeModal() { document.getElementById('modalBuy').style.display = 'none'; }
+
+        // ========== SIMULADOR IMPERMANENT LOSS ==========
+        function simulateIL() {
+            const amount = parseFloat(document.getElementById('ilAmount').value);
+            const vol = parseFloat(document.getElementById('ilVolatility').value);
+            const loss = amount * (vol / 100) * 0.3;
+            document.getElementById('ilResult').innerHTML = `📉 Perda estimada por impermanent loss: ~US$ ${loss.toFixed(2)} (${vol}% de volatilidade). Quanto maior a variação, maior o risco.`;
         }
 
-        function generateContent() {
-            const container = document.getElementById('chaptersContainer');
-            const chaptersMap = new Map();
-            allEvents.forEach(event => {
-                if (!chaptersMap.has(event.chapter)) chaptersMap.set(event.chapter, { id: event.chapter, number: event.chapterNum, title: event.chapterTitle, events: [] });
-                chaptersMap.get(event.chapter).events.push(event);
-            });
-            let html = '';
-            for (const [_, chapter] of chaptersMap) {
-                html += `<section id="${chapter.id}" class="chapter"><div class="chapter-number">Parte ${chapter.number}</div><h2 class="chapter-title">${chapter.title}</h2><div class="chapter-subtitle">Eventos marcantes</div>`;
-                chapter.events.forEach((event, idx) => {
-                    const eventId = `${event.chapter}_${event.year}_${idx}`;
-                    const isFavorite = favorites.includes(eventId);
-                    let storyText = kidMode ? (event.storyKid || event.story) : event.story;
-                    html += `<div class="event-card ${isFavorite ? 'favorite' : ''}" data-event-id="${eventId}" data-year="${event.year}" data-title="${event.title}"><span class="event-year">${event.year}</span><h3 class="event-title">${event.title}</h3><div class="event-illustration">${event.illustration}</div><div class="event-story"><p>${storyText}</p></div><div class="share-buttons"><button class="audio-btn" data-story="${storyText.replace(/"/g, '&quot;')}">🎧 Ouvir</button><button class="share-btn" onclick="shareEvent('${event.title}', '${storyText.replace(/'/g, "\\'")}')">📤 Compartilhar</button><button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite('${eventId}', this)">⭐ ${isFavorite ? 'Favorito' : 'Favoritar'}</button></div></div>`;
+        // ========== PDF ESCOLAS ==========
+        function downloadSchoolPDF() {
+            const content = `<div style="padding:40px"><h1>🏫 Projeto Piloto: Bitcoin nas Escolas</h1><p>Baseado em Mi Primer Bitcoin (El Salvador)</p><h2>Metodologia:</h2><p>1. Formação de professores<br>2. Material didático adaptado<br>3. 4 encontros com alunos<br>4. Certificação</p><h2>Benefícios:</h2><p>Educação financeira desde cedo, preparação para o futuro, inclusão digital.</p><p>Contato: contato@bitcoinparatodos.org</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: 'projeto_piloto_bitcoin_escolas.pdf' }).from(content).save();
+            showToast('📥 Projeto Piloto baixado!');
+        }
+
+        function downloadSchoolPresentation() {
+            const content = `<div style="padding:40px"><h1>📊 Apresentação para Vereadores</h1><p>Projeto Bitcoin nas Escolas - Município Piloto</p><h2>Referência:</h2><p>El Salvador adotou Bitcoin como moeda legal e implementou educação financeira nacional.</p><h2>Proposta:</h2><p>Implementar programa piloto em 5 escolas municipais com material gratuito e formação de professores.</p><p>Investimento: baixo, pois o material é gratuito.</p></div>`;
+            html2pdf().set({ margin: 0.5, filename: 'apresentacao_vereadores_bitcoin.pdf' }).from(content).save();
+            showToast('📥 Apresentação baixada!');
+        }
+
+        // ========== UI ==========
+        function toggleAbout() {
+            const content = document.getElementById('aboutContent');
+            const toggle = document.getElementById('aboutToggle');
+            content.classList.toggle('show');
+            toggle.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
                 });
-                html += `<div class="quiz"><h3>📝 Teste seus conhecimentos</h3><div class="quiz-question"><p>1. Quem criou o Bitcoin?</p><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="a"> Vitalik Buterin</label><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="b"> Satoshi Nakamoto</label><label class="quiz-option"><input type="radio" name="q1_${chapter.id}" value="c"> Elon Musk</label><div class="quiz-feedback" id="q1_fb_${chapter.id}"></div></div><div class="quiz-question"><p>2. O que é o Halving?</p><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="a"> O preço do Bitcoin dobra</label><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="b"> A recompensa dos mineradores cai pela metade</label><label class="quiz-option"><input type="radio" name="q2_${chapter.id}" value="c"> A rede é desligada</label><div class="quiz-feedback" id="q2_fb_${chapter.id}"></div></div><button class="audio-btn" onclick="checkQuiz('${chapter.id}')">✅ Verificar respostas</button><div class="quiz-score" id="score_${chapter.id}" style="display: none;"></div></div>`;
-                html += `</section><hr>`;
-            }
-            container.innerHTML = html;
-            document.querySelectorAll('.audio-btn[data-story]').forEach(btn => {
-                const story = btn.getAttribute('data-story');
-                btn.addEventListener('click', (e) => { e.stopPropagation(); speakText(story, btn); });
             });
-            
-            // Verificar missão da pizza
-            const pizzaEvent = document.querySelector('[data-title*="Pizza"]');
-            if (pizzaEvent && !completedMissions.includes('pizza')) {
-                completeMission('pizza');
-                pizzaEvent.classList.add('pizza-animation');
-            }
-            
-            // Verificar missão Satoshi
-            if (document.querySelector('[data-title*="Satoshi"]') && !completedMissions.includes('satoshi')) {
-                completeMission('satoshi');
-            }
         }
 
-        function speakText(text, btn) {
-            if (currentAudio) window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'pt-BR';
-            utterance.rate = 0.9;
-            utterance.onend = () => { currentAudio = null; btn?.classList.remove('audio-playing'); };
-            currentAudio = utterance; btn?.classList.add('audio-playing');
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function toggleFavorite(eventId, btn) {
-            const index = favorites.indexOf(eventId);
-            if (index === -1) { favorites.push(eventId); btn.classList.add('active'); showToast('⭐ Adicionado aos favoritos!'); }
-            else { favorites.splice(index, 1); btn.classList.remove('active'); showToast('⭐ Removido dos favoritos'); }
-            saveFavorites();
-            if (favorites.length >= 3 && !completedMissions.includes('favorite')) {
-                completeMission('favorite');
-            }
-        }
-
-        function checkQuiz(chapterId) {
-            let score = 0;
-            const q1 = document.querySelector(`input[name="q1_${chapterId}"]:checked`);
-            const q2 = document.querySelector(`input[name="q2_${chapterId}"]:checked`);
-            if (q1?.value === 'b') score++;
-            if (q2?.value === 'b') score++;
-            if (score === 2) {
-                completeMission('quiz');
-            }
-            const scoreDiv = document.getElementById(`score_${chapterId}`);
-            if (scoreDiv) { scoreDiv.textContent = `🎉 Você acertou ${score} de 2 perguntas!`; scoreDiv.style.display = 'block'; }
-        }
-
-        function shareEvent(title, story) {
-            const link = window.location.href;
-            const text = `${title}\n\n${story.substring(0, 200)}...\n\n📖 Aprenda a história completa: ${link}`;
-            if (navigator.share) navigator.share({ title, text });
-            else { navigator.clipboard.writeText(text); showToast('📋 Copiado!'); }
-        }
-
-        function generateGlossary() {
-            const container = document.getElementById('glossary');
-            let html = '<h3>📖 Glossário</h3><div class="glossary-grid">';
-            glossaryData.forEach(item => { html += `<div class="glossary-item"><span class="glossary-term">${item.term}</span><br>${item.definition}</div>`; });
-            html += '</div>'; container.innerHTML = html;
-        }
-
-        function generateChapterLinks() {
-            const container = document.getElementById('chapterLinks');
-            const chapters = [...new Map(allEvents.map(e => [e.chapter, { id: e.chapter, num: e.chapterNum, title: e.chapterTitle }])).values()];
-            chapters.sort((a,b) => a.num - b.num);
-            let html = '';
-            chapters.forEach(ch => { html += `<div class="chapter-link" onclick="document.getElementById('${ch.id}').scrollIntoView({behavior: 'smooth'})">${ch.num}. ${ch.title}</div>`; });
-            container.innerHTML = html;
-        }
-
-        function generateTimeline() {
-            const marksContainer = document.getElementById('timelineMarks');
-            const slider = document.getElementById('timelineSlider');
-            const progress = document.getElementById('timelineProgress');
-            const preview = document.getElementById('timelinePreview');
-            const years = [...new Set(allEvents.map(e => e.year))].sort((a,b) => a-b);
-            let marksHtml = '';
-            years.forEach(year => { marksHtml += `<div class="timeline-mark" onclick="document.getElementById('timelineSlider').value = ${year}; updateTimeline(${year})"><span class="timeline-year">${year}</span></div>`; });
-            marksContainer.innerHTML = marksHtml;
-            function updateTimeline(year) {
-                const percent = (year - 1983) / (2025 - 1983) * 100;
-                progress.style.width = `${Math.min(100, Math.max(0, percent))}%`;
-                const eventFound = allEvents.find(e => e.year === year);
-                if (eventFound) preview.innerHTML = `<strong>${eventFound.year}</strong><br>${eventFound.illustration} ${eventFound.title}<br><small>${eventFound.story.substring(0, 150)}...</small>`;
-                else preview.innerHTML = `<strong>${year}</strong><br>🎯 Explore os anos marcados!`;
-            }
-            window.updateTimeline = updateTimeline;
-            slider.addEventListener('input', (e) => updateTimeline(parseInt(e.target.value)));
-            updateTimeline(2009);
-        }
-
+        // ========== MODOS ==========
         function setupModes() {
-            document.getElementById('kidModeToggle').addEventListener('click', () => {
-                kidMode = !kidMode;
-                if (kidMode) { document.body.classList.add('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧑 Modo Adulto'; talkBitinho('🎨 Modo Criança ativado! Vamos aprender brincando!'); }
-                else { document.body.classList.remove('kid-mode'); document.getElementById('kidModeToggle').textContent = '🧸 Modo Criança'; talkBitinho('👋 Voltamos ao modo normal!'); }
-                generateContent();
-            });
-            document.getElementById('readingModeToggle').addEventListener('click', () => {
-                document.body.classList.toggle('reading-mode');
-                document.getElementById('readingModeToggle').textContent = document.body.classList.contains('reading-mode') ? '📖 Sair Modo Leitura' : '📖 Modo Leitura';
-            });
-            document.getElementById('themeToggle').addEventListener('click', () => {
-                if (document.body.classList.contains('light')) { document.body.classList.add('dark'); document.body.classList.remove('light'); localStorage.setItem('theme', 'dark'); document.getElementById('themeToggle').textContent = '☀️ Modo claro'; }
-                else { document.body.classList.add('light'); document.body.classList.remove('dark'); localStorage.setItem('theme', 'light'); document.getElementById('themeToggle').textContent = '🌙 Modo escuro'; }
-            });
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') { document.body.classList.add('dark'); document.body.classList.remove('light'); document.getElementById('themeToggle').textContent = '☀️ Modo claro'; }
+            document.getElementById('kidModeToggle').onclick = () => { document.body.classList.toggle('kid-mode'); talkBitinho(document.body.classList.contains('kid-mode') ? "🎨 Modo Criança!" : "👋 Modo normal!"); };
+            document.getElementById('readingModeToggle').onclick = () => document.body.classList.toggle('reading-mode');
+            document.getElementById('themeToggle').onclick = () => { document.body.classList.toggle('dark'); document.body.classList.toggle('light'); };
+            document.getElementById('audioGlobalToggle').onclick = () => { if(window.speechSynthesis) window.speechSynthesis.cancel(); };
+            document.getElementById('pdfDownload').onclick = () => { html2pdf().set({ margin: 0.5, filename: 'historia_bitcoin.pdf' }).from(document.getElementById('mainContent')).save(); showToast('📄 PDF gerado!'); };
+            document.getElementById('storyModeBtn').onclick = () => showToast('▶️ Modo História: role pelos capítulos!');
+            document.getElementById('aboutBtn').onclick = () => { document.getElementById('aboutSection').scrollIntoView({ behavior: 'smooth' }); toggleAbout(); };
+            document.getElementById('bitinho').onclick = () => talkBitinho("👋 Complete os módulos do curso!");
         }
 
-        function init() {
-            generateContent();
-            generateGlossary();
-            generateChapterLinks();
-            generateTimeline();
-            updateBadgesUI();
-            renderMissions();
-            renderChallenge();
-            fetchBitcoinPrice();
-            fetchFearGreed();
-            setInterval(() => { fetchBitcoinPrice(); fetchFearGreed(); }, 300000);
-            document.getElementById('refreshDashboard').addEventListener('click', () => { fetchBitcoinPrice(); fetchFearGreed(); showToast('🔄 Dashboard atualizado!'); });
-            document.getElementById('viralShareBtn').addEventListener('click', viralShare);
-            document.getElementById('viralCopyTextBtn').addEventListener('click', copyViralText);
-            document.getElementById('generateSchoolPdf').addEventListener('click', () => showToast('📥 Proposta gerada!'));
-            document.getElementById('leadForm').addEventListener('submit', (e) => { e.preventDefault(); showToast('📧 Obrigado! Curso enviado para seu e-mail.'); talkBitinho('🎉 Obrigado! Você receberá o curso no e-mail!'); });
-            document.getElementById('pdfDownload').addEventListener('click', () => html2pdf().set({ margin: 0.5, filename: 'historia_bitcoin.pdf' }).from(document.getElementById('mainContent')).save());
-            document.getElementById('downloadKidBook').addEventListener('click', () => showToast('📘 Baixando: Bitcoin para Crianças'));
-            document.getElementById('downloadTeacherGuide').addEventListener('click', () => showToast('📗 Baixando: Guia do Professor'));
-            document.getElementById('downloadExercises').addEventListener('click', () => showToast('📙 Baixando: Exercícios Práticos'));
-            document.getElementById('audioGlobalToggle').addEventListener('click', () => { if(window.speechSynthesis) window.speechSynthesis.cancel(); });
-            document.getElementById('simulateKidBtn').addEventListener('click', simulateKid);
-            document.getElementById('shareParentsBtn').addEventListener('click', shareWithParents);
-            document.getElementById('storyModeBtn').addEventListener('click', startStoryMode);
-            document.getElementById('submitChallenge').addEventListener('click', submitChallenge);
-            document.getElementById('downloadCertificate').addEventListener('click', downloadCertificate);
-            document.getElementById('bitinho').addEventListener('click', () => talkBitinho());
-            setTimeout(() => talkBitinho("👋 Olá! Eu sou o Bitinho! Complete as missões ao lado! 🎯"), 2000);
+        // ========== INICIALIZAÇÃO ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTabs(); setupModes();
             const backToTop = document.getElementById('backToTop');
             window.addEventListener('scroll', () => backToTop.classList.toggle('visible', window.scrollY > 300));
-            backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-            generateShareImage();
-            setupModes();
-        }
-        
-        window.onload = init;
-        window.toggleFavorite = toggleFavorite;
-        window.checkQuiz = checkQuiz;
-        window.shareEvent = shareEvent;
-        window.completeMission = completeMission;
+            backToTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => talkBitinho("🎓 Explore os módulos do curso!"), 2000);
+        });
+
+        window.generateCertificate = generateCertificate;
+        window.downloadMaterial = downloadMaterial;
+        window.checkScam = checkScam;
+        window.simulateKidsMission = simulateKidsMission;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.simulateIL = simulateIL;
+        window.downloadSchoolPDF = downloadSchoolPDF;
+        window.downloadSchoolPresentation = downloadSchoolPresentation;
+        window.toggleAbout = toggleAbout;
+        window.showToast = showToast;
+        window.talkBitinho = talkBitinho;
     </script>
 </body>
 </html>
