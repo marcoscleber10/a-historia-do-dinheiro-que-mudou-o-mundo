@@ -1,1140 +1,472 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta property="og:title" content="História das Copas do Mundo — Enciclopédia Completa">
-<meta property="og:description" content="Todas as Copas do Mundo desde 1930. Rankings, estatísticas, timeline, simulador e Copa 2026.">
-<title>História das Copas do Mundo ⚽</title>
-<style>
-:root{--bg:#060A06;--bg2:#0D130D;--bg3:#111A11;--gold:#F59E0B;--gold2:#D97706;--green:#16A34A;--green2:#15803D;--red:#EF4444;--blue:#3B82F6;--purple:#A855F7;--text:#E2E8F0;--muted:#94A3B8;--dim:#475569;--border:rgba(255,255,255,.08);}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-button,a,[onclick]{touch-action:manipulation;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:88px;}
-.header{background:linear-gradient(135deg,#0A1A0A,#060A06);border-bottom:1px solid rgba(245,158,11,.25);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50;}
-.logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 0 18px rgba(245,158,11,.4);}
-.logo-text{font-size:1rem;font-weight:900;color:#fff;}.logo-text span{color:var(--gold);}
-.logo-sub{font-size:8.5px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.08em;}
-.live-chip{margin-left:auto;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:20px;padding:3px 10px;font-size:9px;font-weight:800;color:#EF4444;display:flex;align-items:center;gap:5px;}
-.live-dot{width:5px;height:5px;border-radius:50%;background:#EF4444;animation:pulse 1.5s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* NAV */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(6,10,6,.98);backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;scrollbar-width:none;}
-.bnav::-webkit-scrollbar{display:none;}
-.bnav-btn{min-width:56px;flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;font-size:.47rem;font-weight:700;color:var(--dim);background:none;border:none;cursor:pointer;text-transform:uppercase;letter-spacing:.1px;}
-.bnav-btn.active{color:var(--gold);}
-.bnav-btn svg{width:17px;height:17px;}
-/* PAGES */
-.page{display:none;padding:14px;max-width:720px;margin:0 auto;}.page.active{display:block;}
-/* CARDS */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:9px;}
-.sec{font-size:10px;font-weight:800;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;margin-top:14px;}
-.badge{font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px;text-transform:uppercase;}
-.badge-g{background:rgba(22,163,74,.15);color:var(--green);}
-.badge-gold{background:rgba(245,158,11,.15);color:var(--gold);}
-.badge-r{background:rgba(239,68,68,.15);color:var(--red);}
-/* COUNTDOWN */
-.countdown-box{background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(22,163,74,.08));border:1px solid rgba(245,158,11,.35);border-radius:16px;padding:16px;text-align:center;margin-bottom:12px;}
-.cd-title{font-size:9px;font-weight:800;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;}
-.cd-grid{display:flex;justify-content:center;gap:10px;}
-.cd-item{background:rgba(0,0,0,.4);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:8px 10px;min-width:52px;}
-.cd-num{font-size:22px;font-weight:900;color:var(--gold);line-height:1;font-family:monospace;}
-.cd-lbl{font-size:7px;color:var(--dim);font-weight:700;text-transform:uppercase;margin-top:2px;}
-/* COPA CARD */
-.copa-card{background:var(--bg2);border:1px solid rgba(245,158,11,.2);border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer;transition:.2s;}
-.copa-card:hover{border-color:rgba(245,158,11,.5);transform:translateY(-2px);}
-.copa-card.destaque{border-color:rgba(245,158,11,.5);background:linear-gradient(135deg,rgba(245,158,11,.08),var(--bg2));}
-/* RANKING */
-.rk-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
-/* BAR */
-.bar-wrap{height:7px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--gold2));}
-/* STATS GRID */
-.stat4{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:10px;}
-.stat-c{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:11px;text-align:center;}
-.stat-n{font-size:1.1rem;font-weight:900;color:#fff;}
-.stat-l{font-size:8px;color:var(--dim);font-weight:700;text-transform:uppercase;margin-top:2px;}
-/* TIMELINE */
-.tl-item{display:flex;gap:12px;padding:0 0 18px 0;position:relative;}
-.tl-item::before{content:'';position:absolute;left:20px;top:36px;bottom:0;width:2px;background:rgba(245,158,11,.2);}
-.tl-dot{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;box-shadow:0 0 12px rgba(245,158,11,.3);}
-/* SIMULADOR */
-.bracket{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;}
-.match-slot{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.15s;}
-.match-slot.selected{border-color:var(--gold);background:rgba(245,158,11,.08);}
-.match-slot:hover{border-color:rgba(245,158,11,.4);}
-/* QUIZ */
-.quiz-opt{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px;margin-bottom:6px;cursor:pointer;font-size:12px;font-weight:600;transition:.15s;}
-.quiz-opt:hover{border-color:rgba(245,158,11,.4);}
-.quiz-opt.certo{border-color:var(--green);background:rgba(22,163,74,.1);color:var(--green);}
-.quiz-opt.errado{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red);}
-/* CURIOSIDADES */
-.curio{background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(0,0,0,.2));border:1px solid rgba(245,158,11,.18);border-radius:10px;padding:11px 12px;margin-bottom:7px;display:flex;gap:10px;align-items:flex-start;}
-/* REPESCAGEM BANNER */
-.repescagem-banner{background:linear-gradient(135deg,rgba(239,68,68,.12),rgba(245,158,11,.08));border:1px solid rgba(239,68,68,.35);border-radius:14px;padding:13px;margin-bottom:10px;}
-.repescagem-title{font-size:11px;font-weight:900;color:#EF4444;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.repescagem-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.rep-item{background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:8px 10px;}
-.rep-item .flag{font-size:15px;}
-.rep-item .name{font-size:9.5px;font-weight:800;color:var(--text);margin-top:2px;}
-.rep-item .grupo{font-size:8px;color:var(--gold);font-weight:700;margin-top:1px;}
-.rep-item .match{font-size:7.5px;color:var(--dim);margin-top:1px;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BitcoinEdu • História do Bitcoin para Escolas</title>
+  <meta name="description" content="Plataforma educativa sobre Bitcoin alinhada à BNCC, pronta para uso em escolas brasileiras.">
+  <style>
+    :root {
+      --bg: #f8f9fa; --bg-card: #ffffff; --text: #111827; --text-muted: #6b7280;
+      --primary: #2563eb; --secondary: #7c3aed; --accent: #F7931A; --success: #16a34a;
+      --border: #e5e7eb; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --radius: 0.75rem;
+    }
+    .dark {
+      --bg: #0f172a; --bg-card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
+      --border: #334155; --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+    }
+    .high-contrast {
+      --bg: #000 !important; --bg-card: #111 !important; --text: #fff !important; --text-muted: #ddd !important;
+      --border: #fff !important; --primary: #00f !important; --secondary: #f0f !important;
+    }
+    .large-text { font-size: 18px !important; }
+    .large-text h1 { font-size: 2.5rem !important; } .large-text h2 { font-size: 2rem !important; }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; transition: background 0.3s, color 0.3s; }
+    a { color: var(--primary); text-decoration: none; } a:hover { text-decoration: underline; }
+    button { cursor: pointer; font-family: inherit; }
+    img { max-width: 100%; height: auto; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+    
+    /* Skip Link & Focus */
+    .skip-link { position: absolute; top: -40px; left: 0; background: var(--primary); color: white; padding: 8px 12px; z-index: 1000; transition: top 0.3s; border-radius: 0 0 8px 0; }
+    .skip-link:focus { top: 0; }
+    :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+    /* Header */
+    header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .dark header { background: rgba(15,23,42,0.9); }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.25rem; color: var(--text); }
+    .logo span { color: var(--accent); }
+    nav { display: flex; gap: 4px; }
+    nav a { padding: 8px 12px; border-radius: 6px; color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
+    nav a:hover, nav a.active { background: var(--bg); color: var(--primary); text-decoration: none; }
+    .mobile-toggle { display: none; background: none; border: none; font-size: 1.5rem; color: var(--text); }
+    @media(max-width: 768px) {
+      nav { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 1rem; }
+      nav.open { display: flex; }
+      .mobile-toggle { display: block; }
+    }
+
+    /* Main & Sections */
+    main { min-height: calc(100vh - 140px); padding: 2rem 0; }
+    .section { display: none; animation: fadeIn 0.4s ease; }
+    .section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Components */
+    .hero { text-align: center; padding: 3rem 1rem; background: linear-gradient(135deg, rgba(247,147,26,0.1), rgba(37,99,235,0.05)); border-radius: var(--radius); margin-bottom: 2rem; }
+    h1, h2, h3 { margin-bottom: 0.5rem; color: var(--text); }
+    .subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 600px; margin: 0 auto 1.5rem; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 500; border: 2px solid transparent; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: white; } .btn-primary:hover { opacity: 0.9; }
+    .btn-outline { border-color: var(--primary); color: var(--primary); background: transparent; } .btn-outline:hover { background: var(--primary); color: white; }
+    .btn-secondary { background: var(--accent); color: white; } .btn-secondary:hover { opacity: 0.9; }
+    .btn-group { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15); }
+    .badge { display: inline-block; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; border-radius: 99px; background: rgba(37,99,235,0.1); color: var(--primary); }
+    .badge.secondary { background: rgba(124,58,237,0.1); color: var(--secondary); }
+    .badge.accent { background: rgba(247,147,26,0.1); color: var(--accent); }
+
+    /* Timeline */
+    .controls { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-card); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); }
+    .search-box { flex: 1 1 250px; position: relative; }
+    .search-box input { width: 100%; padding: 0.6rem 1rem 0.6rem 2.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+    .search-icon { position: absolute; left: 0.8rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .filters { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .filter-btn { padding: 4px 10px; border-radius: 99px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; }
+    .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    .timeline-list { display: flex; flex-direction: column; gap: 1rem; }
+    .timeline-item { cursor: pointer; position: relative; padding-left: 1.5rem; }
+    .timeline-item::before { content: ''; position: absolute; left: 0; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid var(--bg-card); }
+    .timeline-item.category-market::before { background: var(--success); }
+    .timeline-item.category-regulation::before { background: var(--secondary); }
+    .timeline-item.category-adoption::before { background: var(--accent); }
+    .timeline-content { background: var(--bg-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); transition: all 0.2s; }
+    .timeline-content.expanded { box-shadow: 0 0 0 2px var(--primary); }
+    .timeline-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
+    .timeline-title { font-weight: 600; margin-bottom: 4px; }
+    .timeline-desc { font-size: 0.95rem; color: var(--text-muted); display: none; margin-top: 0.5rem; border-top: 1px dashed var(--border); padding-top: 0.5rem; }
+    .timeline-content.expanded .timeline-desc { display: block; }
+    .edu-box { background: rgba(37,99,235,0.05); border: 1px dashed var(--primary); padding: 0.75rem; border-radius: 6px; margin-top: 0.75rem; }
+    .edu-box p { font-size: 0.9rem; margin-bottom: 0.5rem; }
+
+    /* Modules & Quiz */
+    .grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+    .module-header { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; }
+    .module-meta { display: flex; gap: 1rem; font-size: 0.9rem; opacity: 0.9; margin-top: 1rem; flex-wrap: wrap; }
+    .quiz-container { max-width: 800px; margin: 0 auto; }
+    .quiz-progress { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 1.5rem; overflow: hidden; }
+    .quiz-progress-bar { height: 100%; background: var(--primary); transition: width 0.3s; }
+    .quiz-option { display: block; width: 100%; text-align: left; padding: 1rem; margin-bottom: 0.75rem; background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .quiz-option:hover { border-color: var(--primary); }
+    .quiz-option.selected { border-color: var(--primary); background: rgba(37,99,235,0.05); }
+    .quiz-option.correct { border-color: var(--success); background: rgba(22,163,74,0.1); }
+    .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
+    .quiz-feedback { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.correct { background: rgba(22,163,74,0.1); border: 1px solid var(--success); color: var(--success); }
+    .quiz-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid #ef4444; color: #ef4444; }
+
+    /* Glossary & Teachers */
+    .glossary-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .term-card { border-left: 4px solid var(--primary); }
+    .teacher-resource { display: flex; flex-direction: column; gap: 0.5rem; }
+    .teacher-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+    /* Accessibility Panel */
+    .a11y-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 100; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
+    .a11y-panel { position: fixed; bottom: 80px; right: 20px; z-index: 100; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 280px; box-shadow: var(--shadow); display: none; }
+    .a11y-panel.open { display: block; }
+    .a11y-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .a11y-row:last-child { border: none; }
+    .toggle-switch { position: relative; width: 40px; height: 22px; background: var(--border); border-radius: 11px; cursor: pointer; transition: 0.3s; }
+    .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: 0.3s; }
+    .toggle-switch.on { background: var(--primary); }
+    .toggle-switch.on::after { transform: translateX(18px); }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 2rem 0; margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+  </style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Pular para conteúdo principal</a>
 
-<div class="header">
-  <div class="logo">⚽</div>
-  <div>
-    <div class="logo-text">Copas do <span>Mundo</span></div>
-    <div class="logo-sub">Enciclopédia Completa · 1930 – 2026</div>
-  </div>
-  <div class="live-chip"><div class="live-dot"></div>2026 AO VIVO</div>
-</div>
-
-<!-- ===== COPA 2026 ===== -->
-<div class="page active" id="page-copa26">
-  <!-- Countdown -->
-  <div class="countdown-box">
-    <div class="cd-title">🏆 FIFA World Cup 2026 — Início em 11 de junho de 2026</div>
-    <div class="cd-grid" id="countdown"></div>
-    <div style="margin-top:10px;font-size:10px;font-weight:700;color:var(--gold);">EUA · Canadá · México — 48 seleções · 16 estádios</div>
-  </div>
-
-  <!-- BANNER REPESCAGEM — NOVO (31/03/2026) -->
-  <div class="repescagem-banner">
-    <div class="repescagem-title">🔴 ÚLTIMOS CLASSIFICADOS — Repescagem 31/03/2026</div>
-    <div class="repescagem-grid">
-      <div class="rep-item">
-        <div class="flag">🇨🇿</div>
-        <div class="name">República Tcheca</div>
-        <div class="grupo">Grupo A</div>
-        <div class="match">Venceu a Dinamarca nos pênaltis (3-1)</div>
-      </div>
-      <div class="rep-item">
-        <div class="flag">🇧🇦</div>
-        <div class="name">Bósnia e Herzegovina</div>
-        <div class="grupo">Grupo B</div>
-        <div class="match">Venceu a Itália (Itália fora pela 3ª vez!)</div>
-      </div>
-      <div class="rep-item">
-        <div class="flag">🇹🇷</div>
-        <div class="name">Turquia</div>
-        <div class="grupo">Grupo D</div>
-        <div class="match">Venceu o Kosovo 1-0</div>
-      </div>
-      <div class="rep-item">
-        <div class="flag">🇸🇪</div>
-        <div class="name">Suécia</div>
-        <div class="grupo">Grupo F</div>
-        <div class="match">Virada épica sobre a Polônia 3-2</div>
-      </div>
-      <div class="rep-item">
-        <div class="flag">🇨🇩</div>
-        <div class="name">RD Congo</div>
-        <div class="grupo">Grupo I</div>
-        <div class="match">Venceu a Jamaica (Rep. Intercontinental)</div>
-      </div>
-      <div class="rep-item">
-        <div class="flag">🇮🇶</div>
-        <div class="name">Iraque</div>
-        <div class="grupo">Grupo K</div>
-        <div class="match">Venceu a Bolívia (Rep. Intercontinental)</div>
-      </div>
+  <header>
+    <div class="container header-inner">
+      <a href="#home" class="logo"><span>₿</span> BitcoinEdu</a>
+      <button class="mobile-toggle" aria-label="Menu" onclick="toggleMenu()">☰</button>
+      <nav id="main-nav">
+        <a href="#home" class="active">Início</a>
+        <a href="#timeline">Linha do Tempo</a>
+        <a href="#modules">Módulos</a>
+        <a href="#teachers">Professores</a>
+        <a href="#glossary">Glossário</a>
+      </nav>
     </div>
-    <div style="margin-top:8px;font-size:8px;color:var(--dim);text-align:center;">🏆 48 seleções confirmadas · Todos os grupos completos</div>
-  </div>
+  </header>
 
-  <!-- Dados da Copa 2026 -->
-  <div class="stat4">
-    <div class="stat-c"><div class="stat-n" style="color:var(--gold);">48</div><div class="stat-l">Seleções</div></div>
-    <div class="stat-c"><div class="stat-n" style="color:var(--green);">3</div><div class="stat-l">Países Sede</div></div>
-    <div class="stat-c"><div class="stat-n" style="color:var(--blue);">104</div><div class="stat-l">Jogos</div></div>
-    <div class="stat-c"><div class="stat-n" style="color:var(--purple);">16</div><div class="stat-l">Estádios</div></div>
-  </div>
-
-  <div class="sec">📍 Cidades-Sede</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:12px;">
-    <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:9px;padding:8px;text-align:center;"><div style="font-size:9px;font-weight:800;color:var(--blue);">🇺🇸 EUA (11)</div><div style="font-size:8px;color:var(--dim);margin-top:2px;">NY·LA·Dallas·Miami·SF·Seattle·Atlanta·Boston·KC·Houston·Philly</div></div>
-    <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:9px;padding:8px;text-align:center;"><div style="font-size:9px;font-weight:800;color:var(--gold);">🇲🇽 México (3)</div><div style="font-size:8px;color:var(--dim);margin-top:2px;">Cidade do México · Guadalajara · Monterrey</div></div>
-    <div style="background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);border-radius:9px;padding:8px;text-align:center;"><div style="font-size:9px;font-weight:800;color:var(--green);">🇨🇦 Canadá (2)</div><div style="font-size:8px;color:var(--dim);margin-top:2px;">Toronto · Vancouver</div></div>
-  </div>
-
-  <div class="sec">🏆 Favoritos ao Título — Probabilidades</div>
-  <div id="favoritos"></div>
-
-  <div id="grupos-anchor" class="sec" style="display:flex;align-items:center;justify-content:space-between;">
-    <span>📋 Grupos — Copa 2026</span>
-    <span style="font-size:8px;color:var(--muted);font-weight:600;">Toque no card para abrir</span>
-  </div>
-  <div id="grupos26"></div>
-
-  <div class="sec">⚡ Formato da Copa 2026</div>
-  <div class="card">
-    <div style="display:flex;flex-direction:column;gap:6px;">
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <div style="width:28px;height:28px;border-radius:7px;background:rgba(245,158,11,.15);display:flex;align-items:center;justify-content:center;font-size:14px;">1</div>
-        <div><div style="font-size:11px;font-weight:800;">Fase de Grupos</div><div style="font-size:9px;color:var(--dim);">12 grupos de 4 times · Top 2 avançam + 8 melhores 3ºs = 32</div></div>
+  <main id="main" class="container">
+    <!-- HOME -->
+    <section id="home" class="section active">
+      <div class="hero">
+        <h1>Bitcoin: A Revolução da <span style="color:var(--accent)">Moeda Digital</span></h1>
+        <p class="subtitle">Plataforma educativa alinhada à BNCC para escolas brasileiras. Aprenda história, tecnologia e economia financeira de forma interativa.</p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="router('timeline')">📅 Explorar Timeline</button>
+          <button class="btn btn-outline" onclick="router('modules')">📚 Ver Módulos</button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <div style="width:28px;height:28px;border-radius:7px;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:14px;">2</div>
-        <div><div style="font-size:11px;font-weight:800;">Oitavas de Final</div><div style="font-size:9px;color:var(--dim);">32 times → 16 classificados</div></div>
+      <div class="grid" style="margin-bottom: 2rem;">
+        <div class="card" style="text-align:center"><div style="font-size:2rem">🌍</div><h3>50+ Eventos</h3><p class="text-muted">História completa desde 2008</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">🎓</div><h3>12 Módulos</h3><p class="text-muted">Prontos para sala de aula</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">📜</div><h3>30+ Habilidades</h3><p class="text-muted">Mapeamento BNCC completo</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">💻</div><h3>100% Gratuito</h3><p class="text-muted">Open Source & Offline</p></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <div style="width:28px;height:28px;border-radius:7px;background:rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;font-size:14px;">3</div>
-        <div><div style="font-size:11px;font-weight:800;">Quartas → Semifinal → Final</div><div style="font-size:9px;color:var(--dim);">16 → 8 → 4 → 2 → Campeão 🏆</div></div>
+      <h2 style="text-align:center; margin-bottom:1.5rem;">Por que estudar Bitcoin nas escolas?</h2>
+      <div class="grid">
+        <div class="card"><h3>🧠 Pensamento Crítico</h3><p>Entenda como tecnologias disruptivas nascem de crises e desafiam modelos tradicionais.</p></div>
+        <div class="card"><h3>💰 Educação Financeira</h3><p>Conceitos de inflação, escassez, descentralização e políticas monetárias na prática.</p></div>
+        <div class="card"><h3>🌐 Cidadania Digital</h3><p>Soberania, inclusão financeira e o papel do Estado na regulação de inovações.</p></div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;">
-        <div style="width:28px;height:28px;border-radius:7px;background:rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;font-size:14px;">🏆</div>
-        <div><div style="font-size:11px;font-weight:800;">Final — 19 de julho de 2026</div><div style="font-size:9px;color:var(--dim);">MetLife Stadium · East Rutherford, Nova Jersey (EUA)</div></div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section id="timeline" class="section">
+      <h1>Linha do Tempo do Bitcoin</h1>
+      <p class="subtitle">Explore marcos históricos com contexto educativo, atividades sugeridas e conexões com a BNCC.</p>
+      <div class="controls">
+        <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="tl-search" placeholder="Buscar eventos..." oninput="filterTimeline()"></div>
+        <div class="filters" id="tl-filters"></div>
       </div>
+      <div id="timeline-list" class="timeline-list"></div>
+    </section>
+
+    <!-- MODULES LIST -->
+    <section id="modules" class="section">
+      <h1>Módulos Educativos</h1>
+      <p class="subtitle">Conteúdo pedagógico pronto, com planos de aula, atividades práticas e alinhamento à BNCC.</p>
+      <div id="modules-grid" class="grid"></div>
+    </section>
+
+    <!-- MODULE DETAIL -->
+    <section id="module-detail" class="section">
+      <div id="module-content"></div>
+    </section>
+
+    <!-- TEACHERS -->
+    <section id="teachers" class="section">
+      <div style="text-align:center; margin-bottom:2rem">
+        <h1>Área do Professor</h1>
+        <p class="subtitle">Recursos exclusivos para integrar o estudo do Bitcoin e da economia digital ao currículo.</p>
+      </div>
+      <div class="grid">
+        <div class="card teacher-resource"><div class="teacher-icon">📖</div><h3>Planos de Aula Editáveis</h3><p>Modelos prontos para copiar, adaptar e imprimir. Alinhados à grade curricular estadual.</p><button class="btn btn-outline" style="margin-top:0.5rem">📥 Baixar Pacote</button></div>
+        <div class="card teacher-resource"><div class="teacher-icon">🖨️</div><h3>Materiais para Impressão</h3><p>Atividades, glossários visuais, infográficos e rubricas de avaliação em PDF.</p><button class="btn btn-outline" style="margin-top:0.5rem">📥 Acessar Biblioteca</button></div>
+        <div class="card teacher-resource"><div class="teacher-icon">👥</div><h3>Fórum de Educadores</h3><p>Espaço para troca de experiências, dúvidas pedagógicas e sugestões de melhoria.</p><button class="btn btn-outline" style="margin-top:0.5rem">💬 Entrar no Fórum</button></div>
+        <div class="card teacher-resource"><div class="teacher-icon">🏅</div><h3>Certificado de Formação</h3><p>Reconhecimento oficial ao concluir os módulos pedagógicos e avaliação continuada.</p><button class="btn btn-outline" style="margin-top:0.5rem">🎓 Ver Requisitos</button></div>
+      </div>
+      <div class="card" style="margin-top:2rem; text-align:center; background:var(--accent); color:white; border:none">
+        <h2>🏫 Cadastre sua Escola</h2>
+        <p style="margin:0.5rem 0 1rem; opacity:0.9">Projeto gratuito para redes públicas e privadas. Suporte técnico e pedagógico incluso.</p>
+        <button class="btn" style="background:white; color:var(--accent); border:none">Iniciar Cadastro</button>
+      </div>
+    </section>
+
+    <!-- GLOSSARY -->
+    <section id="glossary" class="section">
+      <h1>Glossário de Termos</h1>
+      <p class="subtitle">Conceitos fundamentais explicados de forma clara para estudantes e professores.</p>
+      <div class="controls" style="margin-bottom:1.5rem">
+        <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="gl-search" placeholder="Buscar termo..." oninput="filterGlossary()"></div>
+      </div>
+      <div id="glossary-grid" class="glossary-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© <span id="year"></span> BitcoinEdu • Projeto Educacional Open Source</p>
+      <p>Alinhado à BNCC • Feito para escolas brasileiras • 100% Gratuito</p>
     </div>
+  </footer>
+
+  <button class="a11y-toggle" aria-label="Acessibilidade" onclick="toggleA11y()">♿</button>
+  <div class="a11y-panel" id="a11y-panel">
+    <h3 style="margin-bottom:0.5rem">♿ Acessibilidade</h3>
+    <div class="a11y-row"><span>Alto contraste</span><div class="toggle-switch" id="toggle-contrast" onclick="toggleA11ySetting('contrast')"></div></div>
+    <div class="a11y-row"><span>Texto ampliado</span><div class="toggle-switch" id="toggle-large" onclick="toggleA11ySetting('large')"></div></div>
+    <div class="a11y-row"><span>Modo escuro</span><div class="toggle-switch" id="toggle-dark" onclick="toggleA11ySetting('dark')"></div></div>
+    <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.5rem">💡 Tab para navegar • Enter para selecionar</p>
   </div>
 
-  <div class="sec">🌎 Curiosidades da Copa 2026</div>
-  <div class="curio"><div style="font-size:18px;">🆕</div><div><div style="font-size:10px;font-weight:800;margin-bottom:2px;">Maior Copa da história</div><div style="font-size:9px;color:var(--muted);">48 seleções pela primeira vez. Antes eram 32 (desde 1998).</div></div></div>
-  <div class="curio"><div style="font-size:18px;">🌎</div><div><div style="font-size:10px;font-weight:800;margin-bottom:2px;">3 países sede — recorde</div><div style="font-size:9px;color:var(--muted);">Primeira Copa co-sediada por 3 nações. Jogos em 16 cidades.</div></div></div>
-  <div class="curio"><div style="font-size:18px;">💰</div><div><div style="font-size:10px;font-weight:800;margin-bottom:2px;">A Copa mais cara</div><div style="font-size:9px;color:var(--muted);">Estimativa de US$ 11 bilhões em impacto econômico nos EUA.</div></div></div>
-  <div class="curio"><div style="font-size:18px;">🇺🇸</div><div><div style="font-size:10px;font-weight:800;margin-bottom:2px;">30 anos depois</div><div style="font-size:9px;color:var(--muted);">Os EUA já sediaram em 1994 (Copa que o Brasil foi campeão!).</div></div></div>
+  <script>
+    // DADOS
+    const events = [
+      { id: 'wpp', date: '2008-10-31', cat: 'tech', title: 'Whitepaper do Bitcoin', desc: 'Satoshi Nakamoto publica documento propondo dinheiro eletrônico ponto a ponto, sem intermediários.', edu: { obj: ['Contexto histórico da crise de 2008','Princípios de descentralização'], act: 'Leitura guiada e debate sobre problemas do sistema tradicional.', qs: ['Por que 2008 foi crucial?','O que significa peer-to-peer?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
+      { id: 'gen', date: '2009-01-03', dateD: '3 de jan 2009', cat: 'tech', title: 'Genesis Block', desc: 'Primeiro bloco minerado. Contém manchete do The Times criticando resgates bancários.', edu: { obj: ['Entender ledger imutável','Tecnologia e política'], act: 'Criar mensagens simbólicas para um bloco pessoal.', qs: ['Por que usar manchete de jornal?','O que é imutabilidade?'], dur: '1 aula', bncc: ['EF09GE12','EM13MAT305'] }},
+      { id: 'piz', date: '2010-05-22', dateD: '22 de mai 2010', cat: 'market', title: 'Bitcoin Pizza Day', desc: '10.000 BTC trocados por duas pizzas. Primeiro uso comercial real.', edu: { obj: ['Evolução de valor','Escassez vs utilidade'], act: 'Cálculo proporcional: valor das pizzas em 2010 vs hoje.', qs: ['O que dá valor às coisas?','História ajuda a entender o presente?'], dur: '1-2 aulas', bncc: ['EF09MA08','EM13MAT305'] }},
+      { id: 'els', date: '2021-09-07', dateD: '7 de set 2021', cat: 'adopt', title: 'El Salvador adota Bitcoin', desc: 'Primeiro país a tornar BTC moeda legal. Foco em inclusão financeira e remessas.', edu: { obj: ['Políticas públicas','Inclusão financeira'], act: 'Estudo comparativo: El Salvador vs Brasil.', qs: ['Que problemas buscavam resolver?','Educação vem antes ou depois da tecnologia?'], dur: '3 aulas', bncc: ['EM13CHS101','EM13CHS402'] }},
+      { id: 'h4', date: '2024-04-20', cat: 'halving', title: '4º Halving', desc: 'Recompensa cai para 3.125 BTC. Mecanismo de controle de emissão programado.', edu: { obj: ['Progressão geométrica','Escassez programada'], act: 'Calcular emissão total até 2140.', qs: ['Por que programar escassez?','Impacto nos mineradores?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }}
+    ];
 
-  <!-- JOGADORES BRASIL 2026 -->
-  <div class="sec">🇧🇷 Jogadores Convocáveis — Brasil 2026</div>
-  <div style="background:linear-gradient(135deg,rgba(22,163,74,.1),rgba(245,158,11,.06));border:1px solid rgba(22,163,74,.3);border-radius:10px;padding:9px 11px;margin-bottom:10px;font-size:9px;color:var(--muted);">
-    <b style="color:var(--green);">Técnico: Dorival Júnior</b> — Lista dos jogadores que vêm sendo chamados ou são candidatos à Copa 2026. Probabilidade baseada nas convocações recentes.
-  </div>
-  <input id="br-search" oninput="filtrarJogadoresBr()" placeholder="Buscar jogador..." style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-size:11px;margin-bottom:8px;outline:none;"/>
-  <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none;">
-    <button class="br-filter active-filter" onclick="setBrFilter('todos',this)" style="flex-shrink:0;background:rgba(22,163,74,.2);border:1px solid rgba(22,163,74,.4);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--green);cursor:pointer;white-space:nowrap;">Todos (50)</button>
-    <button class="br-filter" onclick="setBrFilter('Goleiro',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Goleiros</button>
-    <button class="br-filter" onclick="setBrFilter('Lateral',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Laterais</button>
-    <button class="br-filter" onclick="setBrFilter('Zagueiro',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Zagueiros</button>
-    <button class="br-filter" onclick="setBrFilter('Volante',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Volantes</button>
-    <button class="br-filter" onclick="setBrFilter('Meia',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Meias</button>
-    <button class="br-filter" onclick="setBrFilter('Atacante',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">Atacantes</button>
-  </div>
-  <div id="jogadores-br-grid"></div>
-  <div id="jogador-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:300;align-items:center;justify-content:center;padding:16px;">
-    <div style="background:var(--bg2);border:1px solid rgba(22,163,74,.4);border-radius:16px;padding:18px;max-width:360px;width:100%;position:relative;max-height:88vh;overflow-y:auto;">
-      <button onclick="document.getElementById('jogador-popup').style.display='none'" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>
-      <div id="jogador-popup-content"></div>
-    </div>
-  </div>
-</div>
+    const modules = [
+      { slug: 'dinheiro', title: 'O Dinheiro Antes do Bitcoin', icon: '🪙', age: 'Fund. II', diff: 'Iniciante', dur: '3 aulas', bncc: ['EF09GE12','EF67LP25'], areas: ['Geografia','Português'], themes: ['História do Dinheiro','Educação Financeira'], desc: 'Evolução das moedas e problemas que o Bitcoin propõe resolver.', content: '<h2>Da Troca ao Digital</h2><p>1. <b>Escambo:</b> Troca direta. Problema: coincidência de desejos.<br>2. <b>Moeda Mercadoria:</b> Conchas, sal, ouro. Raros e divisíveis.<br>3. <b>Papel e Bancos:</b> Confiança institucional e fiduciária.<br>4. <b>Digital:</b> PIX e cartões. Ainda dependem de terceiros.</p><h3>Por que Bitcoin?</h3><p>✅ Sem intermediários obrigatórios<br>✅ Regras transparentes e imutáveis<br>✅ Acesso global com internet<br>✅ Emissão previsível e limitada</p>', quiz: [{q:'Qual o principal problema do escambo?', opts:['Muito rápido','Coincidência de desejos','Usava papel','Sem regras'], ans:1, exp:'Ambos precisam querer exatamente o que o outro tem.'},{q:'Moeda fiduciária vale por:', opts:['Ouro físico','Confiança no emissor','Ser digital','Ser impresso'], ans:1, exp:'Fidúcia significa confiança na instituição/governo.'}]},
+      { slug: 'funcionamento', title: 'Como Funciona o Bitcoin?', icon: '⛓️', age: 'Ens. Médio', diff: 'Intermediário', dur: '4 aulas', bncc: ['EM13MAT305','EM13CHS402'], areas: ['Matemática','Ciências Humanas'], themes: ['Tecnologia','Pensamento Computacional'], desc: 'Blockchain, descentralização e segurança explicados de forma conceitual.', content: '<h2>Blockchain: Caderno Compartilhado</h2><p>📓 Todos têm cópia<br>✏️ Escrever = resolver quebra-cabeça (Prova de Trabalho)<br>🔒 Imutável após validação<br>👥 Consenso sem líder central</p><h3>Segurança</h3><p>Alterar passado = refazer tudo em >50% da rede. Inviável computacionalmente. Mineradores ganham BTC por blocos + taxas, alinhando interesses.</p><p><b>Não é:</b> Anônimo (é pseudônimo), só para investir, ou substituto de tudo.</p>', quiz: [{q:'Proof of Work transforma:', opts:['Tempo em dinheiro','Energia em segurança','Papel em digital','Confiança em ouro'], ans:1, exp:'Consumo computacional comprova trabalho e protege a rede.'},{q:'Para fraudar a blockchain seria necessário:', opts:['Hacker famoso','Controlar >50% da rede','Pagar mineradores','Esperar o halving'], ans:1, exp:'Ataque de 51% é teoricamente possível, mas economicamente inviável.'}]},
+      { slug: 'mundo', title: 'Bitcoin no Mundo Real', icon: '🌍', age: 'Ens. Médio', diff: 'Avançado', dur: '5 aulas', bncc: ['EM13CHS101','EM13LGG603'], areas: ['Sociologia','Linguagens'], themes: ['Globalização','Cidadania Digital'], desc: 'Casos de uso, impactos sociais e debates sobre adoção tecnológica.', content: '<h2>Casos Reais</h2><p>🇸🇻 <b>El Salvador:</b> Moeda legal. 70% sem banco. Infraestrutura desafiadora.<br>🇳🇬 <b>Nigéria:</b> Uso orgânico contra inflação. Remessas P2P.<br>🇧🇷 <b>Brasil:</b> PIX líder. Marco legal cripto. Debate CBDC vs Descentralizado.</p><h3>Pensamento Crítico</h3><p>• Descentralização x Eficiência<br>• Escassez programada x Flexibilidade monetária<br>• Quem se beneficia? Quem fica para trás?</p><p><b>Projeto Final:</b> Pesquisar indicadores locais, propor análise crítica, apresentar relatório.</p>', quiz: [{q:'El Salvador adotou BTC principalmente para:', opts:['Substituir o dólar','Inclusão financeira e remessas','Ganhar eleições','Proibir bancos'], ans:1, exp:'Foco em reduzir custos de remessas e bancarizar população.'},{q:'No Brasil, o principal sistema digital concorrente/complementar é:', opts:['Bitcoin','Pix','Ethereum','Dólar'], ans:1, exp:'Pix é infraestrutura estatal de pagamentos instantâneos.'}]}
+    ];
 
-<!-- ===== COPAS ===== -->
-<div class="page" id="page-copas">
-  <div style="margin-bottom:12px;"><div style="font-size:1.1rem;font-weight:900;">📚 Todas as Copas do Mundo</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">1930 – 2026 · 23 edições · Dados completos</div></div>
-  <div style="display:flex;gap:6px;margin-bottom:10px;">
-    <button onclick="filterCopas('all')" id="cf-all" style="flex:1;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:8px;padding:6px;font-size:9px;font-weight:800;color:var(--gold);cursor:pointer;">Todas</button>
-    <button onclick="filterCopas('brasil')" id="cf-brasil" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">🇧🇷 Brasil</button>
-    <button onclick="filterCopas('campeao')" id="cf-campeao" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">🏆 Títulos</button>
-  </div>
-  <div id="copas-list"></div>
-</div>
+    const glossary = [
+      { term: 'Blockchain', def: 'Registro digital distribuído e imutável de transações.', cat: 'tecnologia' },
+      { term: 'Descentralização', def: 'Controle distribuído entre múltiplos participantes, sem autoridade central.', cat: 'conceito' },
+      { term: 'Proof of Work', def: 'Mecanismo que exige esforço computacional para validar transações.', cat: 'tecnologia' },
+      { term: 'Halving', def: 'Redução pela metade da recompensa de mineração a cada ~4 anos.', cat: 'economia' },
+      { term: 'Carteira (Wallet)', def: 'Ferramenta para gerenciar chaves criptográficas e transações.', cat: 'uso' },
+      { term: 'Moeda Legal', def: 'Reconhecida por lei para quitar dívidas e obrigações.', cat: 'economia' },
+      { term: 'Inclusão Financeira', def: 'Acesso a serviços financeiros úteis para toda a população.', cat: 'social' }
+    ];
 
-<!-- ===== RANKINGS ===== -->
-<div class="page" id="page-rankings">
-  <div style="margin-bottom:10px;"><div style="font-size:1.1rem;font-weight:900;">📊 Rankings Históricos</div></div>
-  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
-    <button onclick="showRanking('titulos')" class="rk-tab active" id="rt-titulos" style="background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;color:var(--gold);cursor:pointer;">🏆 Títulos</button>
-    <button onclick="showRanking('artilheiros')" class="rk-tab" id="rt-artilheiros" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">⚽ Artilheiros</button>
-    <button onclick="showRanking('jogos')" class="rk-tab" id="rt-jogos" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">📋 + Jogos</button>
-    <button onclick="showRanking('goleadas')" class="rk-tab" id="rt-goleadas" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">💥 Goleadas</button>
-    <button onclick="showRanking('records')" class="rk-tab" id="rt-records" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;">⚡ Recordes</button>
-  </div>
-  <div id="ranking-content"></div>
-</div>
-
-<!-- ===== TIMELINE ===== -->
-<div class="page" id="page-timeline">
-  <div style="margin-bottom:12px;"><div style="font-size:1.1rem;font-weight:900;">📅 Linha do Tempo das Copas</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">Os momentos que marcaram a história</div></div>
-  <div id="timeline-content"></div>
-</div>
-
-<!-- ===== SIMULADOR ===== -->
-<div class="page" id="page-simulador">
-  <div style="margin-bottom:10px;"><div style="font-size:1.1rem;font-weight:900;">🎮 Simulador de Bracket</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">Monte seu campeão da Copa 2026</div></div>
-  <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:9px;padding:9px;font-size:9px;color:#92400E;margin-bottom:12px;">
-    🏆 Escolha o vencedor de cada confronto e descubra quem é seu campeão!
-  </div>
-  <div id="simulador-content"></div>
-  <button id="sim-share" onclick="shareSimulador()" style="display:none;width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:12px;padding:12px;font-size:12px;font-weight:900;color:#000;cursor:pointer;margin-top:8px;">📤 Compartilhar meu palpite</button>
-</div>
-
-<!-- ===== QUIZ ===== -->
-<div class="page" id="page-quiz">
-  <div style="margin-bottom:10px;"><div style="font-size:1.1rem;font-weight:900;">🧩 Quiz da Copa</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">Teste seu conhecimento sobre as Copas do Mundo</div></div>
-  <div class="stat4" style="grid-template-columns:repeat(3,1fr);">
-    <div class="stat-c"><div class="stat-n" style="color:var(--green);" id="q-acertos">0</div><div class="stat-l">Acertos</div></div>
-    <div class="stat-c"><div class="stat-n" style="color:var(--red);" id="q-erros">0</div><div class="stat-l">Erros</div></div>
-    <div class="stat-c"><div class="stat-n" style="color:var(--gold);" id="q-total">0</div><div class="stat-l">Total</div></div>
-  </div>
-  <div id="quiz-content"></div>
-  <button onclick="proxPergunta()" id="btn-prox" style="display:none;width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:12px;padding:12px;font-size:12px;font-weight:900;color:#000;cursor:pointer;margin-top:6px;">Próxima Pergunta →</button>
-</div>
-
-<!-- PAGE: SELECOES -->
-<div class="page" id="page-selecoes">
-  <div style="margin-bottom:10px;"><div style="font-size:1.1rem;font-weight:900;">🌍 Seleções da Copa 2026</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">48 seleções · 12 grupos · Clique para conhecer os jogadores</div></div>
-  <input id="sel-search" oninput="filtrarSelecoes()" placeholder="Buscar seleção..." style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--text);font-size:11px;margin-bottom:8px;outline:none;"/>
-  <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none;">
-    <button class="conf-filter active-conf" onclick="setConfFilter('todos',this)" style="flex-shrink:0;background:rgba(59,130,246,.2);border:1px solid rgba(59,130,246,.4);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--blue);cursor:pointer;white-space:nowrap;">Todos</button>
-    <button class="conf-filter" onclick="setConfFilter('CONMEBOL',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">CONMEBOL</button>
-    <button class="conf-filter" onclick="setConfFilter('UEFA',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">UEFA</button>
-    <button class="conf-filter" onclick="setConfFilter('CONCACAF',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">CONCACAF</button>
-    <button class="conf-filter" onclick="setConfFilter('CAF',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">CAF (Africa)</button>
-    <button class="conf-filter" onclick="setConfFilter('AFC',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:5px 10px;font-size:9px;font-weight:800;color:var(--dim);cursor:pointer;white-space:nowrap;">AFC (Asia)</button>
-  </div>
-  <div id="selecoes-grid"></div>
-</div>
-
-<div id="selecao-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;" onclick="if(event.target===this)this.style.display='none'">
-  <div style="background:var(--bg2);border:1px solid rgba(59,130,246,.4);border-radius:16px;padding:18px;max-width:380px;width:100%;position:relative;margin:auto;">
-    <button onclick="document.getElementById('selecao-popup').style.display='none'" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>
-    <div id="selecao-popup-content"></div>
-  </div>
-</div>
-
-<!-- PAGE: MAPA -->
-<div class="page" id="page-mapa">
-  <div style="margin-bottom:12px;"><div style="font-size:1.1rem;font-weight:900;">🗺️ Mapa das Copas</div><div style="font-size:10px;color:var(--dim);margin-top:2px;">Países sede · clique para ver detalhes</div></div>
-  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;" id="mapa-cards"></div>
-  <div id="mapa-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;">
-    <div style="background:var(--bg2);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:18px;max-width:360px;width:100%;position:relative;">
-      <button onclick="fecharMapa()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--dim);font-size:18px;cursor:pointer;">✕</button>
-      <div id="mapa-popup-content"></div>
-    </div>
-  </div>
-  <!-- PAGE: RANKING DAS COPAS -->
-  <div style="margin-top:4px;"><div style="font-size:1rem;font-weight:900;margin-bottom:8px;">🏆 Ranking das Copas</div>
-    <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none;" id="rank-tabs-row">
-      <button class="rank-tab2 rt-active" onclick="showRankTab('selecoes',this)" style="flex-shrink:0;background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:7px;padding:6px 10px;font-size:9px;font-weight:800;color:var(--gold);cursor:pointer;white-space:nowrap;">Selecoes</button>
-      <button class="rank-tab2" onclick="showRankTab('jogadores',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;font-size:9px;font-weight:800;color:var(--muted);cursor:pointer;white-space:nowrap;">Jogadores</button>
-      <button class="rank-tab2" onclick="showRankTab('tecnicos',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;font-size:9px;font-weight:800;color:var(--muted);cursor:pointer;white-space:nowrap;">Tecnicos</button>
-      <button class="rank-tab2" onclick="showRankTab('publico',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;font-size:9px;font-weight:800;color:var(--muted);cursor:pointer;white-space:nowrap;">Publico</button>
-      <button class="rank-tab2" onclick="showRankTab('gols',this)" style="flex-shrink:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 10px;font-size:9px;font-weight:800;color:var(--muted);cursor:pointer;white-space:nowrap;">Mais Gols</button>
-    </div>
-    <div id="rank-panel-selecoes" class="rank-panel2" style="display:block;"></div>
-    <div id="rank-panel-jogadores" class="rank-panel2" style="display:none;"></div>
-    <div id="rank-panel-tecnicos" class="rank-panel2" style="display:none;"></div>
-    <div id="rank-panel-publico" class="rank-panel2" style="display:none;"></div>
-    <div id="rank-panel-gols" class="rank-panel2" style="display:none;"></div>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav class="bnav">
-  <button class="bnav-btn active" id="btn-copa26" onclick="goPage('copa26')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12m0 0C12 7 7 4 3 6m9 6c0-5 5-8 9-6"/><circle cx="12" cy="12" r="2"/></svg>2026
-  </button>
-  <button class="bnav-btn" id="btn-copas" onclick="goPage('copas')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>Copas
-  </button>
-  <button class="bnav-btn" id="btn-rankings" onclick="goPage('rankings')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Ranking
-  </button>
-  <button class="bnav-btn" id="btn-selecoes" onclick="goPage('selecoes')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Selecoes
-  </button>
-  <button class="bnav-btn" id="btn-mapa" onclick="goPage('mapa')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Mapa
-  </button>
-  <button class="bnav-btn" id="btn-timeline" onclick="goPage('timeline')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Timeline
-  </button>
-  <button class="bnav-btn" id="btn-simulador" onclick="goPage('simulador')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>Simular
-  </button>
-  <button class="bnav-btn" id="btn-quiz" onclick="goPage('quiz')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Quiz
-  </button>
-</nav>
-
-<script>
-/* ===== DATA ===== */
-var COPAS = [
-  {ano:1930,flag:'🇺🇾',sede:'Uruguai',campeao:'Uruguai',vice:'Argentina',artilheiro:'Guillermo Stábile (ARG) — 8 gols',gols:70,jogos:18,publico:'590K',sedes:1,marvel:'Primeira Copa da história',brasil:'4º lugar',campeaoFlag:'🇺🇾'},
-  {ano:1934,flag:'🇮🇹',sede:'Itália',campeao:'Itália',vice:'Checoslováquia',artilheiro:'Oldřich Nejedlý (TCH) — 5 gols',gols:70,jogos:17,publico:'363K',sedes:8,marvel:'Brasil eliminado nas oitavas',brasil:'1ª rodada',campeaoFlag:'🇮🇹'},
-  {ano:1938,flag:'🇫🇷',sede:'França',campeao:'Itália',vice:'Hungria',artilheiro:'Leônidas (BRA) — 7 gols',gols:84,jogos:18,publico:'375K',sedes:9,marvel:'Leônidas — o Diamante Negro',brasil:'3º lugar',campeaoFlag:'🇮🇹'},
-  {ano:1950,flag:'🇧🇷',sede:'Brasil',campeao:'Uruguai',vice:'Brasil',artilheiro:'Ademir (BRA) — 9 gols',gols:88,jogos:22,publico:'1,3M',sedes:6,marvel:'Maracanazo — 200.000 no Maracanã',brasil:'2º lugar (vice)',campeaoFlag:'🇺🇾'},
-  {ano:1954,flag:'🇨🇭',sede:'Suíça',campeao:'Alemanha',vice:'Hungria',artilheiro:'Sándor Kocsis (HUN) — 11 gols',gols:140,jogos:26,publico:'943K',sedes:6,marvel:'O Milagre de Berna',brasil:'3º lugar',campeaoFlag:'🇩🇪'},
-  {ano:1958,flag:'🇸🇪',sede:'Suécia',campeao:'Brasil',vice:'Suécia',artilheiro:'Just Fontaine (FRA) — 13 gols (recorde)',gols:126,jogos:35,publico:'820K',sedes:12,marvel:'Pelé estreia aos 17 anos com 6 gols',brasil:'🏆 CAMPEÃO',campeaoFlag:'🇧🇷'},
-  {ano:1962,flag:'🇨🇱',sede:'Chile',campeao:'Brasil',vice:'Checoslováquia',artilheiro:'Vários — 4 gols',gols:89,jogos:32,publico:'776K',sedes:4,marvel:'Brasil bicampeão sem Pelé (lesão)',brasil:'🏆 CAMPEÃO',campeaoFlag:'🇧🇷'},
-  {ano:1966,flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',sede:'Inglaterra',campeao:'Inglaterra',vice:'Alemanha',artilheiro:'Eusébio (POR) — 9 gols',gols:89,jogos:32,publico:'1,6M',sedes:8,marvel:'Pelé chutado e eliminado na 1ª fase',brasil:'1ª fase',campeaoFlag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'},
-  {ano:1970,flag:'🇲🇽',sede:'México',campeao:'Brasil',vice:'Itália',artilheiro:'Gerd Müller (ALE) — 10 gols',gols:95,jogos:32,publico:'1,7M',sedes:5,marvel:'A melhor seleção de todos os tempos',brasil:'🏆 CAMPEÃO',campeaoFlag:'🇧🇷'},
-  {ano:1974,flag:'🇩🇪',sede:'Alemanha Ocid.',campeao:'Alemanha',vice:'Holanda',artilheiro:'Grzegorz Lato (POL) — 7 gols',gols:97,jogos:38,publico:'1,77M',sedes:9,marvel:'Futebol total de Johan Cruyff',brasil:'4º lugar',campeaoFlag:'🇩🇪'},
-  {ano:1978,flag:'🇦🇷',sede:'Argentina',campeao:'Argentina',vice:'Holanda',artilheiro:'Mario Kempes (ARG) — 6 gols',gols:102,jogos:38,publico:'1,6M',sedes:8,marvel:'Argentina vence sob ditadura militar',brasil:'3º lugar',campeaoFlag:'🇦🇷'},
-  {ano:1982,flag:'🇪🇸',sede:'Espanha',campeao:'Itália',vice:'Alemanha',artilheiro:'Paolo Rossi (ITA) — 6 gols',gols:146,jogos:52,publico:'2,1M',sedes:17,marvel:'Itália e o mágico Paolo Rossi',brasil:'2ª fase',campeaoFlag:'🇮🇹'},
-  {ano:1986,flag:'🇲🇽',sede:'México',campeao:'Argentina',vice:'Alemanha',artilheiro:'Gary Lineker (ING) — 6 gols',gols:132,jogos:52,publico:'2,4M',sedes:12,marvel:'Maradona: mão de Deus + gol do século',brasil:'Quartas',campeaoFlag:'🇦🇷'},
-  {ano:1990,flag:'🇮🇹',sede:'Itália',campeao:'Alemanha',vice:'Argentina',artilheiro:'Salvatore Schillaci (ITA) — 6 gols',gols:115,jogos:52,publico:'2,5M',sedes:12,marvel:'Copa das pênaltis e do jogo defensivo',brasil:'Oitavas',campeaoFlag:'🇩🇪'},
-  {ano:1994,flag:'🇺🇸',sede:'EUA',campeao:'Brasil',vice:'Itália',artilheiro:'Oleg Salenko (RUS) / Stoichkov (BUL) — 6',gols:141,jogos:52,publico:'3,6M (recorde)',sedes:9,marvel:'Baggio perde pênalti. Romário é rei.',brasil:'🏆 CAMPEÃO',campeaoFlag:'🇧🇷'},
-  {ano:1998,flag:'🇫🇷',sede:'França',campeao:'França',vice:'Brasil',artilheiro:'Davor Šuker (CRO) — 6 gols',gols:171,jogos:64,publico:'2,8M',sedes:10,marvel:'Ronaldo convulsiona. França vence.',brasil:'Vice',campeaoFlag:'🇫🇷'},
-  {ano:2002,flag:'🇰🇷',sede:'Coréia/Japão',campeao:'Brasil',vice:'Alemanha',artilheiro:'Ronaldo (BRA) — 8 gols',gols:161,jogos:64,publico:'2,7M',sedes:20,marvel:'Ronaldo ressurge e brilha. Penta!',brasil:'🏆 CAMPEÃO',campeaoFlag:'🇧🇷'},
-  {ano:2006,flag:'🇩🇪',sede:'Alemanha',campeao:'Itália',vice:'França',artilheiro:'Miroslav Klose (ALE) — 5 gols',gols:147,jogos:64,publico:'3,4M',sedes:12,marvel:'Zidane cabeçada em Materazzi — expulso',brasil:'Quartas',campeaoFlag:'🇮🇹'},
-  {ano:2010,flag:'🇿🇦',sede:'África do Sul',campeao:'Espanha',vice:'Holanda',artilheiro:'Thomas Müller — 5 gols',gols:145,jogos:64,publico:'3,2M',sedes:10,marvel:'Iniesta, Xavi. Tiki-taka campeã.',brasil:'Quartas',campeaoFlag:'🇪🇸'},
-  {ano:2014,flag:'🇧🇷',sede:'Brasil',campeao:'Alemanha',vice:'Argentina',artilheiro:'James Rodríguez (COL) — 6 gols',gols:171,jogos:64,publico:'3,4M',sedes:12,marvel:'7×1. Brasil 1×7 Alemanha nas semis.',brasil:'4º lugar',campeaoFlag:'🇩🇪'},
-  {ano:2018,flag:'🇷🇺',sede:'Rússia',campeao:'França',vice:'Croácia',artilheiro:'Harry Kane (ING) — 6 gols',gols:169,jogos:64,publico:'3M',sedes:12,marvel:'França vence com geração de ouro.',brasil:'Quartas',campeaoFlag:'🇫🇷'},
-  {ano:2022,flag:'🇶🇦',sede:'Catar',campeao:'Argentina',vice:'França',artilheiro:'Kylian Mbappé (FRA) — 8 gols',gols:172,jogos:64,publico:'3,4M',sedes:8,marvel:'Messi finalmente campeão. Final épica.',brasil:'Quartas',campeaoFlag:'🇦🇷'},
-  {ano:2026,flag:'🇺🇸',sede:'EUA/CAN/MEX',campeao:'?',vice:'?',artilheiro:'?',gols:0,jogos:104,publico:'—',sedes:16,marvel:'48 seleções pela primeira vez!',brasil:'A definir',campeaoFlag:'🏆',atual:true},
-];
-
-var TITULOS = [
-  {f:'🇧🇷',n:'Brasil', t:5, anos:'1958, 1962, 1970, 1994, 2002'},
-  {f:'🇩🇪',n:'Alemanha', t:4, anos:'1954, 1974, 1990, 2014'},
-  {f:'🇮🇹',n:'Itália', t:4, anos:'1934, 1938, 1982, 2006'},
-  {f:'🇦🇷',n:'Argentina', t:3, anos:'1978, 1986, 2022'},
-  {f:'🇫🇷',n:'França', t:2, anos:'1998, 2018'},
-  {f:'🇺🇾',n:'Uruguai', t:2, anos:'1930, 1950'},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'Inglaterra', t:1, anos:'1966'},
-  {f:'🇪🇸',n:'Espanha', t:1, anos:'2010'},
-];
-
-var ARTILHEIROS = [
-  {f:'🇩🇪',n:'Miroslav Klose', g:16, anos:'2002-2014', nota:'Recorde histórico absoluto'},
-  {f:'🇧🇷',n:'Ronaldo', g:15, anos:'1994-2006', nota:'Dois títulos como artilheiro'},
-  {f:'🇩🇪',n:'Gerd Müller', g:14, anos:'1970-1974', nota:'Bombardeiro'},
-  {f:'🇫🇷',n:'Just Fontaine', g:13, anos:'1958', nota:'Recorde em uma única Copa'},
-  {f:'🇦🇷',n:'Gabriel Batistuta', g:10, anos:'1994-2002', nota:'Rei das Copas argentinas'},
-  {f:'🇸🇨',n:'Eusébio', g:9, anos:'1966', nota:'Pantera Negra'},
-  {f:'🇧🇷',n:'Ademir', g:9, anos:'1950', nota:'Artilheiro da Copa no Brasil'},
-  {f:'🇧🇷',n:'Pelé', g:12, anos:'1958-1970', nota:'3 Copas, 3 títulos'},
-  {f:'🇫🇷',n:'Kylian Mbappé', g:12, anos:'2018-2022', nota:'Ativo — pode bater Klose em 2026'},
-];
-
-var GOLEADAS = [
-  {res:'🇩🇪 Alemanha 7 × 1 Brasil 🇧🇷', ano:2014, nota:'Semifinal — o Mineirazo'},
-  {res:'🇭🇺 Hungria 10 × 1 El Salvador 🇸🇻', ano:1982, nota:'Maior goleada da história'},
-  {res:'🇾🇺 Iugoslávia 9 × 0 Zaire 🇨🇩', ano:1974, nota:'3ª maior'},
-  {res:'🇩🇪 Alemanha Occ. 8 × 0 México 🇲🇽', ano:1954, nota:''},
-  {res:'🇸🇪 Suécia 8 × 0 Cuba 🇨🇺', ano:1938, nota:''},
-  {res:'🇺🇾 Uruguai 8 × 0 Bolívia 🇧🇴', ano:1950, nota:''},
-  {res:'🇦🇹 Áustria 7 × 5 Suíça 🇨🇭', ano:1954, nota:'Jogo com mais gols da história (12)'},
-  {res:'🇵🇹 Portugal 7 × 0 Coréia do Norte 🇰🇵', ano:1966, nota:'Eusébio marcou 4'},
-];
-
-var RECORDS = [
-  {ic:'⚡',t:'Gol mais rápido', d:'Hakan Şükür (Turquia) — 11 segundos', ano:2002},
-  {ic:'👴',t:'Jogador mais velho', d:'Essam El Hadary (Egito) — 45 anos e 161 dias', ano:2018},
-  {ic:'👶',t:'Jogador mais jovem', d:'Pelé (Brasil) — 17 anos e 249 dias', ano:1958},
-  {ic:'🟥',t:'Mais expulsões', d:'Zinedine Zidane (FRA) — cabeçada Materazzi', ano:2006},
-  {ic:'📋',t:'Mais jogos', d:'Lothar Matthäus (ALE) — 25 partidas', ano:'1982-1998'},
-  {ic:'⚽',t:'Mais gols em 1 Copa', d:'Just Fontaine (FRA) — 13 gols em 1958', ano:1958},
-  {ic:'🏟️',t:'Maior público', d:'Maracanã 1950: Uruguay×Brasil — ~200.000', ano:1950},
-  {ic:'🏆',t:'Mais títulos', d:'Brasil — 5 Copas do Mundo', ano:'1958-2002'},
-  {ic:'👨‍💼',t:'Técnico campeão', d:'Didier Deschamps (FRA) — jogador e técnico', ano:2018},
-  {ic:'🎯',t:'Hat-trick final', d:'Kylian Mbappé (FRA) — 3 gols na final 2022', ano:2022},
-];
-
-var TIMELINE_EVENTOS = [
-  {ano:1930,ic:'⚽',t:'A Primeira Copa',d:'Uruguai sedia e vence a 1ª Copa do Mundo. 13 seleções, 18 jogos, sem transmissão de TV.'},
-  {ano:1950,ic:'😱',t:'O Maracanazo',d:'200.000 torcedores no Maracanã. Brasil perde para o Uruguai. Silêncio eterno.'},
-  {ano:1954,ic:'🏃',t:'O Milagre de Berna',d:'Hungria era imbatível (4 anos invicta). Alemanha vence na final 3-2.'},
-  {ano:1958,ic:'👑',t:'Rei Pelé nasce',d:'Pelé estreia aos 17 com 6 gols. Brasil vence a primeira Copa. Seleção revolucionária.'},
-  {ano:1966,ic:'💀',t:'Pelé é chutado',d:'Pelé sofre falta brutal, se lesiona e Brasil é eliminado na fase de grupos.'},
-  {ano:1970,ic:'🎨',t:'A Copa mais bonita',d:'Brasil de Pelé, Rivelino, Tostão, Jairzinho. Considerada a melhor seleção da história.'},
-  {ano:1986,ic:'🤚',t:'A Mão de Deus',d:'Maradona marca com a mão e depois dribla 6 adversários. Argentina campeã.'},
-  {ano:1990,ic:'😴',t:'Copa mais tediosa',d:'Média de 2,21 gols por jogo. Fútbol chato. Alemanha vence com gol de pênalti.'},
-  {ano:1994,ic:'🤙',t:'Romário e o Tetra',d:'Romário e Bebeto. Brasil vence nos pênaltis. Roberto Baggio chora.'},
-  {ano:1998,ic:'🤔',t:'O Mistério Ronaldo',d:'Ronaldo convulsiona antes da final. Brasil perde 3-0 para a França.'},
-  {ano:2002,ic:'🎉',t:'O Penta!',d:'Ronaldo marca 2 na final. Brasil pentacampeão. Ronaldinho e Rivaldo brilham.'},
-  {ano:2006,ic:'💢',t:'A Cabeçada',d:'Zidane dá cabeçada em Materazzi na final e é expulso. Itália campeã nos pênaltis.'},
-  {ano:2010,ic:'🐦',t:'A Copa das Vuvuzelas',d:'África do Sul. Iniesta decide na prorrogação. Espanha é campeã pelo tiki-taka.'},
-  {ano:2014,ic:'😭',t:'O 7×1',d:'Alemanha 7 × Brasil 1. O dia mais triste do futebol brasileiro. No Mineirão.'},
-  {ano:2018,ic:'⚡',t:'Mbappé surge',d:'França campeã. Mbappé com 19 anos marca na final. A próxima geração chegou.'},
-  {ano:2022,ic:'👑',t:'Messi finalmente',d:'Argentina 3-3 França (prorr.). Messi levanta a taça. Mbappé 3 gols na final.'},
-  {ano:2026,ic:'🚀',t:'A Maior Copa',d:'48 seleções. EUA, Canadá e México. 104 jogos. A Copa do Centenário quase chegou.'},
-];
-
-var FAVORITOS = [
-  {f:'🇫🇷',n:'França', pct:18, cor:'#3B82F6'},
-  {f:'🇧🇷',n:'Brasil', pct:15, cor:'#22C55E'},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'Inglaterra', pct:13, cor:'#EF4444'},
-  {f:'🇦🇷',n:'Argentina', pct:11, cor:'#60A5FA'},
-  {f:'🇪🇸',n:'Espanha', pct:10, cor:'#F59E0B'},
-  {f:'🇩🇪',n:'Alemanha', pct:9, cor:'#94A3B8'},
-  {f:'🇵🇹',n:'Portugal', pct:8, cor:'#EF4444'},
-  {f:'Outros',n:'', pct:16, cor:'#475569'},
-];
-
-// ✅ GRUPOS ATUALIZADOS — Repescagem 31/03/2026
-// Classificados: Rep. Tcheca (A), Bósnia (B), Turquia (D), Suécia (F), RD Congo (I), Iraque (K)
-var GRUPOS26 = [
-  {g:'A', times:['🇲🇽 México (sede)','🇰🇷 Coreia do Sul','🇿🇦 África do Sul','🇨🇿 República Tcheca']},
-  {g:'B', times:['🇨🇦 Canadá (sede)','🇨🇭 Suíça','🇶🇦 Catar','🇧🇦 Bósnia e Herzegovina']},
-  {g:'C', times:['🇧🇷 Brasil','🇲🇦 Marrocos','🇭🇹 Haiti','🏴󠁧󠁢󠁳󠁣󠁴󠁿 Escócia']},
-  {g:'D', times:['🇺🇸 EUA (sede)','🇵🇾 Paraguai','🇦🇺 Austrália','🇹🇷 Turquia']},
-  {g:'E', times:['🇩🇪 Alemanha','🇨🇮 Costa do Marfim','🇪🇨 Equador','🇨🇼 Curaçao']},
-  {g:'F', times:['🇳🇱 Holanda','🇯🇵 Japão','🇹🇳 Tunísia','🇸🇪 Suécia']},
-  {g:'G', times:['🇧🇪 Bélgica','🇪🇬 Egito','🇮🇷 Irã','🇳🇿 Nova Zelândia']},
-  {g:'H', times:['🇪🇸 Espanha','🇺🇾 Uruguai','🇸🇦 Arábia Saudita','🇨🇻 Cabo Verde']},
-  {g:'I', times:['🇫🇷 França','🇸🇳 Senegal','🇳🇴 Noruega','🇨🇩 RD Congo']},
-  {g:'J', times:['🇦🇷 Argentina','🇩🇿 Argélia','🇦🇹 Áustria','🇯🇴 Jordânia']},
-  {g:'K', times:['🇵🇹 Portugal','🇨🇴 Colômbia','🇺🇿 Uzbequistão','🇮🇶 Iraque']},
-  {g:'L', times:['🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra','🇭🇷 Croácia','🇬🇭 Gana','🇵🇦 Panamá']},
-];
-
-var SIM_OITAVAS = [
-  ['🇧🇷 Brasil (C1)','🇳🇱 Holanda (F2)'],['🇫🇷 França (I1)','🇩🇪 Alemanha (E2)'],
-  ['🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra (L1)','🇪🇸 Espanha (H2)'],['🇦🇷 Argentina (J1)','🇵🇹 Portugal (K2)'],
-  ['🇲🇽 México (A1)','🇧🇪 Bélgica (G2)'],['🇺🇸 EUA (D1)','🇯🇵 Japão (F2)'],
-  ['🇸🇳 Senegal (I2)','🇨🇴 Colômbia (K2)'],['🇲🇦 Marrocos (C2)','🇺🇾 Uruguai (H2)'],
-];
-
-var QUIZ = [
-  {p:'Qual foi o artilheiro histórico das Copas com mais gols no total?', opts:['Pelé','Ronaldo','Miroslav Klose','Gerd Müller'], certo:2},
-  {p:'Qual foi a maior goleada da história das Copas?', opts:['Brasil 8×0 Bolívia','Hungria 10×1 El Salvador','Alemanha 7×1 Brasil','Iugoslávia 9×0 Zaire'], certo:1},
-  {p:'Quantas Copas do Mundo o Brasil conquistou?', opts:['4','5','6','3'], certo:1},
-  {p:'Quem marcou o gol mais rápido da história das Copas?', opts:['Ronaldo','Inamoto','Hakan Şükür','Müller'], certo:2},
-  {p:'Em qual Copa Pelé estreou com apenas 17 anos?', opts:['1954','1958','1962','1966'], certo:1},
-  {p:'Qual país foi campeão da Copa de 2022 no Catar?', opts:['França','Brasil','Argentina','Portugal'], certo:2},
-  {p:'Quem foi artilheiro da Copa de 1958 com 13 gols em uma só edição?', opts:['Pelé','Just Fontaine','Eusébio','Gerd Müller'], certo:1},
-  {p:'Em qual Copa aconteceu o famoso "Maracanazo"?', opts:['1938','1950','1958','1970'], certo:1},
-  {p:'Qual seleção tem mais Copas do Mundo vencidas?', opts:['Alemanha','Itália','Brasil','Argentina'], certo:2},
-  {p:'Em qual edição Zidane deu a famosa cabeçada em Materazzi?', opts:['2002','2004','2006','2010'], certo:2},
-  {p:'Quantas seleções vão disputar a Copa de 2026?', opts:['32','36','48','52'], certo:2},
-  {p:'Quem foi o artilheiro da Copa de 2022?', opts:['Messi','Neymar','Mbappé','Kane'], certo:2},
-  {p:'A Copa de 2026 terá sede em quantos países?', opts:['1','2','3','4'], certo:2},
-  {p:'Qual foi o placar da final da Copa de 1950 (Maracanazo)?', opts:['Brasil 1×2 Uruguai','Brasil 0×1 Uruguai','Brasil 2×3 Uruguai','Brasil 1×3 Uruguai'], certo:0},
-  {p:'Em qual Copa o Brasil ganhou o pentacampeonato?', opts:['1998','2002','2006','1994'], certo:1},
-];
-
-var _quizIdx = 0, _qAcertos = 0, _qErros = 0, _quizOrdem = [];
-var _simVencedores = {};
-var _copasFilter = 'all';
-var _rankingAtual = 'titulos';
-var _brFilter = 'todos';
-var _confFilter = 'todos';
-
-/* ===== JOGADORES BRASIL ===== */
-var JOGADORES_BR = [
-  {n:'Alisson Becker',p:'Goleiro',cl:'Liverpool',id:32,prob:99},{n:'Ederson',p:'Goleiro',cl:'Man City',id:31,prob:85},{n:'Bento',p:'Goleiro',cl:'Al-Qadsiah',id:25,prob:80},
-  {n:'Danilo',p:'Lateral',cl:'Flamengo',id:33,prob:60},{n:'Vanderson',p:'Lateral',cl:'Monaco',id:23,prob:75},{n:'Alex Telles',p:'Lateral',cl:'Botafogo',id:32,prob:55},{n:'Guilherme Arana',p:'Lateral',cl:'Atlético-MG',id:27,prob:70},{n:'Yan Couto',p:'Lateral',cl:'Man City',id:22,prob:72},
-  {n:'Marquinhos',p:'Zagueiro',cl:'PSG',id:30,prob:95},{n:'Gabriel Magalhães',p:'Zagueiro',cl:'Arsenal',id:27,prob:90},{n:'Bremer',p:'Zagueiro',cl:'Juventus',id:27,prob:85},{n:'Beraldo',p:'Zagueiro',cl:'PSG',id:21,prob:70},
-  {n:'Casemiro',p:'Volante',cl:'Man United',id:33,prob:65},{n:'Bruno Guimarães',p:'Volante',cl:'Newcastle',id:27,prob:95},{n:'Gerson',p:'Volante',cl:'Flamengo',id:27,prob:75},{n:'André',p:'Volante',cl:'Fulham',id:23,prob:80},{n:'João Gomes',p:'Volante',cl:'Wolves',id:23,prob:72},
-  {n:'Lucas Paquetá',p:'Meia',cl:'West Ham',id:27,prob:90},{n:'Rodrygo',p:'Meia',cl:'Real Madrid',id:23,prob:95},{n:'Raphinha',p:'Meia',cl:'Barcelona',id:28,prob:90},{n:'Andreas Pereira',p:'Meia',cl:'Fulham',id:29,prob:65},{n:'Matheus Nunes',p:'Meia',cl:'Man City',id:26,prob:70},
-  {n:'Vinicius Jr',p:'Atacante',cl:'Real Madrid',id:24,prob:99},{n:'Endrick',p:'Atacante',cl:'Real Madrid',id:18,prob:85},{n:'Gabriel Martinelli',p:'Atacante',cl:'Arsenal',id:23,prob:88},{n:'Gabigol',p:'Atacante',cl:'Flamengo',id:28,prob:60},{n:'Pedro',p:'Atacante',cl:'Flamengo',id:27,prob:75},{n:'Evanilson',p:'Atacante',cl:'Bournemouth',id:25,prob:72},
-];
-
-function filtrarJogadoresBr() {
-  var q = (document.getElementById('br-search').value||'').toLowerCase();
-  var lista = JOGADORES_BR.filter(function(j){
-    var posOk = _brFilter==='todos' || j.p===_brFilter || (_brFilter==='Lateral' && j.p.indexOf('Lateral')!==-1);
-    var nameOk = !q || j.n.toLowerCase().indexOf(q)!==-1;
-    return posOk && nameOk;
-  });
-  renderBrGrid(lista);
-}
-
-function setBrFilter(pos, btn) {
-  _brFilter = pos;
-  document.querySelectorAll('.br-filter').forEach(function(b){
-    b.style.background='rgba(255,255,255,.05)';b.style.borderColor='rgba(255,255,255,.1)';b.style.color='var(--dim)';
-  });
-  btn.style.background='rgba(22,163,74,.2)';btn.style.borderColor='rgba(22,163,74,.4)';btn.style.color='var(--green)';
-  filtrarJogadoresBr();
-}
-
-function renderBrGrid(lista) {
-  var el = document.getElementById('jogadores-br-grid');
-  if(!el) return;
-  if(!lista||!lista.length){el.innerHTML='<div style="text-align:center;color:var(--dim);padding:20px;">Nenhum jogador encontrado</div>';return;}
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
-    +lista.map(function(j){
-      var cor = j.prob>=90?'var(--green)':j.prob>=70?'var(--gold)':'var(--red)';
-      return '<div onclick="abrirJogadorBr(\''+j.n+'\')" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px;cursor:pointer;">'
-        +'<div style="font-size:10.5px;font-weight:800;">'+j.n+'</div>'
-        +'<div style="font-size:8px;color:var(--dim);margin:2px 0;">'+j.p+' · '+j.cl+'</div>'
-        +'<div style="font-size:8px;color:'+cor+';font-weight:800;">'+j.prob+'% chance</div>'
-        +'</div>';
-    }).join('')+'</div>';
-}
-
-function abrirJogadorBr(nome) {
-  var j = JOGADORES_BR.find(function(x){return x.n===nome;});
-  if(!j) return;
-  var cor = j.prob>=90?'var(--green)':j.prob>=70?'var(--gold)':'var(--red)';
-  document.getElementById('jogador-popup-content').innerHTML =
-    '<div style="font-size:1.2rem;font-weight:900;margin-bottom:4px;">'+j.n+'</div>'
-    +'<div style="font-size:10px;color:var(--muted);">'+j.p+' · '+j.cl+' · '+j.id+' anos</div>'
-    +'<div style="margin-top:12px;"><div style="font-size:9px;color:var(--dim);margin-bottom:4px;">Probabilidade de ir à Copa 2026</div>'
-    +'<div style="background:rgba(255,255,255,.07);border-radius:8px;height:12px;overflow:hidden;">'
-    +'<div style="height:100%;width:'+j.prob+'%;background:'+cor+';border-radius:8px;"></div></div>'
-    +'<div style="font-size:14px;font-weight:900;color:'+cor+';margin-top:4px;">'+j.prob+'%</div></div>';
-  document.getElementById('jogador-popup').style.display='flex';
-}
-
-/* ===== SELECOES COPA ===== */
-var SELECOES_COPA = [
-  {f:'🇧🇷',n:'Brasil',g:'C',conf:'CONMEBOL',pl:['Vinicius Jr','Rodrygo','Raphinha','Endrick','Bruno Guimarães','Casemiro','Marquinhos','Alisson']},
-  {f:'🇦🇷',n:'Argentina',g:'J',conf:'CONMEBOL',pl:['Messi','Di María','De Paul','Lautaro','Enzo Fernández','Romero']},
-  {f:'🇫🇷',n:'França',g:'I',conf:'UEFA',pl:['Mbappé','Griezmann','Tchouaméni','Camavinga','Upamecano','Maignan']},
-  {f:'🇩🇪',n:'Alemanha',g:'E',conf:'UEFA',pl:['Müller','Gnabry','Kimmich','Rüdiger','Neuer','Havertz']},
-  {f:'🇪🇸',n:'Espanha',g:'H',conf:'UEFA',pl:['Pedri','Gavi','Yamal','Morata','Rodri','Unai Simón']},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'Inglaterra',g:'L',conf:'UEFA',pl:['Bellingham','Kane','Saka','Foden','Trippier','Pickford']},
-  {f:'🇵🇹',n:'Portugal',g:'K',conf:'UEFA',pl:['C.Ronaldo','B.Silva','Leão','Vitinha','Rúben Dias','Costa']},
-  {f:'🇳🇱',n:'Holanda',g:'F',conf:'UEFA',pl:['Van Dijk','Dumfries','Gakpo','Weghorst','De Ligt','Flekken']},
-  {f:'🇧🇪',n:'Bélgica',g:'G',conf:'UEFA',pl:['De Bruyne','Lukaku','Thibaut','Vertonghen','Doku','Theate']},
-  {f:'🇺🇸',n:'EUA',g:'D',conf:'CONCACAF',pl:['Pulisic','Reyna','McKennie','Turner','Richards','Dest']},
-  {f:'🇲🇽',n:'México',g:'A',conf:'CONCACAF',pl:['H.Lozano','Guardado','Ochoa','Araujo','Jiménez','Alvarez']},
-  {f:'🇺🇾',n:'Uruguai',g:'H',conf:'CONMEBOL',pl:['L.Suárez','Cavani','Bentancur','Valverde','Godín','Muslera']},
-  {f:'🇨🇴',n:'Colômbia',g:'K',conf:'CONMEBOL',pl:['J.Cuadrado','L.Díaz','Falcao','Ospina','Barrios','Medina']},
-  {f:'🇸🇳',n:'Senegal',g:'I',conf:'CAF',pl:['Mané','Koulibaly','Gana Gueye','Kouyaté','Diatta','Mendy']},
-  {f:'🇲🇦',n:'Marrocos',g:'C',conf:'CAF',pl:['Hakimi','Ziyech','En-Nesyri','Bounou','Amrabat','Ounahi']},
-  {f:'🇯🇵',n:'Japão',g:'F',conf:'AFC',pl:['Minamino','Kubo','Kamada','Doan','Endo','Gonda']},
-  {f:'🇰🇷',n:'Coreia do Sul',g:'A',conf:'AFC',pl:['Son','Lee Kang-in','Kim Min-jae','Hwang','Cho Gue-sung']},
-  {f:'🇦🇺',n:'Austrália',g:'D',conf:'AFC',pl:['Leckie','Irvine','Degenek','Redmayne','Metcalfe','MacLaren']},
-  {f:'🇨🇭',n:'Suíça',g:'B',conf:'UEFA',pl:['Shaqiri','Xhaka','Embolo','Sommer','Akanji','Vargas']},
-  {f:'🇭🇷',n:'Croácia',g:'L',conf:'UEFA',pl:['Modric','Kovacic','Perisic','Gvardiol','Livakovic','Kramaric']},
-  {f:'🇿🇦',n:'África do Sul',g:'A',conf:'CAF',pl:['Percy Tau','Billiat','Ronwen Williams','Dolly','Zungu']},
-  {f:'🇶🇦',n:'Catar',g:'B',conf:'AFC',pl:['Almoez Ali','Akram Afif','Al-Sheeb','Boudiaf','Hisham']},
-  {f:'🇨🇦',n:'Canadá',g:'B',conf:'CONCACAF',pl:['Davies','David','Larin','Johnston','Vitoria','Borjan']},
-  {f:'🇵🇾',n:'Paraguai',g:'D',conf:'CONMEBOL',pl:['Almirón','Sanabria','Bareiro','Alonso','Balbuena']},
-  {f:'🇪🇨',n:'Equador',g:'E',conf:'CONMEBOL',pl:['Caicedo','Plata','Hincapié','Estrada','Preciado']},
-  {f:'🇹🇳',n:'Tunísia',g:'F',conf:'CAF',pl:['Khazri','Msakni','Ben Youssef','Sliti','Bronn']},
-  {f:'🇪🇬',n:'Egito',g:'G',conf:'CAF',pl:['Salah','Trezeguet','El-Shenawy','Galal','El Nenni']},
-  {f:'🇮🇷',n:'Irã',g:'G',conf:'AFC',pl:['Azmoun','Taremi','Jahanbakhsh','Hosseini','Ghaedi']},
-  {f:'🇳🇿',n:'Nova Zelândia',g:'G',conf:'OFC',pl:['Wood','Payne','Old','Hudson','Jones']},
-  {f:'🇸🇦',n:'Arábia Saudita',g:'H',conf:'AFC',pl:['Al-Dawsari','Al-Shehri','Al-Owais','Al-Malki','Talisca']},
-  {f:'🇨🇻',n:'Cabo Verde',g:'H',conf:'CAF',pl:['Garry Rodrigues','Ryan Mendes','Stopira','Marcelo Djalo']},
-  {f:'🇩🇿',n:'Argélia',g:'J',conf:'CAF',pl:['Mahrez','Bennacer','Mandi','Feghouli','Bensebaini']},
-  {f:'🇦🇹',n:'Áustria',g:'J',conf:'UEFA',pl:['Alaba','Gregoritsch','Sabitzer','Arnautovic','Laimer']},
-  {f:'🇯🇴',n:'Jordânia',g:'J',conf:'AFC',pl:['Al-Nabolsi','Al-Tamari','Ababneh','Sukar','Shelbaieh']},
-  {f:'🇺🇿',n:'Uzbequistão',g:'K',conf:'AFC',pl:['Shomurodov','Masharipov','Jaloliddinov','Yusupov']},
-  {f:'🇬🇭',n:'Gana',g:'L',conf:'CAF',pl:['A.Ayew','J.Ayew','Partey','Kudus','Djiku','Wollacott']},
-  {f:'🇵🇦',n:'Panamá',g:'L',conf:'CONCACAF',pl:['Davis','Godoy','Murillo','Benítez','Carrasquilla']},
-  {f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',n:'Escócia',g:'C',conf:'UEFA',pl:['Robertson','McTominay','McGinn','Tierney','Gilmour']},
-  {f:'🇭🇹',n:'Haiti',g:'C',conf:'CONCACAF',pl:['Nazon','Herold','Dossevi','Pierre-Louis','Frantz']},
-  {f:'🇳🇴',n:'Noruega',g:'I',conf:'UEFA',pl:['Haaland','Odegaard','Sorloth','Ajer','Helseth']},
-  {f:'🇨🇮',n:'Costa do Marfim',g:'E',conf:'CAF',pl:['Zaha','Pépé','Kessié','Deli','Gradel','Gbohouo']},
-  {f:'🇨🇼',n:'Curaçao',g:'E',conf:'CONCACAF',pl:['Suk','Bacuna','Fer','Marchena','Lasten']},
-  // ✅ CLASSIFICADOS REPESCAGEM 31/03/2026
-  {f:'🇨🇿',n:'República Tcheca',g:'A',conf:'UEFA',pl:['Schick','Soucek','Krejci','Kral','Vaclik','Celustka']},
-  {f:'🇧🇦',n:'Bósnia e Herzegovina',g:'B',conf:'UEFA',pl:['Dzeko','Pjanic','Bicakcic','Sehic','Visca','Cimirot']},
-  {f:'🇹🇷',n:'Turquia',g:'D',conf:'UEFA',pl:['Calhanoglu','Yildiz','Akturkoglu','Demiral','Gunok','Kabak']},
-  {f:'🇸🇪',n:'Suécia',g:'F',conf:'UEFA',pl:['Gyökeres','Isak','Forsberg','Lindelöf','Olsen','Elanga']},
-  {f:'🇨🇩',n:'RD Congo',g:'I',conf:'CAF',pl:['Bongonda','Masuaku','Ngonda','Mbokani','Bolasie','Makiese']},
-  {f:'🇮🇶',n:'Iraque',g:'K',conf:'AFC',pl:['Amjad Attwan','Hussein Ali','Mohanad Ali','Bashar','Dhurgham']},
-];
-
-function filtrarSelecoes() {
-  var q = (document.getElementById('sel-search').value||'').toLowerCase();
-  var lista = SELECOES_COPA.filter(function(s){
-    var confOk = _confFilter==='todos' || s.conf===_confFilter;
-    var nameOk = !q || s.n.toLowerCase().indexOf(q)!==-1;
-    return confOk && nameOk;
-  });
-  renderSelecoesGrid(lista);
-}
-
-function setConfFilter(conf, btn) {
-  _confFilter = conf;
-  document.querySelectorAll('.conf-filter').forEach(function(b){
-    b.style.background='rgba(255,255,255,.05)';b.style.borderColor='rgba(255,255,255,.1)';b.style.color='var(--dim)';
-  });
-  btn.style.background='rgba(59,130,246,.2)';btn.style.borderColor='rgba(59,130,246,.4)';btn.style.color='var(--blue)';
-  filtrarSelecoes();
-}
-
-function renderSelecoesGrid(lista) {
-  var el = document.getElementById('selecoes-grid');
-  if(!el) return;
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">'
-    +(lista||SELECOES_COPA).map(function(s){
-      return '<div onclick="abrirSelecao('+SELECOES_COPA.indexOf(s)+')" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px;cursor:pointer;">'
-        +'<div style="font-size:18px;">'+s.f+'</div>'
-        +'<div style="font-size:10px;font-weight:800;margin-top:3px;">'+s.n+'</div>'
-        +'<div style="font-size:8px;color:var(--gold);margin-top:2px;">Grupo '+s.g+'</div>'
-        +'<div style="font-size:7.5px;color:var(--dim);">'+s.conf+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-}
-
-function abrirSelecao(idx) {
-  var s = SELECOES_COPA[idx];
-  if(!s) return;
-  document.getElementById('selecao-popup-content').innerHTML =
-    '<div style="font-size:30px;margin-bottom:6px;">'+s.f+'</div>'
-    +'<div style="font-size:1.1rem;font-weight:900;">'+s.n+'</div>'
-    +'<div style="font-size:9px;color:var(--gold);margin-top:2px;">Grupo '+s.g+' · '+s.conf+'</div>'
-    +'<div style="margin-top:12px;font-size:9px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;">Jogadores principais</div>'
-    +'<div style="margin-top:6px;">'
-    +(s.pl||[]).map(function(p){
-      return '<div style="background:var(--bg3);border-radius:7px;padding:6px 9px;margin-bottom:4px;font-size:10px;font-weight:700;">'+p+'</div>';
-    }).join('')+'</div>';
-  document.getElementById('selecao-popup').style.display='flex';
-}
-
-/* ===== COUNTDOWN ===== */
-function updateCountdown() {
-  var alvo = new Date('2026-06-11T17:00:00Z');
-  var diff = alvo - new Date();
-  if (diff <= 0) { document.getElementById('countdown').innerHTML = '<div class="cd-item"><div class="cd-num">🏆</div><div class="cd-lbl">Copa em andamento!</div></div>'; return; }
-  var d = Math.floor(diff / 86400000);
-  var h = Math.floor((diff % 86400000) / 3600000);
-  var m = Math.floor((diff % 3600000) / 60000);
-  var s = Math.floor((diff % 60000) / 1000);
-  document.getElementById('countdown').innerHTML =
-    cdItem(d,'Dias') + cdItem(h,'Horas') + cdItem(m,'Min') + cdItem(s,'Seg');
-}
-function cdItem(n,l){ return '<div class="cd-item"><div class="cd-num">'+String(n).padStart(2,'0')+'</div><div class="cd-lbl">'+l+'</div></div>'; }
-setInterval(updateCountdown, 1000);
-updateCountdown();
-
-/* ===== FAVORITOS ===== */
-function renderFavoritos() {
-  var el = document.getElementById('favoritos');
-  if (!el) return;
-  el.innerHTML = FAVORITOS.map(function(f) {
-    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">'
-      +'<span style="font-size:16px;min-width:24px;">'+(f.f||'🏳️')+'</span>'
-      +'<span style="font-size:10px;font-weight:800;min-width:80px;">'+(f.n||'Outros')+'</span>'
-      +'<div style="flex:1;height:10px;background:rgba(255,255,255,.07);border-radius:6px;overflow:hidden;">'
-      +'<div style="height:100%;width:'+Math.round(f.pct/18*100)+'%;background:'+f.cor+';border-radius:6px;"></div></div>'
-      +'<span style="font-size:11px;font-weight:900;color:'+f.cor+';min-width:32px;text-align:right;">'+f.pct+'%</span>'
-      +'</div>';
-  }).join('');
-}
-
-/* ===== GRUPOS 2026 ===== */
-function renderGrupos() {
-  var el = document.getElementById('grupos26');
-  if (!el) return;
-  el.innerHTML = '';
-  var grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:7px;';
-  GRUPOS26.forEach(function(g, idx) {
-    var hasBr = g.times.some(function(t){ return t.indexOf('Brasil') !== -1; });
-    var bord = hasBr ? 'rgba(22,163,74,.4)' : 'rgba(245,158,11,.3)';
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.setAttribute('data-gidx', idx);
-    btn.style.cssText = 'background:var(--bg2);border:1px solid '+bord+';border-radius:10px;padding:9px;cursor:pointer;text-align:left;width:100%;display:block;-webkit-appearance:none;touch-action:manipulation;';
-    var hdr = document.createElement('div');
-    hdr.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;pointer-events:none;';
-    hdr.innerHTML = '<div style="font-size:10px;font-weight:900;color:var(--gold);">Grupo '+g.g+'</div><div style="font-size:9px;color:var(--dim);">ver ›</div>';
-    btn.appendChild(hdr);
-    g.times.forEach(function(t){
-      var parts = t.split(' '); var flag = parts[0]; var name = parts.slice(1).join(' ');
-      var row = document.createElement('div');
-      row.style.cssText = 'font-size:9px;color:var(--muted);padding:1px 0;display:flex;gap:4px;align-items:center;pointer-events:none;';
-      row.innerHTML = '<span>'+flag+'</span><span>'+name+'</span>';
-      btn.appendChild(row);
-    });
-    btn.addEventListener('click', function(){ abrirGrupo(parseInt(this.getAttribute('data-gidx'))); });
-    grid.appendChild(btn);
-  });
-  el.appendChild(grid);
-}
-
-function fecharGrupoPopup(){ var e=document.getElementById('grupo-popup'); if(e) e.remove(); }
-
-function verElencoGrupo(selIdx) {
-  fecharGrupoPopup();
-  abrirSelecao(selIdx);
-}
-
-function abrirGrupo(gIdx) {
-  var g = GRUPOS26[gIdx];
-  if (!g) return;
-  fecharGrupoPopup();
-  var times = g.times.map(function(t) {
-    var parts = t.split(' ');
-    var flag = parts[0];
-    var name = parts.slice(1).join(' ');
-    var selIdx = -1;
-    for (var i=0; i<SELECOES_COPA.length; i++) {
-      if (SELECOES_COPA[i] && SELECOES_COPA[i].n === name) { selIdx = i; break; }
+    // ROTEADOR
+    function router(hash) {
+      if(hash.startsWith('#module/')) {
+        loadModuleDetail(hash.split('/')[1]);
+        hash = '#module-detail';
+      }
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      const target = document.querySelector(hash) || document.getElementById('home');
+      if(target) target.classList.add('active');
+      document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === hash));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    return {flag:flag, name:name, selIdx:selIdx};
-  });
-  var tabelaHtml = '<div style="font-size:9px;font-weight:800;color:var(--gold);margin:10px 0 5px 0;">CLASSIFICAÇÃO</div>'
-    + '<div style="background:var(--bg3);border-radius:8px;overflow:hidden;margin-bottom:10px;">'
-    + '<div style="display:grid;grid-template-columns:1fr 28px 28px 28px 28px 28px;font-size:7.5px;font-weight:800;color:var(--dim);padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.06);">'
-    + '<div>Time</div><div style="text-align:center;">J</div><div style="text-align:center;">V</div><div style="text-align:center;">E</div><div style="text-align:center;">D</div><div style="text-align:center;">Pts</div>'
-    + '</div>'
-    + times.map(function(t, i) {
-      var isBr = t.name === 'Brasil';
-      var bg = isBr ? 'rgba(22,163,74,.06)' : (i%2===0 ? '' : 'rgba(255,255,255,.02)');
-      var nBtn = t.selIdx >= 0
-        ? '<button type="button" onclick="verElencoGrupo('+t.selIdx+')" style="font-size:7px;background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.25);border-radius:3px;padding:1px 5px;font-weight:800;cursor:pointer;margin-left:4px;">elenco</button>'
-        : '';
-      return '<div style="display:grid;grid-template-columns:1fr 28px 28px 28px 28px 28px;font-size:9px;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);background:'+bg+';">'
-        + '<div style="display:flex;align-items:center;gap:4px;font-weight:700;"><span>'+t.flag+'</span><span>'+t.name+'</span>'+nBtn+'</div>'
-        + '<div style="text-align:center;color:var(--dim);">0</div>'
-        + '<div style="text-align:center;color:var(--dim);">0</div>'
-        + '<div style="text-align:center;color:var(--dim);">0</div>'
-        + '<div style="text-align:center;color:var(--dim);">0</div>'
-        + '<div style="text-align:center;font-weight:900;color:var(--text);">0</div>'
-        + '</div>';
-    }).join('')
-    + '</div>';
-  var pares = [[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
-  var jogosHtml = '<div style="font-size:9px;font-weight:800;color:var(--gold);margin-bottom:5px;">JOGOS DA FASE DE GRUPOS</div>'
-    + pares.map(function(par, ji) {
-      var a = times[par[0]], b = times[par[1]];
-      return '<div style="background:var(--bg3);border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:6px;">'
-        + '<div style="font-size:8px;font-weight:700;color:var(--dim);min-width:14px;">'+(ji+1)+'</div>'
-        + '<div style="flex:1;display:flex;align-items:center;justify-content:space-between;gap:6px;">'
-        + '<div style="font-size:9.5px;font-weight:800;display:flex;align-items:center;gap:4px;"><span>'+a.flag+'</span><span>'+a.name+'</span></div>'
-        + '<div style="font-size:10px;font-weight:900;color:var(--dim);background:rgba(255,255,255,.06);border-radius:5px;padding:2px 7px;">×</div>'
-        + '<div style="font-size:9.5px;font-weight:800;display:flex;align-items:center;gap:4px;text-align:right;"><span>'+b.name+'</span><span>'+b.flag+'</span></div>'
-        + '</div>'
-        + '<div style="font-size:7.5px;color:var(--dim);white-space:nowrap;">Jun/Jul 26</div>'
-        + '</div>';
-    }).join('');
-  var popup = document.createElement('div');
-  popup.id = 'grupo-popup';
-  popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:400;display:flex;align-items:flex-start;justify-content:center;padding:14px;overflow-y:auto;';
-  var _t = Date.now();
-  popup.addEventListener('click', function(e){
-    if (e.target === popup && Date.now() - _t > 600) popup.remove();
-  });
-  popup.innerHTML = '<div style="background:var(--bg2);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:16px;max-width:400px;width:100%;position:relative;margin:auto;">'
-    + '<button type="button" onclick="document.getElementById(\'grupo-popup\').remove()" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer;line-height:1;">✕</button>'
-    + '<div style="font-size:16px;font-weight:900;color:var(--gold);margin-bottom:4px;">⚽ Grupo '+g.g+'</div>'
-    + '<div style="font-size:8.5px;color:var(--dim);margin-bottom:8px;">Copa do Mundo 2026 · Fase de Grupos · Top 2 avançam</div>'
-    + tabelaHtml
-    + jogosHtml
-    + '<div style="margin-top:8px;font-size:7.5px;color:var(--dim);text-align:center;">Toque em "elenco" para ver os jogadores de cada seleção</div>'
-    + '</div>';
-  document.body.appendChild(popup);
-}
+    window.addEventListener('hashchange', () => router(location.hash));
+    function loadModuleDetail(slug) {
+      const m = modules.find(x => x.slug === slug);
+      if(!m) return router('#modules');
+      const content = document.getElementById('module-content');
+      content.innerHTML = `
+        <div class="module-header">
+          <h1>${m.icon} ${m.title}</h1>
+          <p>${m.desc}</p>
+          <div class="module-meta"><span>⏱️ ${m.dur}</span><span>🎓 ${m.age}</span><span>📊 ${m.diff}</span><span>📚 ${m.areas.join(' • ')}</span></div>
+        </div>
+        <div class="grid" style="grid-template-columns: 2fr 1fr; gap:2rem">
+          <div>
+            <div class="card"><h2>🎯 Objetivos</h2><ul style="margin-left:1.2rem; margin-top:0.5rem">${m.bdcc? m.bdcc.map(o=>`<li>${o}</li>`).join(''):''}</ul></div>
+            <div class="card" style="margin-top:1rem"><h2>📚 Conteúdo</h2><div style="margin-top:1rem">${m.content}</div></div>
+          </div>
+          <div>
+            <div class="card"><h3>🔗 BNCC</h3><div style="margin:0.5rem 0">${m.bncc.map(b=>`<span class="badge" style="margin:2px">${b}</span>`).join('')}</div><h4 style="margin-top:0.5rem">Temas:</h4><div>${m.themes.map(t=>`<span class="badge secondary" style="margin:2px">${t}</span>`).join('')}</div></div>
+            <div class="card" style="margin-top:1rem"><h3>📥 Downloads</h3><ul style="list-style:none; margin-top:0.5rem">['Plano de Aula','Slides','Atividade Impressa','Gabarito'].map(f=>`<li style="padding:4px 0; border-bottom:1px dashed var(--border)"><a href="#">⬇️ ${f}</a></li>`).join('')}</ul></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:2rem"><h2>🧠 Quiz de Fixação</h2><div id="quiz-container" class="quiz-container" style="margin-top:1rem"></div></div>
+      `;
+      initQuiz(m.quiz, m.slug);
+    }
 
-/* ===== COPAS LIST ===== */
-function filterCopas(mode) {
-  _copasFilter = mode;
-  ['all','brasil','campeao'].forEach(function(m) {
-    var btn = document.getElementById('cf-'+m);
-    var active = m === mode;
-    btn.style.background = active ? 'rgba(245,158,11,.2)' : 'rgba(255,255,255,.05)';
-    btn.style.borderColor = active ? 'rgba(245,158,11,.4)' : 'rgba(255,255,255,.1)';
-    btn.style.color = active ? 'var(--gold)' : 'var(--dim)';
-  });
-  renderCopasList();
-}
+    // RENDERIZADORES
+    function renderTimeline() {
+      const list = document.getElementById('timeline-list');
+      const cats = [...new Set(events.map(e=>e.cat))];
+      document.getElementById('tl-filters').innerHTML = `<button class="filter-btn active" onclick="filterCat('all')">Todos</button>` + cats.map(c=>`<button class="filter-btn" onclick="filterCat('${c}')">${c}</button>`).join('');
+      window.tlData = events;
+      updateTimeline();
+    }
+    function filterCat(cat) {
+      document.querySelectorAll('#tl-filters .filter-btn').forEach(b=>b.classList.toggle('active', b.textContent.toLowerCase()===cat || (cat==='all' && b.textContent==='Todos')));
+      updateTimeline();
+    }
+    function filterTimeline() { updateTimeline(); }
+    function updateTimeline() {
+      const q = document.getElementById('tl-search').value.toLowerCase();
+      const activeCat = document.querySelector('#tl-filters .filter-btn.active').textContent.toLowerCase();
+      const filtered = window.tlData.filter(e => {
+        const matchCat = activeCat==='todos' || e.cat===activeCat;
+        const matchQ = e.title.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q);
+        return matchCat && matchQ;
+      });
+      document.getElementById('timeline-list').innerHTML = filtered.map(e => `
+        <div class="timeline-item category-${e.cat}">
+          <div class="timeline-content" onclick="this.classList.toggle('expanded')">
+            <div class="timeline-date">${e.dateD || e.date}</div>
+            <div class="timeline-title">${e.title}</div>
+            <div class="timeline-desc">
+              <p>${e.desc}</p>
+              <div class="edu-box">
+                <p><b>🎓 Para Sala:</b> ${e.edu.act}</p>
+                <p><b>💬 Debate:</b> ${e.edu.qs.join(' • ')}</p>
+                <p><b>⏱️ Duração:</b> ${e.edu.dur} | <b>BNCC:</b> ${e.edu.bncc.join(', ')}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
 
-function renderCopasList() {
-  var list = COPAS.slice().reverse();
-  if (_copasFilter === 'brasil') list = list.filter(function(c){ return c.brasil.includes('CAMPEÃO'); });
-  if (_copasFilter === 'campeao') list = list.filter(function(c){ return c.campeao === 'Brasil'; });
-  var el = document.getElementById('copas-list');
-  if (!el) return;
-  el.innerHTML = list.map(function(c) {
-    var isBr = c.brasil && c.brasil.includes('CAMPEÃO');
-    var isAtu = !!c.atual;
-    return '<div class="copa-card '+(isAtu?'destaque':'')+'" onclick="showCopaDetail('+c.ano+')">'
-      +'<div style="display:flex;align-items:center;gap:10px;">'
-      +'<div style="font-size:28px;">'+(isAtu?'🏆':c.campeaoFlag)+'</div>'
-      +'<div style="flex:1;">'
-      +'<div style="font-size:13px;font-weight:900;">'+(isAtu?'⭐ ':'')+c.ano+' — '+c.sede+'</div>'
-      +'<div style="font-size:9.5px;color:var(--muted);margin-top:1px;">🏆 '+(isAtu?'Em disputa':c.campeao+' × '+c.vice)+'</div>'
-      +'<div style="font-size:9px;color:var(--dim);margin-top:1px;">⚽ '+c.artilheiro+'</div>'
-      +'</div>'
-      +'<div style="text-align:right;flex-shrink:0;">'
-      +(isBr?'<span class="badge badge-g">🇧🇷 CAMPEÃO</span>':'')
-      +(isAtu?'<span class="badge badge-gold">🔴 AO VIVO</span>':'')
-      +'<div style="font-size:8px;color:var(--dim);margin-top:3px;">'+c.jogos+' jogos</div>'
-      +'</div></div>'
-      +'<div style="font-size:9px;color:rgba(245,158,11,.7);margin-top:6px;font-style:italic;">📌 '+c.marvel+'</div>'
-      +'</div>';
-  }).join('');
-}
+    function renderModules() {
+      document.getElementById('modules-grid').innerHTML = modules.map(m => `
+        <div class="card">
+          <div style="display:flex; gap:0.75rem; align-items:center; margin-bottom:0.5rem"><span style="font-size:2rem">${m.icon}</span><h3>${m.title}</h3></div>
+          <span class="badge">${m.age}</span> <span class="badge secondary">${m.diff}</span>
+          <p style="margin:0.5rem 0; color:var(--text-muted)">${m.desc}</p>
+          <div style="display:flex; gap:0.5rem; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted)">⏱️ ${m.dur} • 📚 ${m.areas[0]}</div>
+          <button class="btn btn-primary" style="width:100%; margin-top:1rem" onclick="location.hash='#module/${m.slug}'">Começar Módulo</button>
+        </div>
+      `).join('');
+    }
 
-function showCopaDetail(ano) {
-  var c = COPAS.find(function(x){ return x.ano === ano; });
-  if (!c) return;
-  alert('Copa '+c.ano+' — '+c.sede+'\n\n🏆 Campeão: '+c.campeao+'\n🥈 Vice: '+c.vice+'\n⚽ Artilheiro: '+c.artilheiro+'\n🇧🇷 Brasil: '+c.brasil+'\n📌 '+c.marvel+'\n\n📊 Jogos: '+c.jogos+' | Gols: '+c.gols+' | Público: '+c.publico);
-}
+    function renderGlossary() {
+      const grid = document.getElementById('glossary-grid');
+      grid.innerHTML = glossary.map(g => `
+        <div class="card term-card"><h3>${g.term} <span class="badge" style="margin-left:0.5rem">${g.cat}</span></h3><p style="margin:0.5rem 0">${g.def}</p></div>
+      `).join('');
+    }
+    function filterGlossary() {
+      const q = document.getElementById('gl-search').value.toLowerCase();
+      document.querySelectorAll('#glossary-grid .card').forEach(c => {
+        c.style.display = c.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+      });
+    }
 
-/* ===== RANKINGS ===== */
-function showRanking(tab) {
-  _rankingAtual = tab;
-  document.querySelectorAll('.rk-tab').forEach(function(b){
-    b.style.background='rgba(255,255,255,.05)';b.style.borderColor='rgba(255,255,255,.1)';b.style.color='var(--dim)';
-  });
-  var active = document.getElementById('rt-'+tab);
-  if (active) { active.style.background='rgba(245,158,11,.2)'; active.style.borderColor='rgba(245,158,11,.4)'; active.style.color='var(--gold)'; }
-  renderRankingContent();
-}
+    // QUIZ
+    let quizState = { idx: 0, score: 0, questions: [] };
+    function initQuiz(questions, modSlug) {
+      if(!questions || !questions.length) return;
+      quizState = { idx: 0, score: 0, questions, modSlug, selected: -1, answered: false };
+      renderQuiz();
+    }
+    function renderQuiz() {
+      const c = document.getElementById('quiz-container');
+      if(!c) return;
+      const q = quizState.questions[quizState.idx];
+      const total = quizState.questions.length;
+      c.innerHTML = `
+        <div class="quiz-progress"><div class="quiz-progress-bar" style="width:${((quizState.idx)/total)*100}%"></div></div>
+        <h3>Pergunta ${quizState.idx+1} de ${total}</h3>
+        <p style="margin:1rem 0; font-size:1.1rem">${q.q}</p>
+        <div id="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-option" onclick="selectQuizOpt(${i})" data-idx="${i}">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}</div>
+        <div id="quiz-fb" class="quiz-feedback"></div>
+        <div style="display:flex; justify-content:space-between; margin-top:1rem">
+          <button class="btn btn-outline" disabled>← Anterior</button>
+          <button id="quiz-next" class="btn btn-primary" disabled onclick="confirmQuiz()">Confirmar</button>
+        </div>
+      `;
+    }
+    function selectQuizOpt(i) {
+      if(quizState.answered) return;
+      quizState.selected = i;
+      document.querySelectorAll('.quiz-option').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.idx)===i));
+      document.getElementById('quiz-next').disabled = false;
+    }
+    function confirmQuiz() {
+      const q = quizState.questions[quizState.idx];
+      quizState.answered = true;
+      const isCorrect = quizState.selected === q.ans;
+      if(isCorrect) quizState.score++;
+      document.querySelectorAll('.quiz-option').forEach(b => {
+        const idx = parseInt(b.dataset.idx);
+        if(idx === q.ans) b.classList.add('correct');
+        else if(idx === quizState.selected) b.classList.add('wrong');
+        b.onclick = null;
+      });
+      const fb = document.getElementById('quiz-fb');
+      fb.className = `quiz-feedback show ${isCorrect?'correct':'wrong'}`;
+      fb.innerHTML = `<b>${isCorrect?'✅ Correto!':'❌ Incorreto.'}</b><br>${q.exp}`;
+      const btn = document.getElementById('quiz-next');
+      btn.textContent = quizState.idx < quizState.questions.length - 1 ? 'Próxima →' : 'Ver Resultado';
+      btn.disabled = false;
+      btn.onclick = nextQuiz;
+    }
+    function nextQuiz() {
+      if(quizState.idx < quizState.questions.length - 1) {
+        quizState.idx++; quizState.selected = -1; quizState.answered = false;
+        renderQuiz();
+      } else {
+        const pct = Math.round((quizState.score/quizState.questions.length)*100);
+        document.getElementById('quiz-container').innerHTML = `
+          <div style="text-align:center; padding:2rem">
+            <div style="font-size:4rem; margin-bottom:1rem">${pct>=80?'🏆':pct>=50?'👍':'📚'}</div>
+            <h2>Quiz Concluído!</h2>
+            <p style="font-size:2rem; font-weight:bold; color:var(--primary)">${pct}%</p>
+            <p>Você acertou ${quizState.score} de ${quizState.questions.length} questões.</p>
+            <button class="btn btn-primary" style="margin-top:1rem" onclick="initQuiz(${JSON.stringify(quizState.questions).replace(/"/g, '&quot;')}, '${quizState.modSlug}')">Refazer Quiz</button>
+            <button class="btn btn-outline" style="margin-top:1rem; margin-left:0.5rem" onclick="location.hash='#modules'">Voltar aos Módulos</button>
+          </div>
+        `;
+      }
+    }
 
-function renderRankingContent() {
-  var el = document.getElementById('ranking-content');
-  if (!el) return;
-  var html = '';
-  if (_rankingAtual === 'titulos') {
-    html = '<div class="card">' + TITULOS.map(function(p,i){
-      return '<div class="rk-row">'
-        +'<div style="font-size:15px;font-weight:900;color:var(--dim);min-width:22px;">'+(i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1)+'</div>'
-        +'<span style="font-size:20px;">'+p.f+'</span>'
-        +'<div style="flex:1;"><div style="font-size:11.5px;font-weight:800;">'+p.n+'</div>'
-        +'<div style="font-size:8.5px;color:var(--dim);">'+p.anos+'</div>'
-        +'<div class="bar-wrap" style="margin-top:4px;"><div class="bar-fill" style="width:'+Math.round(p.t/5*100)+'%;"></div></div></div>'
-        +'<div style="font-size:20px;font-weight:900;color:var(--gold);">'+p.t+'🏆</div>'
-        +'</div>';
-    }).join('')+'</div>';
-  } else if (_rankingAtual === 'artilheiros') {
-    html = '<div class="card">' + ARTILHEIROS.sort(function(a,b){return b.g-a.g;}).map(function(p,i){
-      return '<div class="rk-row">'
-        +'<div style="font-size:13px;font-weight:900;color:var(--dim);min-width:22px;">'+(i+1)+'</div>'
-        +'<span style="font-size:18px;">'+p.f+'</span>'
-        +'<div style="flex:1;"><div style="font-size:11px;font-weight:800;">'+p.n+'</div>'
-        +'<div style="font-size:8px;color:var(--dim);">'+p.anos+' · '+p.nota+'</div>'
-        +'<div class="bar-wrap" style="margin-top:3px;"><div class="bar-fill" style="width:'+Math.round(p.g/16*100)+'%;background:var(--green);"></div></div></div>'
-        +'<div style="font-size:18px;font-weight:900;color:var(--green);">'+p.g+'⚽</div>'
-        +'</div>';
-    }).join('')+'</div>';
-  } else if (_rankingAtual === 'goleadas') {
-    html = '<div class="card">' + GOLEADAS.map(function(g,i){
-      return '<div style="padding:9px 0;border-bottom:1px solid var(--border);">'
-        +'<div style="font-size:10.5px;font-weight:900;">'+g.res+'</div>'
-        +'<div style="font-size:8.5px;color:var(--dim);margin-top:2px;">'+g.ano+(g.nota?' · '+g.nota:'')+'</div>'
-        +'</div>';
-    }).join('')+'</div>';
-  } else if (_rankingAtual === 'records') {
-    html = '<div class="card">' + RECORDS.map(function(r){
-      return '<div style="display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);align-items:center;">'
-        +'<div style="font-size:22px;flex-shrink:0;">'+r.ic+'</div>'
-        +'<div><div style="font-size:10.5px;font-weight:900;">'+r.t+'</div>'
-        +'<div style="font-size:9px;color:var(--muted);margin-top:1px;">'+r.d+'</div>'
-        +'<div style="font-size:8px;color:var(--dim);margin-top:1px;">'+r.ano+'</div></div>'
-        +'</div>';
-    }).join('')+'</div>';
-  } else if (_rankingAtual === 'jogos') {
-    var ranking = COPAS.filter(function(c){return !c.atual;}).sort(function(a,b){return b.jogos-a.jogos;});
-    html = '<div class="card">' + ranking.slice(0,10).map(function(c,i){
-      return '<div class="rk-row">'
-        +'<div style="font-size:12px;font-weight:900;color:var(--dim);min-width:22px;">'+(i+1)+'</div>'
-        +'<span style="font-size:17px;">'+c.flag+'</span>'
-        +'<div style="flex:1;"><div style="font-size:10.5px;font-weight:800;">'+c.ano+' — '+c.sede+'</div>'
-        +'<div class="bar-wrap" style="margin-top:3px;"><div class="bar-fill" style="width:'+Math.round(c.jogos/64*100)+'%;background:var(--blue);"></div></div></div>'
-        +'<div style="font-size:14px;font-weight:900;color:var(--blue);">'+c.jogos+' 📋</div>'
-        +'</div>';
-    }).join('')+'</div>';
-  }
-  el.innerHTML = html;
-}
+    // ACESSIBILIDADE & UI
+    function toggleMenu() { document.getElementById('main-nav').classList.toggle('open'); }
+    function toggleA11y() { document.getElementById('a11y-panel').classList.toggle('open'); }
+    function toggleA11ySetting(type) {
+      const el = document.getElementById('toggle-'+type);
+      el.classList.toggle('on');
+      const body = document.body;
+      if(type==='contrast') body.classList.toggle('high-contrast');
+      if(type==='large') body.classList.toggle('large-text');
+      if(type==='dark') body.classList.toggle('dark');
+      try { localStorage.setItem('a11y-'+type, el.classList.contains('on')); } catch {}
+    }
+    function loadA11y() {
+      ['contrast','large','dark'].forEach(t => {
+        const val = localStorage.getItem('a11y-'+t) === 'true';
+        if(val) { document.body.classList.toggle('high-contrast', t==='contrast'); document.body.classList.toggle('large-text', t==='large'); document.body.classList.toggle('dark', t==='dark'); document.getElementById('toggle-'+t).classList.add('on'); }
+      });
+    }
 
-/* ===== TIMELINE ===== */
-function renderTimeline() {
-  var el = document.getElementById('timeline-content');
-  if (!el) return;
-  el.innerHTML = TIMELINE_EVENTOS.map(function(e) {
-    return '<div class="tl-item">'
-      +'<div class="tl-dot">'+e.ic+'</div>'
-      +'<div style="flex:1;padding-top:8px;">'
-      +'<div style="font-size:11px;font-weight:900;">'+e.ano+' — '+e.t+'</div>'
-      +'<div style="font-size:9px;color:var(--muted);margin-top:3px;">'+e.d+'</div>'
-      +'</div></div>';
-  }).join('');
-}
-
-/* ===== SIMULADOR ===== */
-function renderSimulador() {
-  var el = document.getElementById('simulador-content');
-  if (!el) return;
-  el.innerHTML = '<div style="font-size:9px;font-weight:800;color:var(--dim);text-transform:uppercase;margin-bottom:8px;">Oitavas de Final</div>'
-    + SIM_OITAVAS.map(function(par, i) {
-      var v = _simVencedores['o'+i];
-      return '<div class="bracket">'
-        +'<div style="font-size:9px;color:var(--dim);margin-bottom:5px;">Jogo '+(i+1)+'</div>'
-        + par.map(function(time) {
-          var sel = v === time;
-          return '<div class="match-slot '+(sel?'selected':'')+'" onclick="escolherVencedor(\'o'+i+'\',\''+time+'\')">'
-            +'<div style="font-size:11px;">'+time+'</div>'
-            +(sel?'<div style="margin-left:auto;font-size:10px;">✓</div>':'')
-            +'</div>';
-        }).join('')
-        +'</div>';
-    }).join('');
-  var total = Object.keys(_simVencedores).length;
-  document.getElementById('sim-share').style.display = total === SIM_OITAVAS.length ? 'block' : 'none';
-}
-
-function escolherVencedor(rodada, time) {
-  _simVencedores[rodada] = time;
-  renderSimulador();
-}
-
-function shareSimulador() {
-  var txt = '🏆 Meu palpite para a Copa 2026:\n' + Object.values(_simVencedores).join(' · ');
-  if (navigator.share) { navigator.share({text: txt}); }
-  else { navigator.clipboard.writeText(txt).then(function(){ alert('Copiado!'); }); }
-}
-
-/* ===== QUIZ ===== */
-function renderQuiz() {
-  if (_quizOrdem.length === 0) {
-    _quizOrdem = QUIZ.map(function(_,i){return i;}).sort(function(){return Math.random()-.5;});
-  }
-  var el = document.getElementById('quiz-content');
-  if (!el) return;
-  if (_quizIdx >= _quizOrdem.length) {
-    el.innerHTML = '<div style="text-align:center;padding:20px;"><div style="font-size:2rem;">🏆</div><div style="font-size:1.1rem;font-weight:900;margin-top:8px;">Fim do Quiz!</div><div style="font-size:10px;color:var(--muted);margin-top:4px;">'+_qAcertos+' acertos de '+_quizOrdem.length+'</div>'
-      +'<button onclick="resetQuiz()" style="margin-top:12px;background:var(--gold);border:none;border-radius:10px;padding:10px 20px;font-size:11px;font-weight:900;color:#000;cursor:pointer;">Jogar novamente</button></div>';
-    document.getElementById('btn-prox').style.display='none';
-    return;
-  }
-  var q = QUIZ[_quizOrdem[_quizIdx]];
-  el.innerHTML = '<div style="font-size:11px;font-weight:800;margin-bottom:12px;line-height:1.4;">'+(_quizIdx+1)+'. '+q.p+'</div>'
-    + q.opts.map(function(opt, i) {
-      return '<div class="quiz-opt" onclick="responderQuiz('+i+')">'+opt+'</div>';
-    }).join('');
-  document.getElementById('btn-prox').style.display='none';
-}
-
-function responderQuiz(idx) {
-  var q = QUIZ[_quizOrdem[_quizIdx]];
-  document.querySelectorAll('.quiz-opt').forEach(function(opt, i) {
-    opt.onclick = null;
-    if (i === q.certo) opt.classList.add('certo');
-    else if (i === idx && idx !== q.certo) opt.classList.add('errado');
-  });
-  if (idx === q.certo) _qAcertos++; else _qErros++;
-  document.getElementById('q-acertos').textContent = _qAcertos;
-  document.getElementById('q-erros').textContent = _qErros;
-  document.getElementById('q-total').textContent = _quizIdx+1;
-  document.getElementById('btn-prox').style.display='block';
-}
-
-function proxPergunta() {
-  _quizIdx++;
-  renderQuiz();
-}
-
-function resetQuiz() {
-  _quizIdx=0; _qAcertos=0; _qErros=0; _quizOrdem=[];
-  document.getElementById('q-acertos').textContent='0';
-  document.getElementById('q-erros').textContent='0';
-  document.getElementById('q-total').textContent='0';
-  renderQuiz();
-}
-
-/* ===== MAPA ===== */
-var MAPA_SEDES = [
-  {f:'🇺🇾',n:'Uruguai',anos:'1930',marvel:'1ª Copa'},
-  {f:'🇮🇹',n:'Itália',anos:'1934, 1990',marvel:'2 edições'},
-  {f:'🇫🇷',n:'França',anos:'1938, 1998',marvel:'2 edições'},
-  {f:'🇧🇷',n:'Brasil',anos:'1950, 2014',marvel:'2 edições'},
-  {f:'🇨🇭',n:'Suíça',anos:'1954',marvel:'Milagre de Berna'},
-  {f:'🇸🇪',n:'Suécia',anos:'1958',marvel:'Pelé aos 17'},
-  {f:'🇨🇱',n:'Chile',anos:'1962',marvel:'Brasil Bi'},
-  {f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',n:'Inglaterra',anos:'1966',marvel:'Único título inglês'},
-  {f:'🇲🇽',n:'México',anos:'1970, 1986, 2026',marvel:'3 edições!'},
-  {f:'🇩🇪',n:'Alemanha',anos:'1974, 2006',marvel:'2 edições'},
-  {f:'🇦🇷',n:'Argentina',anos:'1978',marvel:'Copa da ditadura'},
-  {f:'🇪🇸',n:'Espanha',anos:'1982',marvel:'24 seleções'},
-  {f:'🇺🇸',n:'EUA',anos:'1994, 2026',marvel:'2 edições'},
-  {f:'🇰🇷',n:'Coreia/Japão',anos:'2002',marvel:'Primeira na Ásia'},
-  {f:'🇿🇦',n:'África do Sul',anos:'2010',marvel:'Primeira na África'},
-  {f:'🇷🇺',n:'Rússia',anos:'2018',marvel:'Leste europeu'},
-  {f:'🇶🇦',n:'Catar',anos:'2022',marvel:'Menor país sede'},
-  {f:'🇨🇦',n:'Canadá',anos:'2026',marvel:'Co-sede 2026'},
-];
-
-function renderMapa() {
-  var el = document.getElementById('mapa-cards');
-  if (!el) return;
-  el.innerHTML = MAPA_SEDES.map(function(s, i) {
-    return '<div onclick="abrirMapa('+i+')" style="background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px;cursor:pointer;">'
-      +'<div style="font-size:22px;">'+s.f+'</div>'
-      +'<div style="font-size:10px;font-weight:800;margin-top:4px;">'+s.n+'</div>'
-      +'<div style="font-size:8px;color:var(--gold);margin-top:2px;">'+s.anos+'</div>'
-      +'<div style="font-size:7.5px;color:var(--dim);margin-top:1px;">'+s.marvel+'</div>'
-      +'</div>';
-  }).join('');
-}
-
-function abrirMapa(i) {
-  var s = MAPA_SEDES[i];
-  document.getElementById('mapa-popup-content').innerHTML =
-    '<div style="font-size:2.5rem;">'+s.f+'</div>'
-    +'<div style="font-size:1.1rem;font-weight:900;margin-top:6px;">'+s.n+'</div>'
-    +'<div style="font-size:10px;color:var(--gold);margin-top:4px;">Copa(s): '+s.anos+'</div>'
-    +'<div style="font-size:9px;color:var(--muted);margin-top:4px;">'+s.marvel+'</div>';
-  document.getElementById('mapa-popup').style.display='flex';
-}
-
-function fecharMapa() {
-  document.getElementById('mapa-popup').style.display='none';
-}
-
-/* ===== RANKING COPAS (rank-panel) ===== */
-function showRankTab(tab, btn) {
-  document.querySelectorAll('.rank-tab2').forEach(function(b){
-    b.style.background='rgba(255,255,255,.05)';b.style.borderColor='rgba(255,255,255,.1)';b.style.color='var(--muted)';
-  });
-  btn.style.background='rgba(245,158,11,.2)';btn.style.borderColor='rgba(245,158,11,.4)';btn.style.color='var(--gold)';
-  document.querySelectorAll('.rank-panel2').forEach(function(p){p.style.display='none';});
-  document.getElementById('rank-panel-'+tab).style.display='block';
-}
-
-function renderRankPanels() {
-  // Selecoes
-  var rs = document.getElementById('rank-panel-selecoes');
-  if(rs) rs.innerHTML = '<div class="card">'+TITULOS.map(function(p,i){
-    return '<div class="rk-row"><div style="font-size:13px;font-weight:900;min-width:22px;">'+(i+1)+'</div>'
-      +'<span style="font-size:18px;">'+p.f+'</span>'
-      +'<div style="flex:1;"><div style="font-size:10px;font-weight:800;">'+p.n+'</div>'
-      +'<div class="bar-wrap" style="margin-top:3px;"><div class="bar-fill" style="width:'+Math.round(p.t/5*100)+'%;"></div></div></div>'
-      +'<div style="font-size:16px;font-weight:900;color:var(--gold);">'+p.t+'🏆</div></div>';
-  }).join('')+'</div>';
-  // Jogadores
-  var rj = document.getElementById('rank-panel-jogadores');
-  if(rj) rj.innerHTML = '<div class="card">'+ARTILHEIROS.sort(function(a,b){return b.g-a.g;}).slice(0,8).map(function(p,i){
-    return '<div class="rk-row"><div style="font-size:12px;font-weight:900;min-width:22px;">'+(i+1)+'</div>'
-      +'<span style="font-size:16px;">'+p.f+'</span>'
-      +'<div style="flex:1;"><div style="font-size:10px;font-weight:800;">'+p.n+'</div>'
-      +'<div style="font-size:7.5px;color:var(--dim);">'+p.nota+'</div></div>'
-      +'<div style="font-size:14px;font-weight:900;color:var(--green);">'+p.g+'⚽</div></div>';
-  }).join('')+'</div>';
-  // Tecnicos
-  var rt = document.getElementById('rank-panel-tecnicos');
-  if(rt) rt.innerHTML = '<div class="card"><div style="padding:10px;text-align:center;color:var(--dim);font-size:9px;">Didier Deschamps, Zagallo, Helmut Schön — campeões como jogador e técnico</div></div>';
-  // Publico
-  var rp = document.getElementById('rank-panel-publico');
-  if(rp) rp.innerHTML = '<div class="card">'+COPAS.filter(function(c){return !c.atual&&c.publico!=='—';}).sort(function(a,b){
-    return parseFloat(b.publico.replace(/[^0-9.]/g,'')) - parseFloat(a.publico.replace(/[^0-9.]/g,''));
-  }).slice(0,8).map(function(c,i){
-    return '<div class="rk-row"><div style="font-size:12px;font-weight:900;min-width:22px;">'+(i+1)+'</div>'
-      +'<span style="font-size:16px;">'+c.flag+'</span>'
-      +'<div style="flex:1;"><div style="font-size:10px;font-weight:800;">'+c.ano+' · '+c.sede+'</div></div>'
-      +'<div style="font-size:11px;font-weight:900;color:var(--blue);">'+c.publico+'</div></div>';
-  }).join('')+'</div>';
-  // Mais Gols
-  var rg = document.getElementById('rank-panel-gols');
-  if(rg) rg.innerHTML = '<div class="card">'+COPAS.filter(function(c){return !c.atual&&c.gols>0;}).sort(function(a,b){return b.gols-a.gols;}).slice(0,8).map(function(c,i){
-    return '<div class="rk-row"><div style="font-size:12px;font-weight:900;min-width:22px;">'+(i+1)+'</div>'
-      +'<span style="font-size:16px;">'+c.flag+'</span>'
-      +'<div style="flex:1;"><div style="font-size:10px;font-weight:800;">'+c.ano+' · '+c.sede+'</div></div>'
-      +'<div style="font-size:14px;font-weight:900;color:var(--red);">'+c.gols+'⚽</div></div>';
-  }).join('')+'</div>';
-}
-
-/* ===== NAVEGAÇÃO ===== */
-function goPage(page) {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.bnav-btn').forEach(function(b){ b.classList.remove('active'); });
-  var el = document.getElementById('page-'+page);
-  if (el) el.classList.add('active');
-  var btn = document.getElementById('btn-'+page);
-  if (btn) btn.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-/* ===== INIT ===== */
-document.addEventListener('DOMContentLoaded', function() {
-  renderFavoritos();
-  renderGrupos();
-  renderCopasList();
-  renderTimeline();
-  renderSimulador();
-  renderQuiz();
-  renderMapa();
-  renderRankPanels();
-  renderRankingContent();
-  renderSelecoesGrid(SELECOES_COPA);
-  renderBrGrid(JOGADORES_BR);
-});
-</script>
+    // INIT
+    document.getElementById('year').textContent = new Date().getFullYear();
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTimeline(); renderModules(); renderGlossary(); loadA11y();
+      if(location.hash) router(location.hash); else router('#home');
+    });
+  </script>
 </body>
 </html>
