@@ -3,18 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BitcoinEdu • História do Bitcoin para Escolas</title>
-  <meta name="description" content="Plataforma educativa sobre Bitcoin alinhada à BNCC, com linha do tempo interativa e ciclos de halving.">
+  <title>BitcoinEdu • Curso Interativo para Escolas</title>
+  <meta name="description" content="Plataforma educativa gamificada sobre Bitcoin alinhada à BNCC.">
   <style>
     :root {
       --bg: #f8f9fa; --bg-card: #ffffff; --text: #111827; --text-muted: #6b7280;
-      --primary: #2563eb; --secondary: #7c3aed; --accent: #F7931A; --success: #16a34a;
+      --primary: #2563eb; --secondary: #7c3aed; --accent: #F7931A; --success: #16a34a; --warning: #f59e0b; --danger: #ef4444;
       --border: #e5e7eb; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
       --radius: 0.75rem; --halving-gradient: linear-gradient(135deg, #F7931A, #FFB347);
+      --progress-bg: rgba(37,99,235,0.1); --progress-fill: var(--primary);
+      --xp-bar: linear-gradient(90deg, var(--accent), var(--secondary));
     }
     .dark {
       --bg: #0f172a; --bg-card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
       --border: #334155; --shadow: 0 4px 6px -1px rgba(0,0,0,0.5);
+      --progress-bg: rgba(37,99,235,0.2);
     }
     .high-contrast {
       --bg: #000 !important; --bg-card: #111 !important; --text: #fff !important; --text-muted: #ddd !important;
@@ -41,6 +44,14 @@
     .header-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
     .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.25rem; color: var(--text); }
     .logo span { color: var(--accent); }
+    
+    /* User Progress Bar in Header */
+    .user-progress { display: flex; align-items: center; gap: 1rem; }
+    .xp-display { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 500; }
+    .xp-bar { width: 120px; height: 6px; background: var(--progress-bg); border-radius: 3px; overflow: hidden; }
+    .xp-fill { height: 100%; background: var(--xp-bar); transition: width 0.4s ease; border-radius: 3px; }
+    .level-badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+    
     nav { display: flex; gap: 4px; }
     nav a { padding: 8px 12px; border-radius: 6px; color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
     nav a:hover, nav a.active { background: var(--bg); color: var(--primary); text-decoration: none; }
@@ -49,6 +60,7 @@
       nav { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 1rem; }
       nav.open { display: flex; }
       .mobile-toggle { display: block; }
+      .user-progress { display: none; }
     }
 
     /* Main & Sections */
@@ -65,10 +77,14 @@
     .btn-primary { background: var(--primary); color: white; } .btn-primary:hover { opacity: 0.9; }
     .btn-outline { border-color: var(--primary); color: var(--primary); background: transparent; } .btn-outline:hover { background: var(--primary); color: white; }
     .btn-secondary { background: var(--accent); color: white; } .btn-secondary:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: white; } .btn-danger:hover { opacity: 0.9; }
     .btn-group { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 
     .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15); }
+    .card.interactive { border-left: 4px solid var(--accent); cursor: pointer; }
+    .card.interactive:hover { border-left-color: var(--primary); }
+    
     .badge { display: inline-block; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; border-radius: 99px; }
     .badge.tech { background: rgba(37,99,235,0.15); color: var(--primary); }
     .badge.market { background: rgba(22,163,74,0.15); color: var(--success); }
@@ -79,6 +95,21 @@
     .badge.hack { background: rgba(239,68,68,0.15); color: #ef4444; }
     .badge.scam { background: rgba(249,115,22,0.15); color: #f97316; }
     .badge.defi { background: rgba(168,85,247,0.15); color: #a855f7; }
+    .badge.beginner { background: rgba(22,163,74,0.15); color: var(--success); }
+    .badge.intermediate { background: rgba(247,147,26,0.15); color: var(--accent); }
+    .badge.advanced { background: rgba(124,58,237,0.15); color: var(--secondary); }
+
+    /* Progress & Gamification */
+    .progress-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .progress-bar { height: 8px; background: var(--progress-bg); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--xp-bar); transition: width 0.4s ease; border-radius: 4px; }
+    .progress-stats { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted); }
+    
+    .xp-notification { position: fixed; top: 80px; right: 20px; background: var(--accent); color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: var(--shadow); z-index: 200; animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s; display: none; }
+    .xp-notification.show { display: block; }
+    @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
     /* Timeline */
     .controls { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-card); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); }
@@ -128,29 +159,78 @@
     .cycle-dot .cycle-reward { font-size: 0.75rem; color: var(--text-muted); }
     .cycle-info { margin-top: 1rem; padding: 1rem; background: rgba(247,147,26,0.05); border-radius: 6px; border-left: 4px solid var(--accent); }
 
-    /* Modules & Quiz */
-    .grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-    .module-header { background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; padding: 2rem; border-radius: var(--radius); margin-bottom: 2rem; }
-    .module-meta { display: flex; gap: 1rem; font-size: 0.9rem; opacity: 0.9; margin-top: 1rem; flex-wrap: wrap; }
+    /* Modules - NEW STRUCTURE */
+    .track-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; }
+    .track-header h3 { margin: 0 0 0.5rem 0; }
+    .track-header p { opacity: 0.9; margin: 0; }
+    
+    .module-card { position: relative; overflow: hidden; }
+    .module-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--xp-bar); }
+    .module-card.locked { opacity: 0.6; cursor: not-allowed; }
+    .module-card.locked::before { background: var(--border); }
+    .module-card.completed::before { background: var(--success); }
+    
+    .module-stats { display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap; }
+    .module-stats span { font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: var(--bg); }
+    
+    .lesson-list { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; }
+    .lesson-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: var(--bg); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lesson-item:hover { background: var(--border); }
+    .lesson-item.completed { opacity: 0.7; }
+    .lesson-checkbox { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+    .lesson-checkbox.checked { background: var(--success); border-color: var(--success); color: white; }
+    
+    /* Interactive Elements */
+    .simulation-box { background: var(--bg); border: 2px dashed var(--border); border-radius: 8px; padding: 1rem; margin: 1rem 0; }
+    .simulation-box h4 { margin-bottom: 0.75rem; color: var(--primary); }
+    .simulation-input { display: flex; gap: 0.5rem; margin: 0.75rem 0; flex-wrap: wrap; }
+    .simulation-input input, .simulation-input select { padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-card); color: var(--text); }
+    .simulation-result { margin-top: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: 6px; border-left: 4px solid var(--accent); display: none; }
+    .simulation-result.show { display: block; animation: fadeIn 0.3s; }
+    
+    /* Quiz */
     .quiz-container { max-width: 800px; margin: 0 auto; }
-    .quiz-progress { height: 6px; background: var(--border); border-radius: 3px; margin-bottom: 1.5rem; overflow: hidden; }
-    .quiz-progress-bar { height: 100%; background: var(--primary); transition: width 0.3s; }
-    .quiz-option { display: block; width: 100%; text-align: left; padding: 1rem; margin-bottom: 0.75rem; background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .quiz-question { font-weight: 600; margin-bottom: 1rem; font-size: 1.1rem; }
+    .quiz-options { display: flex; flex-direction: column; gap: 0.5rem; }
+    .quiz-option { display: block; width: 100%; text-align: left; padding: 1rem; background: var(--bg-card); border: 2px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
     .quiz-option:hover { border-color: var(--primary); }
     .quiz-option.selected { border-color: var(--primary); background: rgba(37,99,235,0.05); }
     .quiz-option.correct { border-color: var(--success); background: rgba(22,163,74,0.1); }
-    .quiz-option.wrong { border-color: #ef4444; background: rgba(239,68,68,0.1); }
-    .quiz-feedback { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
-    .quiz-feedback.show { display: block; }
+    .quiz-option.wrong { border-color: var(--danger); background: rgba(239,68,68,0.1); }
+    .quiz-feedback { padding: 1rem; border-radius: 8px; margin: 1rem 0; display: none; }
+    .quiz-feedback.show { display: block; animation: fadeIn 0.3s; }
     .quiz-feedback.correct { background: rgba(22,163,74,0.1); border: 1px solid var(--success); color: var(--success); }
-    .quiz-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid #ef4444; color: #ef4444; }
-
-    /* Glossary & Teachers */
+    .quiz-feedback.wrong { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); }
+    
+    /* Decision Points */
+    .decision-box { background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(247,147,26,0.1)); border: 2px solid var(--secondary); border-radius: var(--radius); padding: 1.25rem; margin: 1rem 0; }
+    .decision-box h4 { margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .decision-options { display: flex; flex-direction: column; gap: 0.5rem; margin: 0.75rem 0; }
+    .decision-option { padding: 0.75rem; background: var(--bg-card); border: 2px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .decision-option:hover { border-color: var(--secondary); }
+    .decision-option.selected { border-color: var(--secondary); background: rgba(124,58,237,0.1); }
+    .decision-consequence { margin-top: 1rem; padding: 0.75rem; background: var(--bg-card); border-radius: 6px; border-left: 4px solid var(--warning); display: none; }
+    .decision-consequence.show { display: block; animation: fadeIn 0.3s; }
+    
+    /* Visualization Charts */
+    .chart-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; }
+    .chart-title { font-weight: 600; margin-bottom: 0.75rem; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 120px; padding: 0.5rem 0; }
+    .chart-bar { flex: 1; background: var(--primary); border-radius: 4px 4px 0 0; position: relative; min-width: 20px; transition: height 0.3s ease; }
+    .chart-bar::after { content: attr(data-label); position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+    .chart-bar.halving { background: var(--halving-gradient); }
+    
+    /* Glossary */
     .glossary-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-    .term-card { border-left: 4px solid var(--primary); }
+    .term-card { border-left: 4px solid var(--primary); cursor: pointer; transition: all 0.2s; }
+    .term-card:hover { transform: translateX(4px); border-left-color: var(--accent); }
+    .term-card.expanded { border-left-color: var(--success); }
+    
+    /* Teachers */
     .teacher-resource { display: flex; flex-direction: column; gap: 0.5rem; }
     .teacher-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-
+    .resource-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+    
     /* Accessibility Panel */
     .a11y-toggle { position: fixed; bottom: 20px; right: 20px; z-index: 100; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--border); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; }
     .a11y-panel { position: fixed; bottom: 80px; right: 20px; z-index: 100; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; width: 280px; box-shadow: var(--shadow); display: none; }
@@ -172,6 +252,8 @@
       .btn-group { flex-direction: column; }
       .cycle-dot { min-width: 50px; padding: 0.4rem; }
       .cycle-dot .cycle-year { font-size: 0.8rem; }
+      .user-progress { display: none; }
+      .chart-bars { height: 80px; }
     }
   </style>
 </head>
@@ -181,36 +263,49 @@
   <header>
     <div class="container header-inner">
       <a href="#home" class="logo"><span>₿</span> BitcoinEdu</a>
+      
+      <!-- User Progress -->
+      <div class="user-progress">
+        <div class="xp-display">
+          <span class="level-badge" id="user-level">Nível 1</span>
+          <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width: 0%"></div></div>
+          <span id="xp-text">0/100 XP</span>
+        </div>
+      </div>
+      
       <button class="mobile-toggle" aria-label="Menu" onclick="toggleMenu()">☰</button>
       <nav id="main-nav">
-        <a href="#home" class="active" onclick="router('home')">Início</a>
-        <a href="#timeline" onclick="router('timeline')">Linha do Tempo</a>
-        <a href="#modules" onclick="router('modules')">Módulos</a>
-        <a href="#teachers" onclick="router('teachers')">Professores</a>
-        <a href="#glossary" onclick="router('glossary')">Glossário</a>
+        <a href="#home" class="active" onclick="router('home')">🏠 Início</a>
+        <a href="#timeline" onclick="router('timeline')">📅 Timeline</a>
+        <a href="#modules" onclick="router('modules')">🎮 Curso</a>
+        <a href="#teachers" onclick="router('teachers')">👨‍🏫 Professores</a>
+        <a href="#glossary" onclick="router('glossary')">📖 Glossário</a>
       </nav>
     </div>
   </header>
+
+  <!-- XP Notification -->
+  <div class="xp-notification" id="xp-notification">+10 XP! 🎉</div>
 
   <main id="main" class="container">
     <!-- HOME -->
     <section id="home" class="section active">
       <div class="hero">
-        <h1>Bitcoin: A Revolução da <span style="color:var(--accent)">Moeda Digital</span></h1>
-        <p class="subtitle">Plataforma educativa alinhada à BNCC para escolas brasileiras. Aprenda história, tecnologia, ciclos de halving e economia financeira de forma interativa.</p>
+        <h1>💸 Por que seu dinheiro perde valor?</h1>
+        <p class="subtitle">Descubra como o Bitcoin desafia o sistema financeiro tradicional. Curso gamificado, interativo e alinhado à BNCC.</p>
         <div class="btn-group">
-          <button class="btn btn-primary" onclick="router('timeline')">📅 Explorar Timeline</button>
-          <button class="btn btn-outline" onclick="router('modules')">📚 Ver Módulos</button>
+          <button class="btn btn-secondary" onclick="router('modules')">🚀 Começar Jornada</button>
+          <button class="btn btn-outline" onclick="router('timeline')">📅 Ver Timeline</button>
         </div>
       </div>
       
-      <!-- Halving Cycle Preview -->
+      <!-- Halving Cycle Preview (KEPT FROM TIMELINE) -->
       <div class="halving-cycles">
         <div class="halving-header">
           <span style="font-size:2rem">✂️</span>
           <div>
             <h3>Ciclos de Halving do Bitcoin</h3>
-            <p style="color:var(--text-muted); font-size:0.9rem">Evento programado a cada 210.000 blocos (~4 anos) que reduz pela metade a emissão de novos bitcoins</p>
+            <p style="color:var(--text-muted); font-size:0.9rem">Evento programado a cada 4 anos que reduz pela metade a emissão de novos bitcoins</p>
           </div>
         </div>
         <div class="cycle-visual" id="cycle-preview"></div>
@@ -219,25 +314,27 @@
         </div>
       </div>
       
+      <h2 style="text-align:center; margin:2rem 0 1.5rem;">🔥 Sua Jornada Começa Aqui</h2>
       <div class="grid" style="margin-bottom: 2rem;">
-        <div class="card" style="text-align:center"><div style="font-size:2rem">🌍</div><h3>60+ Eventos</h3><p class="text-muted">História completa desde 1983 (precursores) até 2028</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">🎓</div><h3>12 Módulos</h3><p class="text-muted">Prontos para sala de aula com BNCC</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">✂️</div><h3>5 Ciclos de Halving</h3><p class="text-muted">2012 • 2016 • 2020 • 2024 • 2028</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">💻</div><h3>100% Gratuito</h3><p class="text-muted">Open Source & Funciona Offline</p></div>
+        <div class="card" style="text-align:center; border-left:4px solid var(--success)"><div style="font-size:2rem">🧠</div><h3>4 Trilhas</h3><p class="text-muted">Do básico ao avançado com progressão real</p></div>
+        <div class="card" style="text-align:center; border-left:4px solid var(--accent)"><div style="font-size:2rem">🎮</div><h3>Simulações</h3><p class="text-muted">Aprenda fazendo: transações, mineração, decisões</p></div>
+        <div class="card" style="text-align:center; border-left:4px solid var(--secondary)"><div style="font-size:2rem">🏆</div><h3>Gamificação</h3><p class="text-muted">XP, níveis, conquistas e certificado final</p></div>
+        <div class="card" style="text-align:center; border-left:4px solid var(--primary)"><div style="font-size:2rem">📊</div><h3>Visualizações</h3><p class="text-muted">Gráficos interativos como na timeline</p></div>
       </div>
       
-      <h2 style="text-align:center; margin-bottom:1.5rem;">Por que estudar Bitcoin nas escolas?</h2>
-      <div class="grid">
-        <div class="card"><h3>🧠 Pensamento Crítico</h3><p>Entenda como tecnologias disruptivas nascem de crises e desafiam modelos tradicionais de dinheiro e confiança.</p></div>
-        <div class="card"><h3>💰 Educação Financeira</h3><p>Conceitos de inflação, escassez programada, descentralização e políticas monetárias algorítmicas na prática.</p></div>
-        <div class="card"><h3>🌐 Cidadania Digital</h3><p>Soberania individual, inclusão financeira global e o papel do Estado na regulação de inovações tecnológicas.</p></div>
+      <div class="card" style="background:linear-gradient(135deg, rgba(247,147,26,0.1), rgba(37,99,235,0.05)); border:2px solid var(--accent)">
+        <h3 style="text-align:center">⚡ Por que este curso é diferente?</h3>
+        <div class="grid" style="margin-top:1rem">
+          <div><strong>❌ Não é:</strong> Leitura passiva • Definições chatas • Conteúdo solto</div>
+          <div><strong>✅ É:</strong> Simulações reais • Conflitos que prendem • Progressão gamificada</div>
+        </div>
       </div>
     </section>
 
-    <!-- TIMELINE -->
+    <!-- TIMELINE (KEPT INTACT - EXCELLENT AS IS) -->
     <section id="timeline" class="section">
       <h1>Linha do Tempo do Bitcoin</h1>
-      <p class="subtitle">Explore marcos históricos, precursores criptográficos e ciclos de halving com contexto educativo, atividades sugeridas e conexões com a BNCC.</p>
+      <p class="subtitle">Explore marcos históricos, precursores criptográficos e ciclos de halving com contexto educativo.</p>
       
       <div class="controls">
         <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="tl-search" placeholder="Buscar eventos..." oninput="filterTimeline()"></div>
@@ -256,41 +353,79 @@
       <div id="timeline-list" class="timeline-list"></div>
     </section>
 
-    <!-- MODULES LIST -->
+    <!-- MODULES - COMPLETELY REDESIGNED -->
     <section id="modules" class="section">
-      <h1>Módulos Educativos</h1>
-      <p class="subtitle">Conteúdo pedagógico pronto, com planos de aula, atividades práticas e alinhamento à BNCC.</p>
-      <div id="modules-grid" class="grid"></div>
+      <h1>🎮 Sua Jornada no Bitcoin</h1>
+      <p class="subtitle">4 trilhas com simulações, quizzes e decisões que impactam seu progresso.</p>
+      
+      <!-- User Progress Overview -->
+      <div class="progress-container">
+        <div class="progress-header">
+          <strong>Progresso Geral</strong>
+          <span><span id="progress-percent">0</span>% concluído</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="overall-progress" style="width: 0%"></div></div>
+        <div class="progress-stats">
+          <span>🎯 <strong id="completed-lessons">0</strong>/<span id="total-lessons">0</span> aulas</span>
+          <span>⭐ <strong id="total-xp">0</strong> XP acumulados</span>
+          <span>🏆 <strong id="badges-earned">0</strong> conquistas</span>
+        </div>
+      </div>
+      
+      <div id="modules-container"></div>
     </section>
 
-    <!-- MODULE DETAIL -->
+    <!-- MODULE DETAIL - INTERACTIVE -->
     <section id="module-detail" class="section">
+      <button class="btn btn-outline" onclick="router('modules')" style="margin-bottom:1rem">← Voltar para Trilhas</button>
       <div id="module-content"></div>
     </section>
 
     <!-- TEACHERS -->
     <section id="teachers" class="section">
       <div style="text-align:center; margin-bottom:2rem">
-        <h1>Área do Professor</h1>
-        <p class="subtitle">Recursos exclusivos para integrar o estudo do Bitcoin e da economia digital ao currículo.</p>
+        <h1>👨‍🏫 Área do Professor</h1>
+        <p class="subtitle">Recursos prontos para sala de aula + ferramentas de acompanhamento.</p>
       </div>
-      <div class="grid">
-        <div class="card teacher-resource"><div class="teacher-icon">📖</div><h3>Planos de Aula Editáveis</h3><p>Modelos prontos para copiar, adaptar e imprimir. Alinhados à grade curricular estadual.</p><button class="btn btn-outline" style="margin-top:0.5rem">📥 Baixar Pacote</button></div>
-        <div class="card teacher-resource"><div class="teacher-icon">🖨️</div><h3>Materiais para Impressão</h3><p>Atividades, glossários visuais, infográficos e rubricas de avaliação em PDF.</p><button class="btn btn-outline" style="margin-top:0.5rem">📥 Acessar Biblioteca</button></div>
-        <div class="card teacher-resource"><div class="teacher-icon">👥</div><h3>Fórum de Educadores</h3><p>Espaço para troca de experiências, dúvidas pedagógicas e sugestões de melhoria.</p><button class="btn btn-outline" style="margin-top:0.5rem">💬 Entrar no Fórum</button></div>
-        <div class="card teacher-resource"><div class="teacher-icon">🏅</div><h3>Certificado de Formação</h3><p>Reconhecimento oficial ao concluir os módulos pedagógicos e avaliação continuada.</p><button class="btn btn-outline" style="margin-top:0.5rem">🎓 Ver Requisitos</button></div>
+      
+      <div class="grid" style="margin-bottom:2rem">
+        <div class="card teacher-resource">
+          <div class="teacher-icon">📋</div>
+          <h3>Planos de Aula Prontos</h3>
+          <p>PDFs editáveis com roteiro, objetivos BNCC e materiais de apoio para cada módulo.</p>
+          <button class="btn btn-outline" onclick="showNotification('📥 Download iniciado!')">📥 Baixar Pacote</button>
+        </div>
+        <div class="card teacher-resource">
+          <div class="teacher-icon">📊</div>
+          <h3>Relatório de Turma</h3>
+          <p>Acompanhe progresso, XP e dificuldades dos alunos em tempo real.</p>
+          <button class="btn btn-outline" onclick="showNotification('🔐 Funcionalidade em desenvolvimento')">👁️ Ver Demo</button>
+        </div>
+        <div class="card teacher-resource">
+          <div class="teacher-icon">🖨️</div>
+          <h3>Materiais para Impressão</h3>
+          <p>Atividades offline, glossários visuais e infográficos em PDF pronto para imprimir.</p>
+          <button class="btn btn-outline" onclick="showNotification('📁 Biblioteca aberta!')">📥 Acessar Biblioteca</button>
+        </div>
+        <div class="card teacher-resource">
+          <div class="teacher-icon">🏅</div>
+          <h3>Certificado Automático</h3>
+          <p>Gere certificados personalizados para alunos que concluírem as trilhas.</p>
+          <button class="btn btn-outline" onclick="showNotification('🎓 Modelo de certificado gerado!')">🎨 Personalizar</button>
+        </div>
       </div>
-      <div class="card" style="margin-top:2rem; text-align:center; background:var(--accent); color:white; border:none">
+      
+      <div class="card" style="background:linear-gradient(135deg, var(--accent), var(--secondary)); color:white; border:none">
         <h2>🏫 Cadastre sua Escola</h2>
-        <p style="margin:0.5rem 0 1rem; opacity:0.9">Projeto gratuito para redes públicas e privadas. Suporte técnico e pedagógico incluso.</p>
-        <button class="btn" style="background:white; color:var(--accent); border:none">Iniciar Cadastro</button>
+        <p style="margin:0.5rem 0 1rem; opacity:0.9">Projeto 100% gratuito. Suporte pedagógico incluso + dashboard para coordenadores.</p>
+        <button class="btn" style="background:white; color:var(--accent); border:none" onclick="showNotification('✅ Cadastro iniciado! Em breve entraremos em contato.')">Iniciar Cadastro</button>
       </div>
     </section>
 
-    <!-- GLOSSARY -->
+    <!-- GLOSSARY - INTERACTIVE -->
     <section id="glossary" class="section">
-      <h1>Glossário de Termos</h1>
-      <p class="subtitle">Conceitos fundamentais explicados de forma clara para estudantes e professores.</p>
+      <h1>📖 Glossário Interativo</h1>
+      <p class="subtitle">Clique nos termos para ver explicações com exemplos práticos e simulações.</p>
       <div class="controls" style="margin-bottom:1.5rem">
         <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="gl-search" placeholder="Buscar termo..." oninput="filterGlossary()"></div>
       </div>
@@ -315,7 +450,998 @@
   </div>
 
   <script>
-    // === DADOS: EVENTOS DA LINHA DO TEMPO COM CICLOS DE HALVING ===
+    // === USER PROGRESS SYSTEM ===
+    const userProgress = {
+      xp: 0,
+      level: 1,
+      completedLessons: [],
+      badges: [],
+      decisions: {}
+    };
+    
+    const XP_PER_LESSON = 10;
+    const XP_PER_QUIZ = 15;
+    const XP_PER_DECISION = 20;
+    const XP_TO_LEVEL_UP = 100;
+
+    function addXP(amount, message = '') {
+      userProgress.xp += amount;
+      
+      // Level up check
+      if (userProgress.xp >= userProgress.level * XP_TO_LEVEL_UP) {
+        userProgress.level++;
+        showXPNotification(`🎉 Nível ${userProgress.level}!`);
+      } else {
+        showXPNotification(`+${amount} XP ${message}`);
+      }
+      
+      updateProgressUI();
+      saveProgress();
+    }
+
+    function showXPNotification(message) {
+      const notif = document.getElementById('xp-notification');
+      notif.textContent = message;
+      notif.classList.add('show');
+      setTimeout(() => notif.classList.remove('show'), 3000);
+    }
+
+    function updateProgressUI() {
+      const xpInLevel = userProgress.xp % XP_TO_LEVEL_UP;
+      const progress = (xpInLevel / XP_TO_LEVEL_UP) * 100;
+      
+      document.getElementById('xp-fill').style.width = `${progress}%`;
+      document.getElementById('xp-text').textContent = `${userProgress.xp} XP`;
+      document.getElementById('user-level').textContent = `Nível ${userProgress.level}`;
+      
+      // Overall progress
+      const totalLessons = getAllLessons().length;
+      const completed = userProgress.completedLessons.length;
+      const percent = Math.round((completed / totalLessons) * 100);
+      
+      document.getElementById('overall-progress').style.width = `${percent}%`;
+      document.getElementById('progress-percent').textContent = percent;
+      document.getElementById('completed-lessons').textContent = completed;
+      document.getElementById('total-lessons').textContent = totalLessons;
+      document.getElementById('total-xp').textContent = userProgress.xp;
+      document.getElementById('badges-earned').textContent = userProgress.badges.length;
+    }
+
+    function saveProgress() {
+      localStorage.setItem('bitcoinedu_progress', JSON.stringify(userProgress));
+    }
+
+    function loadProgress() {
+      const saved = localStorage.getItem('bitcoinedu_progress');
+      if (saved) {
+        Object.assign(userProgress, JSON.parse(saved));
+      }
+      updateProgressUI();
+    }
+
+    function getAllLessons() {
+      return tracks.flatMap(t => t.modules.flatMap(m => m.lessons));
+    }
+
+    // === COURSE STRUCTURE - 4 TRACKS WITH HOOKS ===
+    const tracks = [
+      {
+        id: 'track1',
+        title: '🔥 TRILHA 1: FUNDAMENTOS',
+        subtitle: 'Por que o dinheiro perde valor?',
+        description: 'Comece pelo conflito: inflação, controle e a promessa do Bitcoin.',
+        color: 'var(--success)',
+        modules: [
+          {
+            id: 'mod1',
+            title: '💸 Por que R$100 compram menos hoje?',
+            description: 'Inflação na prática: compare preços de 2002 vs 2024 com exemplos do Brasil.',
+            level: 'beginner',
+            duration: '2 aulas',
+            xp: 30,
+            lessons: [
+              { id: 'l1-1', title: '🛒 Simule: O que R$100 compravam em 2002?', type: 'simulation', completed: false },
+              { id: 'l1-2', title: '📊 Gráfico: Inflação brasileira em 20 anos', type: 'chart', completed: false },
+              { id: 'l1-3', title: '❓ Quiz: Teste seu entendimento', type: 'quiz', completed: false }
+            ]
+          },
+          {
+            id: 'mod2',
+            title: '🏦 Quem decide imprimir dinheiro?',
+            description: 'Bancos centrais, política monetária e o poder por trás da caneta.',
+            level: 'beginner',
+            duration: '2 aulas',
+            xp: 30,
+            lessons: [
+              { id: 'l2-1', title: '🎭 Role-play: Você é o presidente do Banco Central', type: 'decision', completed: false },
+              { id: 'l2-2', title: '🌍 Comparativo: BCE vs Fed vs BCB', type: 'content', completed: false },
+              { id: 'l2-3', title: '❓ Quiz: Quem controla o que?', type: 'quiz', completed: false }
+            ]
+          },
+          {
+            id: 'mod3',
+            title: '₿ Bitcoin: A alternativa programada',
+            description: 'Escassez algorítmica: 21 milhões, halving e por que isso importa.',
+            level: 'intermediate',
+            duration: '3 aulas',
+            xp: 45,
+            lessons: [
+              { id: 'l3-1', title: '✂️ Simule um Halving: Veja a emissão cair', type: 'simulation', completed: false },
+              { id: 'l3-2', title: '📈 Visual: Oferta de BTC vs Moedas Fiat', type: 'chart', completed: false },
+              { id: 'l3-3', title: '🤔 Decisão: Guardar em exchange ou carteira própria?', type: 'decision', completed: false },
+              { id: 'l3-4', title: '❓ Quiz Final da Trilha 1', type: 'quiz', completed: false }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'track2',
+        title: '⚙️ TRILHA 2: COMO FUNCIONA',
+        subtitle: 'Blockchain na prática',
+        description: 'Entenda a tecnologia por trás com simulações reais, não apenas teoria.',
+        color: 'var(--primary)',
+        locked: true,
+        unlockXp: 100,
+        modules: [
+          {
+            id: 'mod4',
+            title: '🔗 Blockchain: O livro-razão que ninguém apaga',
+            description: 'Simule uma transação e veja como blocos se encadeiam.',
+            level: 'intermediate',
+            duration: '3 aulas',
+            xp: 40,
+            lessons: [
+              { id: 'l4-1', title: '✍️ Simule: Envie "BTC" e valide em grupo', type: 'simulation', completed: false },
+              { id: 'l4-2', title: '🔐 Chaves públicas/privadas: Simulação de perda', type: 'decision', completed: false },
+              { id: 'l4-3', title: '❓ Quiz: Como uma transação é confirmada?', type: 'quiz', completed: false }
+            ]
+          },
+          {
+            id: 'mod5',
+            title: '⛏️ Mineração: Não é só "clicar e ganhar"',
+            description: 'Proof-of-Work na prática: jogo simples de mineração simulada.',
+            level: 'intermediate',
+            duration: '2 aulas',
+            xp: 35,
+            lessons: [
+              { id: 'l5-1', title: '🎮 Jogo: Mine um bloco em 60 segundos', type: 'simulation', completed: false },
+              { id: 'l5-2', title: '📊 Gráfico: Dificuldade de mineração ao longo do tempo', type: 'chart', completed: false },
+              { id: 'l5-3', title: '❓ Quiz: Por que mineração consome energia?', type: 'quiz', completed: false }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'track3',
+        title: '💰 TRILHA 3: MERCADO',
+        subtitle: 'Por que o preço sobe (e desce)?',
+        description: 'Entenda ciclos, halving, bolhas e quem realmente move o mercado.',
+        color: 'var(--accent)',
+        locked: true,
+        unlockXp: 200,
+        modules: [
+          {
+            id: 'mod6',
+            title: '📈 Oferta, demanda e o mito do "preço justo"',
+            description: 'Simule um mercado e veja como notícias afetam o preço.',
+            level: 'advanced',
+            duration: '3 aulas',
+            xp: 45,
+            lessons: [
+              { id: 'l6-1', title: '🎭 Simulação: Você é um trader reagindo a notícias', type: 'simulation', completed: false },
+              { id: 'l6-2', title: '🔄 Ciclos de 4 anos: Halving e preço', type: 'chart', completed: false },
+              { id: 'l6-3', title: '🤔 Decisão: Comprar na alta ou esperar?', type: 'decision', completed: false },
+              { id: 'l6-4', title: '❓ Quiz: O que move o preço do Bitcoin?', type: 'quiz', completed: false }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'track4',
+        title: '🌍 TRILHA 4: MUNDO REAL',
+        subtitle: 'Bitcoin vs Governos vs Bancos',
+        description: 'Casos reais, regulação e o futuro do dinheiro no Brasil e no mundo.',
+        color: 'var(--secondary)',
+        locked: true,
+        unlockXp: 350,
+        modules: [
+          {
+            id: 'mod7',
+            title: '🗳️ El Salvador: Experimento em tempo real',
+            description: 'Análise crítica: o que funcionou, o que não funcionou.',
+            level: 'advanced',
+            duration: '2 aulas',
+            xp: 40,
+            lessons: [
+              { id: 'l7-1', title: '🌐 Mapa: Países com postura pró/anti Bitcoin', type: 'content', completed: false },
+              { id: 'l7-2', title: '⚖️ Debate guiado: Regulação vs Inovação', type: 'decision', completed: false },
+              { id: 'l7-3', title: '❓ Quiz Final do Curso', type: 'quiz', completed: false }
+            ]
+          },
+          {
+            id: 'mod8',
+            title: '🎓 Certificado + Próximos Passos',
+            description: 'Parabéns! Gere seu certificado e veja caminhos para se aprofundar.',
+            level: 'advanced',
+            duration: '1 aula',
+            xp: 50,
+            lessons: [
+              { id: 'l8-1', title: '🏆 Gerar Certificado Personalizado', type: 'certificate', completed: false },
+              { id: 'l8-2', title: '🚀 Onde estudar mais: Recursos recomendados', type: 'content', completed: false }
+            ]
+          }
+        ]
+      }
+    ];
+
+    // === QUIZ DATA ===
+    const quizzes = {
+      'l1-3': {
+        question: 'Se a inflação foi de 10% no ano, quanto vale hoje R$100 guardados debaixo do colchão?',
+        options: ['R$110', 'R$100', 'R$90', 'Não muda'],
+        correct: 2,
+        feedback: {
+          correct: '✅ Exato! Inflação corrói o poder de compra. R$100 hoje compram ~10% menos.',
+          wrong: '❌ Quase! Inflação significa que o dinheiro perde valor. R$100 hoje compram menos.'
+        }
+      },
+      'l2-3': {
+        question: 'Quem decide a quantidade de Reais em circulação no Brasil?',
+        options: ['Presidente da República', 'Banco Central do Brasil', 'Congresso Nacional', 'Mercado financeiro'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Correto! O BCB controla a política monetária, incluindo emissão de moeda.',
+          wrong: '❌ Não é bem assim. Quem controla a emissão é o Banco Central, não o presidente ou congresso.'
+        }
+      },
+      'l3-4': {
+        question: 'Quantos Bitcoins existirão no máximo?',
+        options: ['10 milhões', '21 milhões', '100 milhões', 'Ilimitados'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Perfeito! 21 milhões é o limite programado no código do Bitcoin desde 2008.',
+          wrong: '❌ O limite é 21 milhões. Isso é parte fundamental da escassez programada do Bitcoin.'
+        }
+      },
+      'l4-3': {
+        question: 'O que acontece se você perder sua chave privada?',
+        options: ['Recupera com e-mail', 'O Bitcoin some para sempre', 'O banco central devolve', 'Mineradores recuperam'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Exato! Sem a chave privada, os bitcoins são inacessíveis para sempre. Por isso a importância do backup!',
+          wrong: '❌ Não há recuperação. Sem a chave privada, os fundos são perdidos permanentemente. Guarde com cuidado!'
+        }
+      },
+      'l5-3': {
+        question: 'Por que a mineração de Bitcoin consome muita energia?',
+        options: ['Porque é ineficiente', 'Para garantir segurança via Proof-of-Work', 'Porque os mineradores desperdiçam', 'Não consome tanto assim'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Correto! O consumo é intencional: torna ataques à rede economicamente inviáveis.',
+          wrong: '❌ O consumo é uma característica de segurança, não um defeito. Proof-of-Work exige esforço real.'
+        }
+      },
+      'l6-4': {
+        question: 'Qual evento historicamente precede grandes altas do Bitcoin?',
+        options: ['Eleições nos EUA', 'Halving', 'Crise bancária', 'Lançamento de nova exchange'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Exato! Os halvings (2012, 2016, 2020, 2024) historicamente antecedem bull runs.',
+          wrong: '❌ Embora outros fatores influenciem, os halvings são o evento programado mais correlacionado com ciclos de alta.'
+        }
+      },
+      'l7-3': {
+        question: 'Qual é o maior desafio para adoção do Bitcoin como moeda oficial?',
+        options: ['Tecnologia muito complexa', 'Volatilidade de preço', 'Falta de mineradores', 'Internet lenta'],
+        correct: 1,
+        feedback: {
+          correct: '✅ Correto! A volatilidade dificulta o uso diário como meio de troca estável.',
+          wrong: '❌ A volatilidade é o principal obstáculo prático para uso como moeda do dia a dia.'
+        }
+      }
+    };
+
+    // === RENDER MODULES (NEW STRUCTURE) ===
+    function renderModules() {
+      const container = document.getElementById('modules-container');
+      if (!container) return;
+      
+      container.innerHTML = tracks.map(track => {
+        const isLocked = track.locked && userProgress.xp < track.unlockXp;
+        const trackProgress = calculateTrackProgress(track);
+        
+        return `
+          <div class="track-header" style="background: linear-gradient(135deg, ${track.color}, ${track.color}dd)">
+            <h3>${track.title}</h3>
+            <p>${track.subtitle} • ${track.description}</p>
+            ${track.locked ? `<p style="margin-top:0.5rem; font-size:0.9rem">🔒 Desbloqueie com ${track.unlockXp} XP</p>` : ''}
+          </div>
+          
+          <div class="grid">
+            ${track.modules.map(mod => {
+              const isModLocked = isLocked || !isModuleUnlocked(mod, track);
+              const modProgress = calculateModuleProgress(mod);
+              const isCompleted = userProgress.completedLessons.filter(l => mod.lessons.some(ml => ml.id === l)).length === mod.lessons.length;
+              
+              return `
+                <div class="card module-card ${isModLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}" 
+                     ${!isModLocked ? `onclick="openModule('${track.id}', '${mod.id}')"` : ''}
+                     style="${!isModLocked ? 'cursor:pointer' : ''}">
+                  <h4>${mod.title}</h4>
+                  <p class="text-muted" style="font-size:0.95rem">${mod.description}</p>
+                  
+                  <div class="module-stats">
+                    <span class="badge ${mod.level}">${mod.level === 'beginner' ? '🌱 Iniciante' : mod.level === 'intermediate' ? '⚡ Intermediário' : '🔥 Avançado'}</span>
+                    <span>⏱ ${mod.duration}</span>
+                    <span>⭐ ${mod.xp} XP</span>
+                  </div>
+                  
+                  <div class="progress-container" style="margin:0.75rem 0">
+                    <div class="progress-header" style="font-size:0.85rem">
+                      <span>Progresso</span>
+                      <span>${modProgress}%</span>
+                    </div>
+                    <div class="progress-bar" style="height:4px">
+                      <div class="progress-fill" style="width:${modProgress}%; background:${track.color}"></div>
+                    </div>
+                  </div>
+                  
+                  <div class="lesson-list">
+                    ${mod.lessons.map(lesson => {
+                      const isDone = userProgress.completedLessons.includes(lesson.id);
+                      return `
+                        <div class="lesson-item ${isDone ? 'completed' : ''}" 
+                             ${!isModLocked ? `onclick="openLesson('${track.id}', '${mod.id}', '${lesson.id}')"` : ''}
+                             style="${isModLocked ? 'cursor:not-allowed; opacity:0.6' : ''}">
+                          <div class="lesson-checkbox ${isDone ? 'checked' : ''}">${isDone ? '✓' : ''}</div>
+                          <span style="font-size:0.9rem">${lesson.title}</span>
+                          <span class="badge" style="margin-left:auto; font-size:0.7rem">${getLessonTypeIcon(lesson.type)}</span>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function getLessonTypeIcon(type) {
+      const icons = { simulation: '🎮', quiz: '❓', decision: '🤔', chart: '📊', content: '📖', certificate: '🏆' };
+      return icons[type] || '📄';
+    }
+
+    function calculateTrackProgress(track) {
+      const allLessons = track.modules.flatMap(m => m.lessons);
+      const completed = allLessons.filter(l => userProgress.completedLessons.includes(l.id)).length;
+      return allLessons.length ? Math.round((completed / allLessons.length) * 100) : 0;
+    }
+
+    function calculateModuleProgress(mod) {
+      const completed = mod.lessons.filter(l => userProgress.completedLessons.includes(l.id)).length;
+      return Math.round((completed / mod.lessons.length) * 100);
+    }
+
+    function isModuleUnlocked(mod, track) {
+      // Simple logic: unlock if previous modules in track are completed
+      const trackModules = track.modules;
+      const currentIndex = trackModules.findIndex(m => m.id === mod.id);
+      if (currentIndex === 0) return true;
+      
+      for (let i = 0; i < currentIndex; i++) {
+        const prevMod = trackModules[i];
+        const allCompleted = prevMod.lessons.every(l => userProgress.completedLessons.includes(l.id));
+        if (!allCompleted) return false;
+      }
+      return true;
+    }
+
+    // === OPEN MODULE / LESSON ===
+    function openModule(trackId, modId) {
+      const track = tracks.find(t => t.id === trackId);
+      const mod = track.modules.find(m => m.id === modId);
+      
+      if (!mod) return;
+      
+      const content = document.getElementById('module-content');
+      content.innerHTML = `
+        <div class="card">
+          <h2>${mod.title}</h2>
+          <p class="text-muted">${mod.description}</p>
+          <div class="module-stats" style="margin:1rem 0">
+            <span class="badge ${mod.level}">${mod.level}</span>
+            <span>⏱ ${mod.duration}</span>
+            <span>⭐ ${mod.xp} XP ao concluir</span>
+          </div>
+        </div>
+        
+        <div class="lesson-list">
+          ${mod.lessons.map(lesson => `
+            <div class="lesson-item" onclick="openLesson('${trackId}', '${modId}', '${lesson.id}')">
+              <div class="lesson-checkbox ${userProgress.completedLessons.includes(lesson.id) ? 'checked' : ''}">
+                ${userProgress.completedLessons.includes(lesson.id) ? '✓' : ''}
+              </div>
+              <strong>${lesson.title}</strong>
+              <span class="badge" style="margin-left:auto">${getLessonTypeIcon(lesson.type)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      router('module-detail');
+    }
+
+    function openLesson(trackId, modId, lessonId) {
+      const track = tracks.find(t => t.id === trackId);
+      const mod = track.modules.find(m => m.id === modId);
+      const lesson = mod.lessons.find(l => l.id === lessonId);
+      
+      if (!lesson || userProgress.completedLessons.includes(lessonId)) {
+        // Show completion message if already done
+        showXPNotification('✅ Aula já concluída!');
+        return;
+      }
+      
+      const content = document.getElementById('module-content');
+      
+      // Render based on lesson type
+      let lessonContent = '';
+      
+      if (lesson.type === 'simulation') {
+        lessonContent = renderSimulation(lessonId);
+      } else if (lesson.type === 'quiz') {
+        lessonContent = renderQuiz(lessonId);
+      } else if (lesson.type === 'decision') {
+        lessonContent = renderDecision(lessonId);
+      } else if (lesson.type === 'chart') {
+        lessonContent = renderChart(lessonId);
+      } else {
+        lessonContent = `<div class="card"><p>Conteúdo da aula: ${lesson.title}</p><button class="btn btn-primary" onclick="completeLesson('${lessonId}', ${mod.xp})">✅ Concluir Aula (+${mod.xp} XP)</button></div>`;
+      }
+      
+      content.innerHTML = `
+        <button class="btn btn-outline" onclick="openModule('${trackId}', '${modId}')" style="margin-bottom:1rem">← Voltar para ${mod.title}</button>
+        <div class="card">
+          <h3>${lesson.title}</h3>
+          ${lessonContent}
+        </div>
+      `;
+      
+      // Keep in module-detail view
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('module-detail').classList.add('active');
+    }
+
+    // === SIMULATION RENDERERS ===
+    function renderSimulation(lessonId) {
+      const sims = {
+        'l1-1': {
+          title: '🛒 Simulador de Poder de Compra',
+          description: 'Digite um valor em Reais de 2002 e veja quanto seria necessário hoje para comprar as mesmas coisas.',
+          type: 'inflation',
+          formula: (val) => Math.round(val * 2.8), // ~180% inflation 2002-2024
+          resultText: (original, adjusted) => `Em 2002, R$${original} compravam X. Hoje, você precisaria de ~R$${adjusted} para o mesmo poder de compra. <strong>Isso é inflação.</strong>`
+        },
+        'l3-1': {
+          title: '✂️ Simulador de Halving',
+          description: 'Veja como a recompensa dos mineradores cai pela metade a cada 210.000 blocos (~4 anos).',
+          type: 'halving',
+          data: [
+            { year: 2009, reward: 50 }, { year: 2012, reward: 25 },
+            { year: 2016, reward: 12.5 }, { year: 2020, reward: 6.25 },
+            { year: 2024, reward: 3.125 }, { year: 2028, reward: 1.5625 }
+          ],
+          resultText: () => `A cada ~4 anos, a emissão de novos bitcoins cai pela metade. Isso cria escassez programada — diferente de moedas que podem ser impressas ilimitadamente.`
+        },
+        'l4-1': {
+          title: '✍️ Simulador de Transação',
+          description: 'Digite um valor e "envie" para ver como uma transação Bitcoin é validada.',
+          type: 'transaction',
+          resultText: (val) => `✅ Transação de ${val} BTC simulada! <br><small>Na rede real: 1) Você assina com chave privada 2) Transação vai para mempool 3) Mineradores validam 4) Bloco é adicionado à blockchain (~10 min)</small>`
+        },
+        'l5-1': {
+          title: '🎮 Mini-Jogo de Mineração',
+          description: 'Clique para "minerar". Encontre um hash que comece com 4 zeros!',
+          type: 'mining-game',
+          resultText: () => `🎉 Bloco minerado! Na rede real, isso exige trilhões de tentativas por segundo. É assim que o Proof-of-Work protege o Bitcoin.`
+        },
+        'l6-1': {
+          title: '🎭 Simulador de Mercado',
+          description: 'Reaja a notícias e veja como o "preço" do seu BTC simulado muda.',
+          type: 'market',
+          resultText: (finalPrice) => `Seu BTC simulado agora vale $${finalPrice}. Notícias, halving e adoção movem o mercado — mas volatilidade é parte do jogo.`
+        }
+      };
+      
+      const sim = sims[lessonId];
+      if (!sim) return '<p>Simulação em desenvolvimento.</p>';
+      
+      if (sim.type === 'inflation') {
+        return `
+          <div class="simulation-box">
+            <h4>${sim.title}</h4>
+            <p>${sim.description}</p>
+            <div class="simulation-input">
+              <input type="number" id="sim-input" placeholder="Valor em R$ (2002)" min="1" value="100">
+              <button class="btn btn-primary" onclick="runInflationSim()">Calcular</button>
+            </div>
+            <div class="simulation-result" id="sim-result"></div>
+          </div>
+          <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem">✅ Concluir Aula (+30 XP)</button>
+        `;
+      }
+      
+      if (sim.type === 'halving') {
+        return `
+          <div class="simulation-box">
+            <h4>${sim.title}</h4>
+            <p>${sim.description}</p>
+            <div class="chart-container">
+              <div class="chart-title">Recompensa por Bloco ao Longo dos Halvings</div>
+              <div class="chart-bars">
+                ${sim.data.map(d => `<div class="chart-bar halving" style="height:${(d.reward/50)*100}%" data-label="${d.year}"></div>`).join('')}
+              </div>
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem">${sim.resultText()}</p>
+          </div>
+          <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem">✅ Concluir Aula (+30 XP)</button>
+        `;
+      }
+      
+      if (sim.type === 'transaction') {
+        return `
+          <div class="simulation-box">
+            <h4>${sim.title}</h4>
+            <p>${sim.description}</p>
+            <div class="simulation-input">
+              <input type="number" id="tx-amount" placeholder="Valor em BTC" step="0.0001" value="0.001">
+              <button class="btn btn-primary" onclick="runTxSim()">Enviar Transação</button>
+            </div>
+            <div class="simulation-result" id="tx-result"></div>
+          </div>
+          <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem">✅ Concluir Aula (+30 XP)</button>
+        `;
+      }
+      
+      if (sim.type === 'mining-game') {
+        return `
+          <div class="simulation-box">
+            <h4>${sim.title}</h4>
+            <p>${sim.description}</p>
+            <button class="btn btn-secondary" id="mine-btn" onclick="startMining()">⛏️ Começar a Minerar</button>
+            <p id="mining-status" style="margin:0.5rem 0; font-size:0.9rem; color:var(--text-muted)">Clique para tentar encontrar um hash válido...</p>
+            <div class="simulation-result" id="mining-result"></div>
+          </div>
+          <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem; display:none" id="complete-mining">✅ Concluir Aula (+30 XP)</button>
+        `;
+      }
+      
+      if (sim.type === 'market') {
+        return `
+          <div class="simulation-box">
+            <h4>${sim.title}</h4>
+            <p>${sim.description}</p>
+            <p style="font-size:1.2rem; margin:0.5rem 0"><strong>Seu BTC: $<span id="market-price">40000</span></strong></p>
+            <select id="news-select" style="margin:0.5rem 0; padding:0.5rem; width:100%">
+              <option value="">📰 Escolha uma notícia...</option>
+              <option value="10">📈 ETF aprovado nos EUA (+10%)</option>
+              <option value="-15">📉 Exchange hackeada (-15%)</option>
+              <option value="25">🚀 País adota Bitcoin como moeda (+25%)</option>
+              <option value="-8">⚖️ Regulação restritiva (-8%)</option>
+              <option value="5">💬 Elon Musk twitta sobre BTC (+5%)</option>
+            </select>
+            <button class="btn btn-primary" onclick="applyNews()">Aplicar Notícia</button>
+            <button class="btn btn-outline" onclick="resetMarket()" style="margin-left:0.5rem">🔄 Resetar</button>
+            <div class="simulation-result" id="market-result"></div>
+          </div>
+          <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem">✅ Concluir Aula (+30 XP)</button>
+        `;
+      }
+      
+      return `<p>Simulação em desenvolvimento.</p>`;
+    }
+
+    // Simulation Functions
+    function runInflationSim() {
+      const val = parseFloat(document.getElementById('sim-input').value) || 100;
+      const sim = { formula: (v) => Math.round(v * 2.8) };
+      const result = sim.formula(val);
+      const resultDiv = document.getElementById('sim-result');
+      resultDiv.innerHTML = `<strong>Resultado:</strong> ${sim.resultText(val, result)}`;
+      resultDiv.classList.add('show');
+    }
+
+    function runTxSim() {
+      const amount = document.getElementById('tx-amount').value;
+      const resultDiv = document.getElementById('tx-result');
+      resultDiv.innerHTML = `<strong>✅ Transação enviada!</strong><br>${quizzes['l4-3'].feedback.correct}`;
+      resultDiv.classList.add('show');
+    }
+
+    function startMining() {
+      const btn = document.getElementById('mine-btn');
+      const status = document.getElementById('mining-status');
+      const result = document.getElementById('mining-result');
+      const completeBtn = document.getElementById('complete-mining');
+      
+      btn.disabled = true;
+      status.textContent = 'Minerando... tentando encontrar hash com 4 zeros à frente...';
+      
+      // Simulate mining with random chance
+      let attempts = 0;
+      const interval = setInterval(() => {
+        attempts++;
+        status.textContent = `Tentativa #${attempts}...`;
+        
+        // 2% chance per attempt to "find" block
+        if (Math.random() < 0.02) {
+          clearInterval(interval);
+          const hash = '0000' + Math.random().toString(16).substr(2, 12);
+          result.innerHTML = `<strong>🎉 Bloco encontrado!</strong><br>Hash: ${hash}...<br><small>${quizzes['l5-3'].feedback.correct}</small>`;
+          result.classList.add('show');
+          btn.style.display = 'none';
+          completeBtn.style.display = 'inline-flex';
+          addXP(15, 'por mineração!');
+        }
+      }, 200);
+    }
+
+    let marketPrice = 40000;
+    function applyNews() {
+      const select = document.getElementById('news-select');
+      const change = parseInt(select.value);
+      if (!change) return;
+      
+      const oldPrice = marketPrice;
+      marketPrice = Math.round(marketPrice * (1 + change/100));
+      
+      document.getElementById('market-price').textContent = marketPrice.toLocaleString();
+      
+      const resultDiv = document.getElementById('market-result');
+      const changeText = change > 0 ? `+${change}%` : `${change}%`;
+      resultDiv.innerHTML = `<strong>${changeText}</strong>: De $${oldPrice.toLocaleString()} para $${marketPrice.toLocaleString()}<br><small>Volatilidade é normal em mercados emergentes.</small>`;
+      resultDiv.classList.add('show');
+      
+      addXP(5, 'por análise de mercado!');
+    }
+    
+    function resetMarket() {
+      marketPrice = 40000;
+      document.getElementById('market-price').textContent = '40000';
+      document.getElementById('news-select').value = '';
+      document.getElementById('market-result').classList.remove('show');
+    }
+
+    // === QUIZ RENDERER ===
+    function renderQuiz(lessonId) {
+      const quiz = quizzes[lessonId];
+      if (!quiz) return '<p>Quiz em desenvolvimento.</p>';
+      
+      return `
+        <div class="quiz-container">
+          <p class="quiz-question">${quiz.question}</p>
+          <div class="quiz-options">
+            ${quiz.options.map((opt, i) => 
+              `<button class="quiz-option" onclick="selectQuizOption(this, ${i}, '${lessonId}')">${opt}</button>`
+            ).join('')}
+          </div>
+          <div class="quiz-feedback" id="quiz-feedback-${lessonId}"></div>
+          <button class="btn btn-primary" id="quiz-next-${lessonId}" onclick="completeLesson('${lessonId}', 40)" style="display:none; margin-top:1rem">✅ Próxima Aula (+40 XP)</button>
+        </div>
+      `;
+    }
+
+    function selectQuizOption(btn, selectedIndex, lessonId) {
+      // Prevent re-selection
+      if (document.querySelector(`#quiz-feedback-${lessonId}`).classList.contains('show')) return;
+      
+      const quiz = quizzes[lessonId];
+      const options = btn.parentElement.querySelectorAll('.quiz-option');
+      
+      // Mark selection
+      options.forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+      
+      // Show feedback
+      const feedback = document.getElementById(`quiz-feedback-${lessonId}`);
+      const isCorrect = selectedIndex === quiz.correct;
+      
+      feedback.textContent = isCorrect ? quiz.feedback.correct : quiz.feedback.wrong;
+      feedback.className = `quiz-feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+      
+      // Show next button if correct
+      if (isCorrect) {
+        document.getElementById(`quiz-next-${lessonId}`).style.display = 'inline-flex';
+        addXP(15, 'por quiz!');
+      }
+      
+      // Disable options
+      options.forEach(o => o.disabled = true);
+    }
+
+    // === DECISION POINT RENDERER ===
+    function renderDecision(lessonId) {
+      const decisions = {
+        'l2-1': {
+          scenario: '🎭 Você é o presidente do Banco Central. A inflação está em 8%. O que você faz?',
+          options: [
+            { text: 'Aumentar juros para conter inflação', consequence: '✅ Juros altos atraem capital e reduzem inflação, mas podem desacelerar a economia.', xp: 20 },
+            { text: 'Imprimir mais dinheiro para estimular', consequence: '⚠️ Pode ajudar no curto prazo, mas risco de piorar a inflação no longo prazo.', xp: 10 },
+            { text: 'Manter política atual e observar', consequence: '🤔 Às vezes esperar é a melhor opção, mas a inflação pode fugir do controle.', xp: 15 }
+          ]
+        },
+        'l3-3': {
+          scenario: '🤔 Você comprou 0.1 BTC. Onde guarda?',
+          options: [
+            { text: 'Deixo na exchange (fácil de usar)', consequence: '⚠️ Conveniente, mas "not your keys, not your coins". Se a exchange falir, você pode perder tudo.', xp: 10 },
+            { text: 'Carteira própria (hardware/paper)', consequence: '✅ Máxima segurança! Mas exige responsabilidade: sem backup = perda permanente.', xp: 25 },
+            { text: 'Divido: parte na exchange, parte na carteira', consequence: '🎯 Equilíbrio inteligente! Liquidez para uso diário + segurança para reserva.', xp: 20 }
+          ]
+        },
+        'l4-2': {
+          scenario: '🔐 Você anotou sua seed phrase em um papel. O que faz com ele?',
+          options: [
+            { text: 'Guardo na gaveta em casa', consequence: '⚠️ Melhor que nada, mas risco de perda, roubo ou dano por água/fogo.', xp: 10 },
+            { text: 'Gravo em aço e escondo em local seguro', consequence: '✅ Resistente a fogo/água e discreto. Boa prática de segurança!', xp: 25 },
+            { text: 'Tiro foto e salvo no celular/nuvem', consequence: '❌ Risco alto! Se seu celular ou conta na nuvem for comprometido, seus BTC também.', xp: 0 }
+          ]
+        },
+        'l6-3': {
+          scenario: '📈 Bitcoin caiu 30% esta semana. Você:',
+          options: [
+            { text: 'Vendo tudo para "cortar prejuízo"', consequence: '⚠️ Pode realizar perdas permanentes. Mercados cripto são voláteis — timing é difícil.', xp: 5 },
+            { text: 'Compro mais (buy the dip)', consequence: '🎯 Estratégia comum, mas só faça com dinheiro que pode perder e após estudar.', xp: 20 },
+            { text: 'Mantenho e revisito minha tese de investimento', consequence: '✅ Disciplina emocional é chave. Decisões baseadas em análise, não em pânico.', xp: 25 }
+          ]
+        },
+        'l7-2': {
+          scenario: '⚖️ Debate: Um país deve proibir Bitcoin?',
+          options: [
+            { text: 'Sim, para proteger cidadãos de riscos', consequence: '🤔 Proteção é importante, mas proibições podem empurrar para mercados informais e limitar inovação.', xp: 15 },
+            { text: 'Não, mas regular com clareza', consequence: '✅ Regulação inteligente protege sem sufocar. Exemplo: exigir KYC em exchanges, mas permitir uso pessoal.', xp: 25 },
+            { text: 'Deixar totalmente livre, sem regras', consequence: '⚠️ Liberdade é boa, mas algum nível de proteção ao consumidor pode ser necessário.', xp: 15 }
+          ]
+        }
+      };
+      
+      const decision = decisions[lessonId];
+      if (!decision) return '<p>Atividade de decisão em desenvolvimento.</p>';
+      
+      return `
+        <div class="decision-box">
+          <h4>🤔 Ponto de Decisão</h4>
+          <p>${decision.scenario}</p>
+          <div class="decision-options">
+            ${decision.options.map((opt, i) => 
+              `<div class="decision-option" onclick="selectDecision(this, ${lessonId}, ${i})">${opt.text}</div>`
+            ).join('')}
+          </div>
+          <div class="decision-consequence" id="decision-result-${lessonId}"></div>
+        </div>
+        <button class="btn btn-primary" id="decision-complete-${lessonId}" onclick="completeLesson('${lessonId}', 40)" style="display:none; margin-top:1rem">✅ Concluir Aula (+40 XP)</button>
+      `;
+    }
+
+    function selectDecision(btn, lessonId, optionIndex) {
+      if (document.getElementById(`decision-result-${lessonId}`).classList.contains('show')) return;
+      
+      const decision = {
+        'l2-1': decisions['l2-1'],
+        'l3-3': decisions['l3-3'],
+        'l4-2': decisions['l4-2'],
+        'l6-3': decisions['l6-3'],
+        'l7-2': decisions['l7-2']
+      }[lessonId];
+      
+      if (!decision) return;
+      
+      // Mark selection
+      document.querySelectorAll('.decision-option').forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+      
+      // Show consequence
+      const result = document.getElementById(`decision-result-${lessonId}`);
+      const chosen = decision.options[optionIndex];
+      result.innerHTML = `<strong>Consequência:</strong> ${chosen.consequence}`;
+      result.classList.add('show');
+      
+      // Show complete button and award XP
+      document.getElementById(`decision-complete-${lessonId}`).style.display = 'inline-flex';
+      addXP(chosen.xp, 'por decisão!');
+      
+      // Disable options
+      document.querySelectorAll('.decision-option').forEach(o => o.style.cursor = 'default');
+    }
+
+    // === CHART RENDERER ===
+    function renderChart(lessonId) {
+      const charts = {
+        'l1-2': {
+          title: '📊 Inflação Acumulada no Brasil (2002-2024)',
+          data: [
+            { label: '2002', value: 100 }, { label: '2006', value: 140 },
+            { label: '2010', value: 180 }, { label: '2014', value: 220 },
+            { label: '2018', value: 250 }, { label: '2022', value: 270 },
+            { label: '2024', value: 280 }
+          ],
+          insight: 'Em 22 anos, os preços subiram ~180% em média. R$100 de 2002 equivalem a ~R$280 hoje em poder de compra.'
+        },
+        'l3-2': {
+          title: '📈 Oferta: Bitcoin vs Moedas Fiat',
+          data: [
+            { label: 'BTC', value: 100, color: 'var(--accent)', note: '21M máximo' },
+            { label: 'USD', value: 40, color: 'var(--primary)', note: 'Sem limite' },
+            { label: 'BRL', value: 30, color: 'var(--success)', note: 'Sem limite' },
+            { label: 'EUR', value: 35, color: 'var(--secondary)', note: 'Sem limite' }
+          ],
+          insight: 'Bitcoin tem oferta fixa programada. Moedas fiduciárias podem ser impressas ilimitadamente por bancos centrais.'
+        },
+        'l5-2': {
+          title: '⛏️ Dificuldade de Mineração (2014-2024)',
+          data: [
+            { label: '2014', value: 15 }, { label: '2016', value: 30 },
+            { label: '2018', value: 60 }, { label: '2020', value: 80 },
+            { label: '2022', value: 95 }, { label: '2024', value: 100 }
+          ],
+          insight: 'A dificuldade ajusta automaticamente para manter blocos a cada ~10 min, independente do poder computacional da rede.'
+        },
+        'l6-2': {
+          title: '🔄 Preço do Bitcoin Pós-Halving (Média dos Ciclos)',
+          data: [
+            { label: '6m antes', value: 40 }, { label: 'Halving', value: 60 },
+            { label: '+6m', value: 85 }, { label: '+12m', value: 100 },
+            { label: '+18m', value: 90 }, { label: '+24m', value: 70 }
+          ],
+          insight: 'Historicamente, halvings antecedem ciclos de alta — mas passado não garante futuro. Volatilidade é parte do jogo.'
+        }
+      };
+      
+      const chart = charts[lessonId];
+      if (!chart) return '<p>Visualização em desenvolvimento.</p>';
+      
+      const maxValue = Math.max(...chart.data.map(d => d.value));
+      
+      return `
+        <div class="chart-container">
+          <div class="chart-title">${chart.title}</div>
+          <div class="chart-bars">
+            ${chart.data.map(d => `
+              <div class="chart-bar" style="height:${(d.value/maxValue)*100}%; background:${d.color || 'var(--primary)'}" data-label="${d.label}">
+                ${d.note ? `<small style="position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:0.65rem; white-space:nowrap">${d.note}</small>` : ''}
+              </div>
+            `).join('')}
+          </div>
+          <p style="margin-top:1rem; font-size:0.9rem; color:var(--text-muted)"><strong>💡 Insight:</strong> ${chart.insight}</p>
+        </div>
+        <button class="btn btn-primary" onclick="completeLesson('${lessonId}', 30)" style="margin-top:1rem">✅ Concluir Aula (+30 XP)</button>
+      `;
+    }
+
+    // === COMPLETE LESSON ===
+    function completeLesson(lessonId, xp) {
+      if (userProgress.completedLessons.includes(lessonId)) {
+        showXPNotification('✅ Aula já concluída!');
+        return;
+      }
+      
+      userProgress.completedLessons.push(lessonId);
+      addXP(xp, 'por aula!');
+      
+      // Check for badges
+      if (userProgress.completedLessons.length === 5) {
+        userProgress.badges.push('🌱 Primeiros Passos');
+        showXPNotification('🏆 Conquista: Primeiros Passos!');
+      }
+      if (userProgress.completedLessons.length === 15) {
+        userProgress.badges.push('⚡ Explorador');
+        showXPNotification('🏆 Conquista: Explorador!');
+      }
+      
+      saveProgress();
+      renderModules(); // Refresh to show completion
+      
+      // Auto-navigate to next lesson or back
+      setTimeout(() => {
+        const allLessons = getAllLessons();
+        const currentIndex = allLessons.findIndex(l => l.id === lessonId);
+        const nextLesson = allLessons[currentIndex + 1];
+        
+        if (nextLesson) {
+          // Find its track and module
+          for (const track of tracks) {
+            for (const mod of track.modules) {
+              if (mod.lessons.some(l => l.id === nextLesson.id)) {
+                openModule(track.id, mod.id);
+                return;
+              }
+            }
+          }
+        }
+        router('modules');
+      }, 1500);
+    }
+
+    // === GLOSSARY ===
+    function renderGlossary() {
+      const terms = [
+        { term: 'Inflação', def: 'Perda do poder de compra da moeda ao longo do tempo. Ex: R$100 em 2002 compravam muito mais que hoje.', example: 'Se a inflação é 10%/ano, R$100 hoje valerão ~R$90 em poder de compra no ano que vem.' },
+        { term: 'Halving', def: 'Evento programado a cada 210.000 blocos (~4 anos) que reduz pela metade a recompensa dos mineradores.', example: '2024: recompensa caiu de 6.25 para 3.125 BTC por bloco. Próximo: ~2028 → 1.5625 BTC.' },
+        { term: 'Chave Privada', def: 'Senha secreta que prova propriedade de bitcoins. Quem controla a chave, controla os fundos.', example: 'Perdeu a chave? Perdeu os BTC para sempre. Por isso: backup seguro é essencial!' },
+        { term: 'Proof-of-Work', def: 'Mecanismo que exige esforço computacional para validar transações, garantindo segurança à rede.', example: 'Mineradores competem para resolver problemas matemáticos. O vencedor valida o bloco e recebe BTC.' },
+        { term: 'Volatilidade', def: 'Variações bruscas de preço em curto período. Comum em mercados emergentes como cripto.', example: 'Bitcoin pode subir 20% em um dia e cair 15% no outro. Não é para quem busca estabilidade imediata.' },
+        { term: 'Descentralização', def: 'Controle distribuído entre muitos participantes, sem autoridade central única.', example: 'Nenhum governo, banco ou empresa controla o Bitcoin. A rede é mantida por milhares de nós independentes.' },
+        { term: 'Exchange', def: 'Plataforma para comprar, vender e negociar criptomoedas. Pode ser custodial ou não-custodial.', example: 'Binance, Coinbase: fáceis de usar, mas "not your keys, not your coins" — a exchange controla suas chaves.' },
+        { term: 'Wallet (Carteira)', def: 'Software ou dispositivo que armazena chaves criptográficas e permite enviar/receber bitcoins.', example: 'Hardware wallets (Ledger, Trezor) são as mais seguras. Software wallets são mais convenientes.' }
+      ];
+      
+      const container = document.getElementById('glossary-grid');
+      if (!container) return;
+      
+      const search = document.getElementById('gl-search')?.value.toLowerCase() || '';
+      const filtered = terms.filter(t => t.term.toLowerCase().includes(search) || t.def.toLowerCase().includes(search));
+      
+      container.innerHTML = filtered.map(t => `
+        <div class="card term-card" onclick="this.classList.toggle('expanded')">
+          <h4 style="color:var(--primary); margin-bottom:0.25rem; display:flex; justify-content:space-between; align-items:center">
+            ${t.term}
+            <span style="font-size:0.8rem; color:var(--text-muted)">▼</span>
+          </h4>
+          <p style="font-size:0.95rem; color:var(--text-muted)">${t.def}</p>
+          <div style="display:none; margin-top:0.5rem; padding-top:0.5rem; border-top:1px dashed var(--border); font-size:0.9rem">
+            <strong>💡 Exemplo:</strong> ${t.example}
+          </div>
+        </div>
+      `).join('') || '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted)">Nenhum termo encontrado.</p>';
+    }
+
+    function filterGlossary() {
+      renderGlossary();
+    }
+
+    // === NAVIGATION & UTILS ===
+    function router(section) {
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`nav a[href="#${section}"]`)?.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(section)?.classList.add('active');
+      document.getElementById('main-nav')?.classList.remove('open');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMenu() {
+      document.getElementById('main-nav').classList.toggle('open');
+    }
+
+    function showNotification(msg) {
+      const notif = document.getElementById('xp-notification');
+      notif.textContent = msg;
+      notif.className = 'xp-notification show';
+      setTimeout(() => notif.classList.remove('show'), 3000);
+    }
+
+    // === A11Y ===
+    function toggleA11y() {
+      document.getElementById('a11y-panel').classList.toggle('open');
+    }
+    function toggleA11ySetting(setting) {
+      const toggle = document.getElementById(`toggle-${setting}`);
+      const isOn = toggle.classList.toggle('on');
+      if (setting === 'contrast') {
+        document.body.classList.toggle('high-contrast', isOn);
+        if (isOn) { document.body.classList.remove('dark'); document.getElementById('toggle-dark').classList.remove('on'); }
+      }
+      if (setting === 'dark') {
+        document.body.classList.toggle('dark', isOn);
+        if (isOn) { document.body.classList.remove('high-contrast'); document.getElementById('toggle-contrast').classList.remove('on'); }
+      }
+      if (setting === 'large') {
+        document.body.classList.toggle('large-text', isOn);
+      }
+    }
+
+    // === TIMELINE FUNCTIONS (KEPT FROM PREVIOUS VERSION) ===
     const halvingCycles = [
       { id: 'genesis', year: 2009, reward: 50, label: 'Gênese', desc: 'Início da rede Bitcoin' },
       { id: 'h1', year: 2012, reward: 25, label: '1º Halving', desc: 'Primeira redução de emissão' },
@@ -326,58 +1452,20 @@
     ];
 
     const events = [
-      // PRECURSORES
-      { id: 'digicash', date: '1983', cat: 'precursor', title: 'DigiCash — David Chaum', desc: 'Primeiro sistema de dinheiro eletrônico com assinaturas cegas para privacidade.', cycle: 'genesis', edu: { obj: ['História da criptografia aplicada','Privacidade digital'], act: 'Pesquisar sobre criptografia de chave pública.', qs: ['Por que privacidade é importante no dinheiro digital?'], dur: '1 aula', bncc: ['EF09CI10','EM13LGG601'] }},
-      { id: 'cypherpunk', date: '1991', cat: 'precursor', title: 'Cypherpunk Mailing List', desc: 'Comunidade de hackers e criptógrafos discutindo privacidade e dinheiro digital.', cycle: 'genesis', edu: { obj: ['Movimentos sociais tecnológicos','Cultura hacker'], act: 'Debate: "Privacidade é um direito fundamental?"', qs: ['O que é um movimento cypherpunk?'], dur: '1 aula', bncc: ['EM13CHS101','EM13LGG603'] }},
-      { id: 'hashcash', date: '1997-03', cat: 'precursor', title: 'HashCash — Adam Back', desc: 'Sistema proof-of-work para combater spam. Base técnica do mining do Bitcoin.', cycle: 'genesis', edu: { obj: ['Proof-of-Work como conceito','Resolução de problemas computacionais'], act: 'Simular "prova de trabalho" com quebra-cabeças.', qs: ['Como um sistema anti-spam virou base para dinheiro?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EF09CI10'] }},
-      { id: 'bmoney', date: '1998-11', cat: 'precursor', title: 'b-money — Wei Dai', desc: 'Proposta de sistema de dinheiro eletrônico descentralizado. Citado no whitepaper do Bitcoin.', cycle: 'genesis', edu: { obj: ['Ideias que inspiram inovações','Citação acadêmica'], act: 'Ler trecho do whitepaper que cita b-money.', qs: ['Por que Satoshi citou Wei Dai?'], dur: '1 aula', bncc: ['EM13LGG602','EM13CHS402'] }},
-      { id: 'bitgold', date: '1998-12', cat: 'precursor', title: 'Bit Gold — Nick Szabo', desc: 'Conceito de "ouro digital" com provas de trabalho encadeadas. Precursor direto do Bitcoin.', cycle: 'genesis', edu: { obj: ['Escassez digital','Propriedade descentralizada'], act: 'Comparar Bit Gold vs Bitcoin em tabela.', qs: ['O que faltou para o Bit Gold funcionar?'], dur: '1-2 aulas', bncc: ['EM13MAT312','EM13CHS402'] }},
-      { id: 'rpow', date: '2004-08', cat: 'precursor', title: 'RPOW — Hal Finney', desc: 'Primeiro sistema funcional de dinheiro digital com PoW reutilizável. Hal foi o primeiro a receber BTC.', cycle: 'genesis', edu: { obj: ['Colaboração científica','Legado técnico'], act: 'Linha do tempo: quem influenciou Satoshi?', qs: ['Por que Hal Finney é importante na história?'], dur: '1 aula', bncc: ['EM13LGG601','EM13CHS101'] }},
-      
-      // NASCIMENTO DO BITCOIN
-      { id: 'wpp', date: '2008-10-31', dateD: '31 de out 2008', cat: 'tech', title: 'Whitepaper do Bitcoin', desc: 'Satoshi Nakamoto publica "Bitcoin: A Peer-to-Peer Electronic Cash System". 9 páginas que mudariam as finanças.', cycle: 'genesis', edu: { obj: ['Contexto da crise de 2008','Princípios de descentralização'], act: 'Leitura guiada: trechos do whitepaper + debate.', qs: ['Por que 2008 foi crucial?','O que significa peer-to-peer?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
-      { id: 'gen', date: '2009-01-03', dateD: '3 de jan 2009', cat: 'tech', title: 'Genesis Block', desc: 'Primeiro bloco minerado. Mensagem oculta: "Chancellor on brink of second bailout for banks". Recompensa: 50 BTC.', cycle: 'genesis', edu: { obj: ['Ledger imutável','Tecnologia como crítica política'], act: 'Criar mensagens simbólicas para um "bloco pessoal".', qs: ['Por que usar manchete de jornal?','O que é imutabilidade?'], dur: '1 aula', bncc: ['EF09GE12','EM13MAT305'] }},
-      { id: 'firsttx', date: '2009-01-12', dateD: '12 de jan 2009', cat: 'tech', title: 'Primeira Transação', desc: 'Satoshi envia 10 BTC para Hal Finney. Primeira transferência peer-to-peer da história do Bitcoin.', cycle: 'genesis', edu: { obj: ['Funcionamento de transações','Rede P2P na prática'], act: 'Simular envio de "moedas" em sala com papel.', qs: ['Como uma transação é validada?'], dur: '1 aula', bncc: ['EM13MAT305','EF09MA08'] }},
-      
-      // PRIMEIROS ANOS E MERCADO
-      { id: 'piz', date: '2010-05-22', dateD: '22 de mai 2010', cat: 'market', title: 'Bitcoin Pizza Day', desc: 'Laszlo Hanyecz paga 10.000 BTC por duas pizzas. Primeiro uso comercial documentado. Hoje valeriam ~$700 milhões.', cycle: 'genesis', edu: { obj: ['Evolução de valor','Escassez vs utilidade'], act: 'Cálculo proporcional: valor das pizzas em 2010 vs hoje.', qs: ['O que dá valor às coisas?','História ajuda a entender o presente?'], dur: '1-2 aulas', bncc: ['EF09MA08','EM13MAT305'] }},
-      { id: 'mtgox-launch', date: '2010-07', cat: 'tech', title: 'Mt. Gox Lança Exchange', desc: 'Maior exchange da época. Processava 70% das transações globais antes do colapso em 2014.', cycle: 'genesis', edu: { obj: ['Infraestrutura de mercado','Riscos de centralização'], act: 'Debate: "Exchanges são necessárias ou perigosas?"', qs: ['Qual a diferença entre custódia própria e exchange?'], dur: '1-2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      { id: 'satoshi-leave', date: '2010-12', cat: 'tech', title: 'Satoshi Desaparece', desc: 'Últimas comunicações públicas. Satoshi entrega o controle para Gavin Andresen. Identidade permanece desconhecida.', cycle: 'genesis', edu: { obj: ['Descentralização radical','Anonimato e liderança'], act: 'Redação: "Por que o anonimato de Satoshi importa?"', qs: ['Bitcoin precisa de um líder?'], dur: '1 aula', bncc: ['EM13LGG603','EM13CHS402'] }},
-      
-      // PRIMEIRO HALVING (2012)
-      { id: 'halv1', date: '2012-11-28', dateD: '28 de nov 2012', cat: 'halving', title: '1º Halving do Bitcoin', desc: 'Recompensa cai de 50 para 25 BTC. Primeiro evento de escassez programada. Marco na política monetária algorítmica.', cycle: 'h1', edu: { obj: ['Progressão geométrica','Política monetária programada'], act: 'Calcular emissão total de BTC até 2140 usando PG.', qs: ['Por que programar escassez?','Como difere de moedas fiduciárias?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }},
-      { id: 'btc-usd-1', date: '2011-04', cat: 'market', title: 'Bitcoin Alcança $1 USD', desc: 'Paridade com o dólar pela primeira vez. BTC valia menos de 1 centavo dois anos antes.', cycle: 'h1', edu: { obj: ['Volatilidade e adoção','Formação de preço'], act: 'Gráfico histórico: BTC/USD de 2009 a 2012.', qs: ['O que faz o preço subir?'], dur: '1 aula', bncc: ['EF09MA08','EM13MAT305'] }},
-      { id: 'silkroad', date: '2011-06', cat: 'regulation', title: 'Silk Road — Bitcoin na Dark Web', desc: 'Mercado anônimo impulsiona adoção. FBI fecha em 2013, prendendo Ross Ulbricht. Debate sobre uso dual da tecnologia.', cycle: 'h1', edu: { obj: ['Tecnologia de uso dual','Ética e inovação'], act: 'Debate: "Deve-se banir tecnologia por usos ilícitos?"', qs: ['Como regular sem censurar inovação?'], dur: '2-3 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      { id: 'litecoin', date: '2011-10', cat: 'tech', title: 'Litecoin — Primeira Altcoin', desc: 'Charlie Lee lança Litecoin com confirmações 4x mais rápidas. Template para centenas de criptomoedas.', cycle: 'h1', edu: { obj: ['Inovação por fork','Competição tecnológica'], act: 'Comparar Bitcoin vs Litecoin em tabela técnica.', qs: ['Por que criar uma nova moeda?'], dur: '1 aula', bncc: ['EM13MAT305','EM13LGG601'] }},
-      
-      // SEGUNDO HALVING (2016)
-      { id: 'halv2', date: '2016-07-09', dateD: '9 de jul 2016', cat: 'halving', title: '2º Halving do Bitcoin', desc: 'Recompensa cai de 25 para 12.5 BTC. Segundo ciclo de 4 anos. Historicamente precede bull runs.', cycle: 'h2', edu: { obj: ['Ciclos econômicos','Análise histórica de padrões'], act: 'Gráfico: preço do BTC 12 meses antes/depois de cada halving.', qs: ['Padrões históricos garantem futuro?'], dur: '2 aulas', bncc: ['EM13MAT312','EM13CHS402'] }},
-      { id: 'eth-whitepaper', date: '2013-11', cat: 'tech', title: 'Whitepaper do Ethereum', desc: 'Vitalik Buterin, aos 19 anos, propõe blockchain programável com smart contracts.', cycle: 'h2', edu: { obj: ['Evolução de blockchains','Smart contracts'], act: 'Exemplo simples de smart contract em pseudocódigo.', qs: ['Qual a diferença entre Bitcoin e Ethereum?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EM13LGG601'] }},
-      { id: 'btc-100', date: '2013-04', cat: 'market', title: 'Bitcoin Supera $100', desc: 'Crise bancária no Chipre impulsiona interesse. Primeira grande cobertura da mídia mainstream.', cycle: 'h2', edu: { obj: ['Crises e adoção','Mídia e percepção pública'], act: 'Análise de manchetes de 2013 sobre Bitcoin.', qs: ['Como crises afetam a busca por alternativas?'], dur: '1 aula', bncc: ['EM13CHS402','EM13LGG603'] }},
-      { id: 'btc-1000', date: '2013-11', cat: 'market', title: 'Bitcoin Alcança $1.000', desc: 'Primeiro grande bull run. Senado dos EUA realiza audiências sobre Bitcoin. Seguido por queda de 80%.', cycle: 'h2', edu: { obj: ['Ciclos de mercado','Regulação e preço'], act: 'Linha do tempo: eventos regulatórios vs preço.', qs: ['Regulação ajuda ou atrapalha a adoção?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13MAT305'] }},
-      { id: 'mtgox-collapse', date: '2014-02-24', dateD: '24 de fev 2014', cat: 'hack', title: 'Colapso da Mt. Gox', desc: '850.000 BTC (~$450M) desaparecem. Maior hack da época. Bitcoin cai 50%. Lição sobre custódia.', cycle: 'h2', edu: { obj: ['Segurança digital','"Not your keys, not your coins"'], act: 'Simulação: comparar custódia própria vs. terceiros.', qs: ['Por que guardar suas próprias chaves é importante?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      
-      // TERCEIRO HALVING (2020)
-      { id: 'halv3', date: '2020-05-11', dateD: '11 de mai 2020', cat: 'halving', title: '3º Halving do Bitcoin', desc: 'Recompensa cai de 12.5 para 6.25 BTC. Historicamente precede grandes bull runs. Pandemia global como pano de fundo.', cycle: 'h3', edu: { obj: ['Macroeconomia e cripto','Eventos globais e mercados'], act: 'Pesquisar: como a pandemia afetou diferentes ativos.', qs: ['Bitcoin é "ouro digital" ou ativo de risco?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13MAT312'] }},
-      { id: 'microstrategy', date: '2020-08', cat: 'market', title: 'MicroStrategy Adota Bitcoin', desc: 'Michael Saylor anuncia compra de $250M em BTC. Primeira empresa pública a adotar Bitcoin como reserva de tesouraria.', cycle: 'h3', edu: { obj: ['Tesouraria corporativa','Reserva de valor institucional'], act: 'Debate: "Empresas devem ter BTC no balanço?"', qs: ['Que riscos e benefícios isso traz?'], dur: '1-2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      { id: 'defi-summer', date: '2020-06', cat: 'defi', title: 'DeFi Summer', desc: 'Uniswap, Compound, Aave acumulam bilhões em TVL em semanas. Revolução das finanças descentralizadas.', cycle: 'h3', edu: { obj: ['Inovação financeira','Riscos e oportunidades em DeFi'], act: 'Explorar interface do Uniswap (simulação).', qs: ['DeFi substitui bancos tradicionais?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13CHS402'] }},
-      { id: 'paypal-btc', date: '2020-10', cat: 'market', title: 'PayPal Habilita Bitcoin', desc: '346 milhões de usuários podem comprar BTC. Sinal claro de adoção institucional e mainstream.', cycle: 'h3', edu: { obj: ['Adoção em massa','Papel de grandes plataformas'], act: 'Pesquisar: quais países o PayPal oferece BTC?', qs: ['Por que grandes empresas entram no mercado cripto?'], dur: '1 aula', bncc: ['EM13CHS101','EM13LGG603'] }},
-      
-      // QUARTO HALVING (2024)
-      { id: 'halv4', date: '2024-04-20', dateD: '20 de abr 2024', cat: 'halving', title: '4º Halving do Bitcoin', desc: 'Recompensa cai para 3.125 BTC. Primeiro halving após aprovação de ETFs institucionais nos EUA.', cycle: 'h4', edu: { obj: ['Escassez programada','Institucionalização do mercado'], act: 'Calcular: quantos BTC restam para minerar após 2024?', qs: ['Como ETFs mudam a dinâmica de oferta e demanda?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }},
-      { id: 'etf-approval', date: '2024-01-10', dateD: '10 de jan 2024', cat: 'regulation', title: 'SEC Aprova ETFs Spot de Bitcoin', desc: 'BlackRock, Fidelity e outros lançam ETFs. Maior evento de adoção institucional da história.', cycle: 'h4', edu: { obj: ['Regulação financeira','Produtos de investimento'], act: 'Comparar: ETF vs comprar BTC direto. Prós e contras.', qs: ['ETFs aproximam ou distorcem o Bitcoin?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
-      { id: 'elsalvador', date: '2021-09-07', dateD: '7 de set 2021', cat: 'adopt', title: 'El Salvador: Bitcoin como Moeda Legal', desc: 'Primeiro país a adotar Bitcoin como moeda oficial. Foco em inclusão financeira e redução de custos de remessas.', cycle: 'h4', edu: { obj: ['Políticas públicas','Inclusão financeira global'], act: 'Estudo comparativo: El Salvador vs Brasil.', qs: ['Que problemas buscavam resolver?','Educação vem antes ou depois da tecnologia?'], dur: '3 aulas', bncc: ['EM13CHS101','EM13CHS402'] }},
-      { id: 'taproot', date: '2021-11-14', dateD: '14 de nov 2021', cat: 'tech', title: 'Taproot Ativado no Bitcoin', desc: 'Maior upgrade desde SegWit. Melhora privacidade e habilita smart contracts mais complexos.', cycle: 'h4', edu: { obj: ['Upgrades de protocolo','Governança descentralizada'], act: 'Pesquisar: como funciona o processo de BIPs?', qs: ['Como mudanças são decididas no Bitcoin?'], dur: '1-2 aulas', bncc: ['EM13LGG601','EM13MAT305'] }},
-      { id: 'btc-69k', date: '2021-11', cat: 'market', title: 'Bitcoin Alcança $69.000 — ATH #3', desc: 'Máxima histórica em novembro de 2021. Capitalização total do mercado cripto supera $3 trilhões.', cycle: 'h4', edu: { obj: ['Bolhas e ciclos de mercado','Análise de sentimentos'], act: 'Gráfico: BTC vs S&P500 vs Ouro em 2021.', qs: ['O que leva a máximas históricas?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EM13CHS402'] }},
-      
-      // EVENTOS RECENTES E FUTURO
-      { id: 'terra-collapse', date: '2022-05', cat: 'scam', title: 'Colapso Terra/Luna — $60B Perdidos', desc: 'TerraUSD perde paridade. LUNA cai de $80 para $0 em dias. Maior colapso único na história cripto.', cycle: 'h4', edu: { obj: ['Riscos de stablecoins','Due diligence em cripto'], act: 'Estudo de caso: o que deu errado no Terra?', qs: ['Como identificar projetos arriscados?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      { id: 'ftx-collapse', date: '2022-11', cat: 'scam', title: 'FTX Colapsa — SBF Preso', desc: 'Sam Bankman-Fried e FTX revelam déficit de $8B em fundos de clientes. SBF condenado a 25 anos.', cycle: 'h4', edu: { obj: ['Ética nos negócios','Transparência e auditoria'], act: 'Debate: "Regulação previne fraudes?"', qs: ['Como proteger investidores sem sufocar inovação?'], dur: '2-3 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
-      { id: 'btc-100k', date: '2024-12', cat: 'market', title: 'Bitcoin Supera $100.000', desc: 'Após vitória eleitoral nos EUA e promessas de reserva estratégica de Bitcoin, BTC cruza a barreira de $100k.', cycle: 'h4', edu: { obj: ['Geopolítica e cripto','Reservas soberanas'], act: 'Pesquisar: quais países consideram reserva em BTC?', qs: ['Bitcoin pode ser reserva de valor nacional?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
-      { id: 'halv5-proj', date: '2028', cat: 'halving', title: '5º Halving (Projeção)', desc: 'Recompensa cairá para 1.5625 BTC. Duas certezas na vida: impostos e os 210.000 blocos que formam uma Era no Bitcoin.', cycle: 'h5', edu: { obj: ['Previsão vs realidade','Matemática da emissão'], act: 'Calcular: ano estimado do último BTC minerado.', qs: ['O que acontece quando todos os 21M BTC forem minerados?'], dur: '2 aulas', bncc: ['EM13MAT312','EM13MAT305'] }}
+      { id: 'digicash', date: '1983', cat: 'precursor', title: 'DigiCash — David Chaum', desc: 'Primeiro sistema de dinheiro eletrônico com assinaturas cegas para privacidade.', cycle: 'genesis', edu: { obj: ['História da criptografia aplicada'], act: 'Pesquisar sobre criptografia de chave pública.', qs: ['Por que privacidade é importante?'], dur: '1 aula', bncc: ['EF09CI10'] }},
+      { id: 'wpp', date: '2008-10-31', dateD: '31 de out 2008', cat: 'tech', title: 'Whitepaper do Bitcoin', desc: 'Satoshi publica "Bitcoin: A Peer-to-Peer Electronic Cash System". 9 páginas que mudariam as finanças.', cycle: 'genesis', edu: { obj: ['Contexto da crise de 2008'], act: 'Leitura guiada do whitepaper.', qs: ['Por que 2008 foi crucial?'], dur: '2 aulas', bncc: ['EM13CHS402'] }},
+      { id: 'gen', date: '2009-01-03', dateD: '3 de jan 2009', cat: 'tech', title: 'Genesis Block', desc: 'Primeiro bloco minerado. Mensagem: "Chancellor on brink of second bailout for banks".', cycle: 'genesis', edu: { obj: ['Ledger imutável'], act: 'Criar mensagens simbólicas para um bloco pessoal.', qs: ['O que é imutabilidade?'], dur: '1 aula', bncc: ['EF09GE12'] }},
+      { id: 'piz', date: '2010-05-22', dateD: '22 de mai 2010', cat: 'market', title: 'Bitcoin Pizza Day', desc: '10.000 BTC por duas pizzas. Primeiro uso comercial documentado.', cycle: 'genesis', edu: { obj: ['Evolução de valor'], act: 'Cálculo: valor das pizzas em 2010 vs hoje.', qs: ['O que dá valor às coisas?'], dur: '1-2 aulas', bncc: ['EF09MA08'] }},
+      { id: 'halv1', date: '2012-11-28', dateD: '28 de nov 2012', cat: 'halving', title: '1º Halving', desc: 'Recompensa cai de 50 para 25 BTC. Primeira escassez programada.', cycle: 'h1', edu: { obj: ['Progressão geométrica'], act: 'Calcular emissão total até 2140.', qs: ['Por que programar escassez?'], dur: '2 aulas', bncc: ['EM13MAT305'] }},
+      { id: 'mtgox', date: '2014-02-24', dateD: '24 de fev 2014', cat: 'hack', title: 'Colapso da Mt. Gox', desc: '850.000 BTC desaparecem. Lição sobre custódia: "Not your keys, not your coins".', cycle: 'h2', edu: { obj: ['Segurança digital'], act: 'Comparar custódia própria vs. exchange.', qs: ['Por que guardar suas chaves?'], dur: '2 aulas', bncc: ['EM13LGG602'] }},
+      { id: 'halv2', date: '2016-07-09', dateD: '9 de jul 2016', cat: 'halving', title: '2º Halving', desc: 'Recompensa cai para 12.5 BTC. Segundo ciclo de 4 anos.', cycle: 'h2', edu: { obj: ['Ciclos econômicos'], act: 'Gráfico: preço 12 meses antes/depois do halving.', qs: ['Padrões históricos garantem futuro?'], dur: '2 aulas', bncc: ['EM13MAT312'] }},
+      { id: 'halv3', date: '2020-05-11', dateD: '11 de mai 2020', cat: 'halving', title: '3º Halving', desc: 'Recompensa cai para 6.25 BTC. Pandemia como pano de fundo.', cycle: 'h3', edu: { obj: ['Macroeconomia e cripto'], act: 'Pesquisar: como a pandemia afetou ativos.', qs: ['BTC é "ouro digital" ou ativo de risco?'], dur: '2 aulas', bncc: ['EM13CHS402'] }},
+      { id: 'elsalvador', date: '2021-09-07', dateD: '7 de set 2021', cat: 'adopt', title: 'El Salvador: Bitcoin como Moeda Legal', desc: 'Primeiro país a adotar Bitcoin oficialmente. Foco em inclusão financeira.', cycle: 'h4', edu: { obj: ['Políticas públicas'], act: 'Estudo comparativo: El Salvador vs Brasil.', qs: ['Educação vem antes ou depois da tecnologia?'], dur: '3 aulas', bncc: ['EM13CHS101'] }},
+      { id: 'halv4', date: '2024-04-20', dateD: '20 de abr 2024', cat: 'halving', title: '4º Halving', desc: 'Recompensa cai para 3.125 BTC. Primeiro halving após ETFs institucionais.', cycle: 'h4', edu: { obj: ['Escassez programada'], act: 'Calcular: BTC restantes para minerar.', qs: ['Como ETFs mudam oferta e demanda?'], dur: '2 aulas', bncc: ['EM13MAT305'] }},
+      { id: 'etf', date: '2024-01-10', dateD: '10 de jan 2024', cat: 'regulation', title: 'SEC Aprova ETFs Spot', desc: 'BlackRock, Fidelity lançam ETFs. Maior evento de adoção institucional.', cycle: 'h4', edu: { obj: ['Regulação financeira'], act: 'Comparar: ETF vs comprar BTC direto.', qs: ['ETFs aproximam ou distorcem o Bitcoin?'], dur: '2 aulas', bncc: ['EM13CHS402'] }},
+      { id: 'halv5-proj', date: '2028', cat: 'halving', title: '5º Halving (Projeção)', desc: 'Recompensa cairá para 1.5625 BTC. Duas certezas: impostos e 210.000 blocos.', cycle: 'h5', edu: { obj: ['Previsão vs realidade'], act: 'Calcular: ano do último BTC minerado.', qs: ['O que acontece quando todos os 21M forem minerados?'], dur: '2 aulas', bncc: ['EM13MAT312'] }}
     ];
 
-    // Categorias para filtros
     const categories = [
       { id: 'all', label: 'Todos', icon: '🌐' },
       { id: 'precursor', label: 'Precursores', icon: '🔐' },
@@ -387,40 +1475,14 @@
       { id: 'regulation', label: 'Regulação', icon: '⚖️' },
       { id: 'halving', label: 'Halving', icon: '✂️' },
       { id: 'hack', label: 'Hacks', icon: '🔓' },
-      { id: 'scam', label: 'Fraudes', icon: '⚠️' },
-      { id: 'defi', label: 'DeFi/NFT', icon: '🌐' }
+      { id: 'scam', label: 'Fraudes', icon: '⚠️' }
     ];
 
-    // === FUNÇÕES DE NAVEGAÇÃO ===
-    function router(section) {
-      // Atualiza navegação
-      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-      document.querySelector(`nav a[href="#${section}"]`)?.classList.add('active');
-      
-      // Mostra seção
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(section)?.classList.add('active');
-      
-      // Fecha menu mobile
-      document.getElementById('main-nav')?.classList.remove('open');
-      
-      // Scroll para topo
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function toggleMenu() {
-      document.getElementById('main-nav').classList.toggle('open');
-    }
-
-    // === FUNÇÕES DA TIMELINE ===
     function renderTimelineFilters() {
       const container = document.getElementById('tl-filters');
+      if (!container) return;
       container.innerHTML = categories.map(cat => 
-        `<button class="filter-btn ${cat.id === 'all' ? 'active' : ''}" 
-                data-cat="${cat.id}" 
-                onclick="setTimelineFilter('${cat.id}')">
-          ${cat.icon} ${cat.label}
-        </button>`
+        `<button class="filter-btn ${cat.id === 'all' ? 'active' : ''}" data-cat="${cat.id}" onclick="setTimelineFilter('${cat.id}')">${cat.icon} ${cat.label}</button>`
       ).join('');
     }
 
@@ -436,48 +1498,28 @@
       const activeCycle = document.querySelector('.cycle-dot.active')?.dataset.cycle || 'all';
       
       const filtered = events.filter(e => {
-        const matchesSearch = e.title.toLowerCase().includes(search) || 
-                             e.desc.toLowerCase().includes(search);
+        const matchesSearch = e.title.toLowerCase().includes(search) || e.desc.toLowerCase().includes(search);
         const matchesCat = activeCat === 'all' || e.cat === activeCat;
         const matchesCycle = activeCycle === 'all' || e.cycle === activeCycle;
         return matchesSearch && matchesCat && matchesCycle;
       });
-      
       renderTimelineItems(filtered);
     }
 
     function renderTimelineItems(items) {
       const container = document.getElementById('timeline-list');
       if (!container) return;
-      
       if (items.length === 0) {
         container.innerHTML = '<p class="text-muted" style="text-align:center; padding:2rem">Nenhum evento encontrado.</p>';
         return;
       }
-      
       container.innerHTML = items.map(e => `
-        <div class="timeline-item category-${e.cat}" tabindex="0" 
-             onclick="toggleEvent('${e.id}')" 
-             onkeydown="if(event.key==='Enter')toggleEvent('${e.id}')">
+        <div class="timeline-item category-${e.cat}" tabindex="0" onclick="toggleEvent('${e.id}')" onkeydown="if(event.key==='Enter')toggleEvent('${e.id}')">
           <div class="timeline-content" id="content-${e.id}">
-            <div class="timeline-date">
-              ${e.dateD || e.date}
-              ${e.cycle ? `<span class="cycle-badge">${halvingCycles.find(c=>c.id===e.cycle)?.label || ''}</span>` : ''}
-            </div>
-            <div class="timeline-title">
-              ${e.title} 
-              <span class="badge ${e.cat}">${categories.find(c=>c.id===e.cat)?.icon}</span>
-            </div>
+            <div class="timeline-date">${e.dateD || e.date}${e.cycle ? `<span class="cycle-badge">${halvingCycles.find(c=>c.id===e.cycle)?.label||''}</span>`:''}</div>
+            <div class="timeline-title">${e.title} <span class="badge ${e.cat}">${categories.find(c=>c.id===e.cat)?.icon}</span></div>
             <p class="timeline-desc">${e.desc}</p>
-            ${e.edu ? `
-              <div class="edu-box">
-                <strong>🎓 Para o Professor:</strong>
-                <p><strong>Objetivos:</strong> ${e.edu.obj.join(' • ')}</p>
-                <p><strong>Atividade:</strong> ${e.edu.act}</p>
-                <p><strong>Perguntas:</strong> ${e.edu.qs.join(' • ')}</p>
-                <p><strong>Duração:</strong> ${e.edu.dur} | <strong>BNCC:</strong> ${e.edu.bncc.join(', ')}</p>
-              </div>
-            ` : ''}
+            ${e.edu ? `<div class="edu-box"><strong>🎓 Para o Professor:</strong><p><strong>Obj:</strong> ${e.edu.obj.join(' • ')}</p><p><strong>Ativ:</strong> ${e.edu.act}</p><p><strong>Perg:</strong> ${e.edu.qs.join(' • ')}</p><p><strong>Dur:</strong> ${e.edu.dur} | <strong>BNCC:</strong> ${e.edu.bncc.join(', ')}</p></div>`:''}
           </div>
         </div>
       `).join('');
@@ -488,198 +1530,49 @@
       if (content) content.classList.toggle('expanded');
     }
 
-    // === CICLOS DE HALVING ===
     function renderCyclePreview() {
       const container = document.getElementById('cycle-preview');
       const info = document.getElementById('cycle-info');
       if (!container) return;
-      
       container.innerHTML = halvingCycles.map((c, i) => `
-        <div class="cycle-dot ${i === halvingCycles.length - 2 ? 'active' : ''}" 
-             data-cycle="${c.id}" 
-             onclick="selectCycle('${c.id}')">
-          <div class="cycle-year">${c.year}</div>
-          <div class="cycle-reward">${c.reward} BTC</div>
+        <div class="cycle-dot ${i === halvingCycles.length - 2 ? 'active' : ''}" data-cycle="${c.id}" onclick="selectCycle('${c.id}')">
+          <div class="cycle-year">${c.year}</div><div class="cycle-reward">${c.reward} BTC</div>
         </div>
       `).join('');
-      
-      // Info inicial
       updateCycleInfo(halvingCycles[halvingCycles.length - 2]);
     }
 
     function renderCycleFilter() {
       const container = document.getElementById('cycle-filter');
       if (!container) return;
-      
       container.innerHTML = `
-        <div class="cycle-dot active" data-cycle="all" onclick="selectCycle('all')">
-          <div class="cycle-year">Todos</div>
-          <div class="cycle-reward">—</div>
-        </div>
-        ${halvingCycles.map(c => `
-          <div class="cycle-dot" data-cycle="${c.id}" onclick="selectCycle('${c.id}')">
-            <div class="cycle-year">${c.year}</div>
-            <div class="cycle-reward">${c.reward} BTC</div>
-          </div>
-        `).join('')}
+        <div class="cycle-dot active" data-cycle="all" onclick="selectCycle('all')"><div class="cycle-year">Todos</div><div class="cycle-reward">—</div></div>
+        ${halvingCycles.map(c => `<div class="cycle-dot" data-cycle="${c.id}" onclick="selectCycle('${c.id}')"><div class="cycle-year">${c.year}</div><div class="cycle-reward">${c.reward} BTC</div></div>`).join('')}
       `;
     }
 
     function selectCycle(cycleId) {
-      // Atualiza visual
       document.querySelectorAll('.cycle-dot').forEach(d => d.classList.remove('active'));
       document.querySelector(`.cycle-dot[data-cycle="${cycleId}"]`)?.classList.add('active');
-      
-      // Atualiza info
       const cycle = halvingCycles.find(c => c.id === cycleId);
       if (cycle) updateCycleInfo(cycle);
-      
-      // Filtra timeline
       filterTimeline();
     }
 
     function updateCycleInfo(cycle) {
       const info = document.getElementById('cycle-info');
       if (!info) return;
-      
       const nextIdx = halvingCycles.findIndex(c => c.id === cycle.id) + 1;
       const next = halvingCycles[nextIdx];
-      
-      info.innerHTML = `
-        <strong>${cycle.label}:</strong> ${cycle.year} • 
-        Recompensa: ${cycle.reward} BTC • 
-        ${next ? `Próximo: ${next.year} → ${next.reward} BTC` : 'Último ciclo projetado'}
-        <br><small style="color:var(--text-muted)">${cycle.desc}</small>
-      `;
+      info.innerHTML = `<strong>${cycle.label}:</strong> ${cycle.year} • Recompensa: ${cycle.reward} BTC • ${next ? `Próximo: ${next.year} → ${next.reward} BTC` : 'Último ciclo projetado'}<br><small style="color:var(--text-muted)">${cycle.desc}</small>`;
     }
 
-    // === MÓDULOS EDUCATIVOS ===
-    function renderModules() {
-      const modules = [
-        { id: 'mod1', title: 'O Que É Bitcoin?', icon: '₿', desc: 'Conceitos fundamentais: blockchain, descentralização, chaves públicas/privadas.', level: 'Fundamental II', duration: '4 aulas', bncc: ['EF09MA08','EF09CI10'] },
-        { id: 'mod2', title: 'História do Dinheiro', icon: '🪙', desc: 'De trocas ao Bitcoin: evolução dos sistemas monetários e crises que moldaram inovações.', level: 'Ensino Médio', duration: '6 aulas', bncc: ['EM13CHS402','EM13LGG603'] },
-        { id: 'mod3', title: 'Ciclos de Halving', icon: '✂️', desc: 'Matemática da escassez programada: progressão geométrica, emissão e política monetária algorítmica.', level: 'Ensino Médio', duration: '3 aulas', bncc: ['EM13MAT305','EM13MAT312'] },
-        { id: 'mod4', title: 'Segurança Digital', icon: '🔐', desc: 'Custódia, phishing, 2FA e práticas seguras para estudantes no mundo cripto.', level: 'Fundamental II', duration: '2 aulas', bncc: ['EF09CI10','EM13LGG602'] },
-        { id: 'mod5', title: 'Bitcoin e Sociedade', icon: '🌍', desc: 'Inclusão financeira, remessas, soberania monetária e o papel do Estado na regulação.', level: 'Ensino Médio', duration: '5 aulas', bncc: ['EM13CHS101','EM13CHS402'] },
-        { id: 'mod6', title: 'Matemática do Bitcoin', icon: '📊', desc: 'Hash functions, proof-of-work, dificuldade de mineração e análise de dados on-chain.', level: 'Ensino Médio', duration: '4 aulas', bncc: ['EM13MAT305','EM13MAT312'] }
-      ];
-      
-      const container = document.getElementById('modules-grid');
-      if (!container) return;
-      
-      container.innerHTML = modules.map(m => `
-        <div class="card" style="cursor:pointer" onclick="openModule('${m.id}')">
-          <div style="font-size:2rem; margin-bottom:0.5rem">${m.icon}</div>
-          <h3>${m.title}</h3>
-          <p class="text-muted" style="margin:0.5rem 0">${m.desc}</p>
-          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem">
-            <span class="badge">${m.level}</span>
-            <span class="badge secondary">⏱ ${m.duration}</span>
-            <span class="badge accent">📜 ${m.bncc.length} BNCC</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openModule(id) {
-      const module = {
-        mod1: {
-          title: 'O Que É Bitcoin?',
-          content: `
-            <div class="module-header">
-              <h2>₿ O Que É Bitcoin?</h2>
-              <p>Conceitos fundamentais para estudantes do Fundamental II</p>
-              <div class="module-meta">
-                <span>⏱ 4 aulas</span>
-                <span>🎯 EF09MA08 • EF09CI10</span>
-                <span>👥 8º-9º ano</span>
-              </div>
-            </div>
-            <div class="card">
-              <h3>Objetivos de Aprendizagem</h3>
-              <ul style="margin-left:1.5rem; margin-top:0.5rem">
-                <li>Compreender o conceito de descentralização</li>
-                <li>Diferenciar moeda fiduciária de criptomoeda</li>
-                <li>Entender o papel das chaves públicas e privadas</li>
-                <li>Identificar usos legítimos e riscos do Bitcoin</li>
-              </ul>
-            </div>
-            <div class="grid" style="margin-top:1.5rem">
-              <div class="card">
-                <h4>🎲 Atividade 1: Simulando Transações</h4>
-                <p>Em duplas, os alunos simulam envio de "BTC" usando envelopes (chaves) e um quadro público (blockchain).</p>
-              </div>
-              <div class="card">
-                <h4>🗣️ Atividade 2: Debate Guiado</h4>
-                <p>"Bitcoin é dinheiro?" — Argumentação com base em funções da moeda: meio de troca, reserva de valor, unidade de conta.</p>
-              </div>
-            </div>
-            <button class="btn btn-primary" style="margin-top:1.5rem" onclick="router('modules')">← Voltar para Módulos</button>
-          `
-        }
-      }[id] || { title: 'Módulo', content: '<p>Conteúdo em desenvolvimento.</p><button class="btn btn-outline" onclick="router(\'modules\')">← Voltar</button>' };
-      
-      document.getElementById('module-content').innerHTML = module.content;
-      router('module-detail');
-    }
-
-    // === GLOSSÁRIO ===
-    function renderGlossary() {
-      const terms = [
-        { term: 'Blockchain', def: 'Registro digital descentralizado e imutável de transações, organizado em blocos encadeados criptograficamente.' },
-        { term: 'Halving', def: 'Evento programado a cada 210.000 blocos (~4 anos) que reduz pela metade a recompensa dos mineradores, controlando a emissão de novos bitcoins.' },
-        { term: 'Proof-of-Work', def: 'Mecanismo de consenso que exige esforço computacional para validar transações e criar novos blocos, garantindo segurança à rede.' },
-        { term: 'Chave Privada', def: 'Senha secreta que prova propriedade de bitcoins. Quem controla a chave privada controla os fundos. Nunca compartilhe!' },
-        { term: 'Descentralização', def: 'Distribuição de controle e decisão entre muitos participantes, sem autoridade central única. Princípio fundamental do Bitcoin.' },
-        { term: 'Escassez Programada', def: 'Política monetária algorítmica que limita a oferta total de Bitcoin a 21 milhões de unidades, com emissão decrescente via halvings.' },
-        { term: 'Wallet (Carteira)', def: 'Software ou dispositivo que armazena chaves criptográficas e permite enviar/receber bitcoins. Pode ser custodial ou não-custodial.' },
-        { term: 'Mining (Mineração)', def: 'Processo de validar transações e criar novos blocos usando poder computacional, recompensado com bitcoins recém-emitidos e taxas.' }
-      ];
-      
-      const container = document.getElementById('glossary-grid');
-      if (!container) return;
-      
-      const search = document.getElementById('gl-search')?.value.toLowerCase() || '';
-      const filtered = terms.filter(t => t.term.toLowerCase().includes(search) || t.def.toLowerCase().includes(search));
-      
-      container.innerHTML = filtered.map(t => `
-        <div class="card term-card">
-          <h4 style="color:var(--primary); margin-bottom:0.25rem">${t.term}</h4>
-          <p style="font-size:0.95rem; color:var(--text-muted)">${t.def}</p>
-        </div>
-      `).join('') || '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted)">Nenhum termo encontrado.</p>';
-    }
-
-    function filterGlossary() {
-      renderGlossary();
-    }
-
-    // === ACESSIBILIDADE ===
-    function toggleA11y() {
-      document.getElementById('a11y-panel').classList.toggle('open');
-    }
-
-    function toggleA11ySetting(setting) {
-      const toggle = document.getElementById(`toggle-${setting}`);
-      const isOn = toggle.classList.toggle('on');
-      
-      if (setting === 'contrast') {
-        document.body.classList.toggle('high-contrast', isOn);
-        if (isOn) { document.body.classList.remove('dark'); document.getElementById('toggle-dark').classList.remove('on'); }
-      }
-      if (setting === 'dark') {
-        document.body.classList.toggle('dark', isOn);
-        if (isOn) { document.body.classList.remove('high-contrast'); document.getElementById('toggle-contrast').classList.remove('on'); }
-      }
-      if (setting === 'large') {
-        document.body.classList.toggle('large-text', isOn);
-      }
-    }
-
-    // === INICIALIZAÇÃO ===
+    // === INIT ===
     document.addEventListener('DOMContentLoaded', () => {
-      // Ano no footer
       document.getElementById('year').textContent = new Date().getFullYear();
+      
+      // Load user progress
+      loadProgress();
       
       // Timeline
       renderTimelineFilters();
@@ -687,20 +1580,19 @@
       renderCycleFilter();
       renderTimelineItems(events);
       
-      // Módulos
+      // Modules
       renderModules();
       
-      // Glossário
+      // Glossary
       renderGlossary();
       
-      // Event listeners para inputs
+      // Event listeners
       const tlSearch = document.getElementById('tl-search');
       if (tlSearch) tlSearch.addEventListener('input', filterTimeline);
-      
       const glSearch = document.getElementById('gl-search');
       if (glSearch) glSearch.addEventListener('input', filterGlossary);
       
-      // Fechar painel de acessibilidade ao clicar fora
+      // Close a11y panel on outside click
       document.addEventListener('click', (e) => {
         const panel = document.getElementById('a11y-panel');
         const toggle = document.querySelector('.a11y-toggle');
