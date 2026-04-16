@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BitcoinEdu • História do Bitcoin para Escolas</title>
-  <meta name="description" content="Plataforma educativa sobre Bitcoin alinhada à BNCC, pronta para uso em escolas brasileiras.">
+  <meta name="description" content="Plataforma educativa sobre Bitcoin alinhada à BNCC, com linha do tempo interativa e ciclos de halving.">
   <style>
     :root {
       --bg: #f8f9fa; --bg-card: #ffffff; --text: #111827; --text-muted: #6b7280;
       --primary: #2563eb; --secondary: #7c3aed; --accent: #F7931A; --success: #16a34a;
       --border: #e5e7eb; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-      --radius: 0.75rem;
+      --radius: 0.75rem; --halving-gradient: linear-gradient(135deg, #F7931A, #FFB347);
     }
     .dark {
       --bg: #0f172a; --bg-card: #1e293b; --text: #f8fafc; --text-muted: #94a3b8;
@@ -69,9 +69,16 @@
 
     .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.15); }
-    .badge { display: inline-block; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; border-radius: 99px; background: rgba(37,99,235,0.1); color: var(--primary); }
-    .badge.secondary { background: rgba(124,58,237,0.1); color: var(--secondary); }
-    .badge.accent { background: rgba(247,147,26,0.1); color: var(--accent); }
+    .badge { display: inline-block; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; border-radius: 99px; }
+    .badge.tech { background: rgba(37,99,235,0.15); color: var(--primary); }
+    .badge.market { background: rgba(22,163,74,0.15); color: var(--success); }
+    .badge.adopt { background: rgba(247,147,26,0.15); color: var(--accent); }
+    .badge.regulation { background: rgba(124,58,237,0.15); color: var(--secondary); }
+    .badge.halving { background: var(--halving-gradient); color: white; }
+    .badge.precursor { background: rgba(100,116,139,0.15); color: #64748b; }
+    .badge.hack { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge.scam { background: rgba(249,115,22,0.15); color: #f97316; }
+    .badge.defi { background: rgba(168,85,247,0.15); color: #a855f7; }
 
     /* Timeline */
     .controls { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: var(--bg-card); padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); }
@@ -83,19 +90,43 @@
     .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .timeline-list { display: flex; flex-direction: column; gap: 1rem; }
-    .timeline-item { cursor: pointer; position: relative; padding-left: 1.5rem; }
-    .timeline-item::before { content: ''; position: absolute; left: 0; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--primary); border: 2px solid var(--bg-card); }
+    .timeline-item { cursor: pointer; position: relative; padding-left: 1.5rem; transition: all 0.2s ease; border-left: 3px solid transparent; }
+    .timeline-item:hover { border-left-color: var(--primary); transform: translateX(4px); }
+    .timeline-item:focus { outline: none; box-shadow: 0 0 0 3px var(--primary); border-radius: 8px; }
+    .timeline-item::before { content: ''; position: absolute; left: -5px; top: 10px; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); border: 3px solid var(--bg-card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .timeline-item.category-market::before { background: var(--success); }
     .timeline-item.category-regulation::before { background: var(--secondary); }
     .timeline-item.category-adoption::before { background: var(--accent); }
+    .timeline-item.category-halving::before { background: var(--halving-gradient); }
+    .timeline-item.category-hack::before { background: #ef4444; }
+    .timeline-item.category-scam::before { background: #f97316; }
+    .timeline-item.category-defi::before { background: #a855f7; }
+    .timeline-item.category-precursor::before { background: #64748b; }
+    
     .timeline-content { background: var(--bg-card); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); transition: all 0.2s; }
-    .timeline-content.expanded { box-shadow: 0 0 0 2px var(--primary); }
-    .timeline-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
-    .timeline-title { font-weight: 600; margin-bottom: 4px; }
+    .timeline-content.expanded { box-shadow: 0 0 0 2px var(--primary); animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .timeline-date { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .timeline-date .cycle-badge { background: var(--halving-gradient); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .timeline-title { font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .timeline-desc { font-size: 0.95rem; color: var(--text-muted); display: none; margin-top: 0.5rem; border-top: 1px dashed var(--border); padding-top: 0.5rem; }
     .timeline-content.expanded .timeline-desc { display: block; }
+    
     .edu-box { background: rgba(37,99,235,0.05); border: 1px dashed var(--primary); padding: 0.75rem; border-radius: 6px; margin-top: 0.75rem; }
     .edu-box p { font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .edu-box strong { color: var(--primary); }
+
+    /* Halving Cycle Visualizer */
+    .halving-cycles { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 2rem 0; }
+    .halving-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .halving-header h3 { margin: 0; }
+    .cycle-visual { display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 0; }
+    .cycle-dot { min-width: 60px; text-align: center; padding: 0.5rem; border-radius: 8px; background: var(--bg); border: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
+    .cycle-dot.active { border-color: var(--accent); background: rgba(247,147,26,0.1); }
+    .cycle-dot .cycle-year { font-weight: 600; font-size: 0.9rem; }
+    .cycle-dot .cycle-reward { font-size: 0.75rem; color: var(--text-muted); }
+    .cycle-info { margin-top: 1rem; padding: 1rem; background: rgba(247,147,26,0.05); border-radius: 6px; border-left: 4px solid var(--accent); }
 
     /* Modules & Quiz */
     .grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
@@ -133,6 +164,15 @@
 
     /* Footer */
     footer { border-top: 1px solid var(--border); padding: 2rem 0; margin-top: 3rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+    
+    /* Responsive */
+    @media(max-width: 600px) {
+      .hero { padding: 2rem 1rem; }
+      h1 { font-size: 1.8rem !important; }
+      .btn-group { flex-direction: column; }
+      .cycle-dot { min-width: 50px; padding: 0.4rem; }
+      .cycle-dot .cycle-year { font-size: 0.8rem; }
+    }
   </style>
 </head>
 <body>
@@ -143,11 +183,11 @@
       <a href="#home" class="logo"><span>₿</span> BitcoinEdu</a>
       <button class="mobile-toggle" aria-label="Menu" onclick="toggleMenu()">☰</button>
       <nav id="main-nav">
-        <a href="#home" class="active">Início</a>
-        <a href="#timeline">Linha do Tempo</a>
-        <a href="#modules">Módulos</a>
-        <a href="#teachers">Professores</a>
-        <a href="#glossary">Glossário</a>
+        <a href="#home" class="active" onclick="router('home')">Início</a>
+        <a href="#timeline" onclick="router('timeline')">Linha do Tempo</a>
+        <a href="#modules" onclick="router('modules')">Módulos</a>
+        <a href="#teachers" onclick="router('teachers')">Professores</a>
+        <a href="#glossary" onclick="router('glossary')">Glossário</a>
       </nav>
     </div>
   </header>
@@ -157,34 +197,62 @@
     <section id="home" class="section active">
       <div class="hero">
         <h1>Bitcoin: A Revolução da <span style="color:var(--accent)">Moeda Digital</span></h1>
-        <p class="subtitle">Plataforma educativa alinhada à BNCC para escolas brasileiras. Aprenda história, tecnologia e economia financeira de forma interativa.</p>
+        <p class="subtitle">Plataforma educativa alinhada à BNCC para escolas brasileiras. Aprenda história, tecnologia, ciclos de halving e economia financeira de forma interativa.</p>
         <div class="btn-group">
           <button class="btn btn-primary" onclick="router('timeline')">📅 Explorar Timeline</button>
           <button class="btn btn-outline" onclick="router('modules')">📚 Ver Módulos</button>
         </div>
       </div>
-      <div class="grid" style="margin-bottom: 2rem;">
-        <div class="card" style="text-align:center"><div style="font-size:2rem">🌍</div><h3>50+ Eventos</h3><p class="text-muted">História completa desde 2008</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">🎓</div><h3>12 Módulos</h3><p class="text-muted">Prontos para sala de aula</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">📜</div><h3>30+ Habilidades</h3><p class="text-muted">Mapeamento BNCC completo</p></div>
-        <div class="card" style="text-align:center"><div style="font-size:2rem">💻</div><h3>100% Gratuito</h3><p class="text-muted">Open Source & Offline</p></div>
+      
+      <!-- Halving Cycle Preview -->
+      <div class="halving-cycles">
+        <div class="halving-header">
+          <span style="font-size:2rem">✂️</span>
+          <div>
+            <h3>Ciclos de Halving do Bitcoin</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem">Evento programado a cada 210.000 blocos (~4 anos) que reduz pela metade a emissão de novos bitcoins</p>
+          </div>
+        </div>
+        <div class="cycle-visual" id="cycle-preview"></div>
+        <div class="cycle-info" id="cycle-info">
+          <strong>Próximo Halving:</strong> 2028 • Recompensa: 1.5625 BTC • Total emitido: ~19.7M/21M BTC
+        </div>
       </div>
+      
+      <div class="grid" style="margin-bottom: 2rem;">
+        <div class="card" style="text-align:center"><div style="font-size:2rem">🌍</div><h3>60+ Eventos</h3><p class="text-muted">História completa desde 1983 (precursores) até 2028</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">🎓</div><h3>12 Módulos</h3><p class="text-muted">Prontos para sala de aula com BNCC</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">✂️</div><h3>5 Ciclos de Halving</h3><p class="text-muted">2012 • 2016 • 2020 • 2024 • 2028</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:2rem">💻</div><h3>100% Gratuito</h3><p class="text-muted">Open Source & Funciona Offline</p></div>
+      </div>
+      
       <h2 style="text-align:center; margin-bottom:1.5rem;">Por que estudar Bitcoin nas escolas?</h2>
       <div class="grid">
-        <div class="card"><h3>🧠 Pensamento Crítico</h3><p>Entenda como tecnologias disruptivas nascem de crises e desafiam modelos tradicionais.</p></div>
-        <div class="card"><h3>💰 Educação Financeira</h3><p>Conceitos de inflação, escassez, descentralização e políticas monetárias na prática.</p></div>
-        <div class="card"><h3>🌐 Cidadania Digital</h3><p>Soberania, inclusão financeira e o papel do Estado na regulação de inovações.</p></div>
+        <div class="card"><h3>🧠 Pensamento Crítico</h3><p>Entenda como tecnologias disruptivas nascem de crises e desafiam modelos tradicionais de dinheiro e confiança.</p></div>
+        <div class="card"><h3>💰 Educação Financeira</h3><p>Conceitos de inflação, escassez programada, descentralização e políticas monetárias algorítmicas na prática.</p></div>
+        <div class="card"><h3>🌐 Cidadania Digital</h3><p>Soberania individual, inclusão financeira global e o papel do Estado na regulação de inovações tecnológicas.</p></div>
       </div>
     </section>
 
     <!-- TIMELINE -->
     <section id="timeline" class="section">
       <h1>Linha do Tempo do Bitcoin</h1>
-      <p class="subtitle">Explore marcos históricos com contexto educativo, atividades sugeridas e conexões com a BNCC.</p>
+      <p class="subtitle">Explore marcos históricos, precursores criptográficos e ciclos de halving com contexto educativo, atividades sugeridas e conexões com a BNCC.</p>
+      
       <div class="controls">
         <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="tl-search" placeholder="Buscar eventos..." oninput="filterTimeline()"></div>
         <div class="filters" id="tl-filters"></div>
       </div>
+      
+      <!-- Halving Cycle Selector -->
+      <div class="halving-cycles" style="margin:1rem 0">
+        <div class="halving-header">
+          <span style="font-size:1.5rem">✂️</span>
+          <h3 style="margin:0">Filtrar por Ciclo de Halving</h3>
+        </div>
+        <div class="cycle-visual" id="cycle-filter"></div>
+      </div>
+      
       <div id="timeline-list" class="timeline-list"></div>
     </section>
 
@@ -233,7 +301,7 @@
   <footer>
     <div class="container">
       <p>© <span id="year"></span> BitcoinEdu • Projeto Educacional Open Source</p>
-      <p>Alinhado à BNCC • Feito para escolas brasileiras • 100% Gratuito</p>
+      <p>Alinhado à BNCC • Feito para escolas brasileiras • 100% Gratuito • Funciona Offline</p>
     </div>
   </footer>
 
@@ -247,225 +315,399 @@
   </div>
 
   <script>
-    // DADOS
+    // === DADOS: EVENTOS DA LINHA DO TEMPO COM CICLOS DE HALVING ===
+    const halvingCycles = [
+      { id: 'genesis', year: 2009, reward: 50, label: 'Gênese', desc: 'Início da rede Bitcoin' },
+      { id: 'h1', year: 2012, reward: 25, label: '1º Halving', desc: 'Primeira redução de emissão' },
+      { id: 'h2', year: 2016, reward: 12.5, label: '2º Halving', desc: 'Maturação do ecossistema' },
+      { id: 'h3', year: 2020, reward: 6.25, label: '3º Halving', desc: 'Adoção institucional' },
+      { id: 'h4', year: 2024, reward: 3.125, label: '4º Halving', desc: 'ETFs e mainstream' },
+      { id: 'h5', year: 2028, reward: 1.5625, label: '5º Halving', desc: 'Próximo ciclo (projeção)' }
+    ];
+
     const events = [
-      { id: 'wpp', date: '2008-10-31', cat: 'tech', title: 'Whitepaper do Bitcoin', desc: 'Satoshi Nakamoto publica documento propondo dinheiro eletrônico ponto a ponto, sem intermediários.', edu: { obj: ['Contexto histórico da crise de 2008','Princípios de descentralização'], act: 'Leitura guiada e debate sobre problemas do sistema tradicional.', qs: ['Por que 2008 foi crucial?','O que significa peer-to-peer?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
-      { id: 'gen', date: '2009-01-03', dateD: '3 de jan 2009', cat: 'tech', title: 'Genesis Block', desc: 'Primeiro bloco minerado. Contém manchete do The Times criticando resgates bancários.', edu: { obj: ['Entender ledger imutável','Tecnologia e política'], act: 'Criar mensagens simbólicas para um bloco pessoal.', qs: ['Por que usar manchete de jornal?','O que é imutabilidade?'], dur: '1 aula', bncc: ['EF09GE12','EM13MAT305'] }},
-      { id: 'piz', date: '2010-05-22', dateD: '22 de mai 2010', cat: 'market', title: 'Bitcoin Pizza Day', desc: '10.000 BTC trocados por duas pizzas. Primeiro uso comercial real.', edu: { obj: ['Evolução de valor','Escassez vs utilidade'], act: 'Cálculo proporcional: valor das pizzas em 2010 vs hoje.', qs: ['O que dá valor às coisas?','História ajuda a entender o presente?'], dur: '1-2 aulas', bncc: ['EF09MA08','EM13MAT305'] }},
-      { id: 'els', date: '2021-09-07', dateD: '7 de set 2021', cat: 'adopt', title: 'El Salvador adota Bitcoin', desc: 'Primeiro país a tornar BTC moeda legal. Foco em inclusão financeira e remessas.', edu: { obj: ['Políticas públicas','Inclusão financeira'], act: 'Estudo comparativo: El Salvador vs Brasil.', qs: ['Que problemas buscavam resolver?','Educação vem antes ou depois da tecnologia?'], dur: '3 aulas', bncc: ['EM13CHS101','EM13CHS402'] }},
-      { id: 'h4', date: '2024-04-20', cat: 'halving', title: '4º Halving', desc: 'Recompensa cai para 3.125 BTC. Mecanismo de controle de emissão programado.', edu: { obj: ['Progressão geométrica','Escassez programada'], act: 'Calcular emissão total até 2140.', qs: ['Por que programar escassez?','Impacto nos mineradores?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }}
+      // PRECURSORES
+      { id: 'digicash', date: '1983', cat: 'precursor', title: 'DigiCash — David Chaum', desc: 'Primeiro sistema de dinheiro eletrônico com assinaturas cegas para privacidade.', cycle: 'genesis', edu: { obj: ['História da criptografia aplicada','Privacidade digital'], act: 'Pesquisar sobre criptografia de chave pública.', qs: ['Por que privacidade é importante no dinheiro digital?'], dur: '1 aula', bncc: ['EF09CI10','EM13LGG601'] }},
+      { id: 'cypherpunk', date: '1991', cat: 'precursor', title: 'Cypherpunk Mailing List', desc: 'Comunidade de hackers e criptógrafos discutindo privacidade e dinheiro digital.', cycle: 'genesis', edu: { obj: ['Movimentos sociais tecnológicos','Cultura hacker'], act: 'Debate: "Privacidade é um direito fundamental?"', qs: ['O que é um movimento cypherpunk?'], dur: '1 aula', bncc: ['EM13CHS101','EM13LGG603'] }},
+      { id: 'hashcash', date: '1997-03', cat: 'precursor', title: 'HashCash — Adam Back', desc: 'Sistema proof-of-work para combater spam. Base técnica do mining do Bitcoin.', cycle: 'genesis', edu: { obj: ['Proof-of-Work como conceito','Resolução de problemas computacionais'], act: 'Simular "prova de trabalho" com quebra-cabeças.', qs: ['Como um sistema anti-spam virou base para dinheiro?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EF09CI10'] }},
+      { id: 'bmoney', date: '1998-11', cat: 'precursor', title: 'b-money — Wei Dai', desc: 'Proposta de sistema de dinheiro eletrônico descentralizado. Citado no whitepaper do Bitcoin.', cycle: 'genesis', edu: { obj: ['Ideias que inspiram inovações','Citação acadêmica'], act: 'Ler trecho do whitepaper que cita b-money.', qs: ['Por que Satoshi citou Wei Dai?'], dur: '1 aula', bncc: ['EM13LGG602','EM13CHS402'] }},
+      { id: 'bitgold', date: '1998-12', cat: 'precursor', title: 'Bit Gold — Nick Szabo', desc: 'Conceito de "ouro digital" com provas de trabalho encadeadas. Precursor direto do Bitcoin.', cycle: 'genesis', edu: { obj: ['Escassez digital','Propriedade descentralizada'], act: 'Comparar Bit Gold vs Bitcoin em tabela.', qs: ['O que faltou para o Bit Gold funcionar?'], dur: '1-2 aulas', bncc: ['EM13MAT312','EM13CHS402'] }},
+      { id: 'rpow', date: '2004-08', cat: 'precursor', title: 'RPOW — Hal Finney', desc: 'Primeiro sistema funcional de dinheiro digital com PoW reutilizável. Hal foi o primeiro a receber BTC.', cycle: 'genesis', edu: { obj: ['Colaboração científica','Legado técnico'], act: 'Linha do tempo: quem influenciou Satoshi?', qs: ['Por que Hal Finney é importante na história?'], dur: '1 aula', bncc: ['EM13LGG601','EM13CHS101'] }},
+      
+      // NASCIMENTO DO BITCOIN
+      { id: 'wpp', date: '2008-10-31', dateD: '31 de out 2008', cat: 'tech', title: 'Whitepaper do Bitcoin', desc: 'Satoshi Nakamoto publica "Bitcoin: A Peer-to-Peer Electronic Cash System". 9 páginas que mudariam as finanças.', cycle: 'genesis', edu: { obj: ['Contexto da crise de 2008','Princípios de descentralização'], act: 'Leitura guiada: trechos do whitepaper + debate.', qs: ['Por que 2008 foi crucial?','O que significa peer-to-peer?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
+      { id: 'gen', date: '2009-01-03', dateD: '3 de jan 2009', cat: 'tech', title: 'Genesis Block', desc: 'Primeiro bloco minerado. Mensagem oculta: "Chancellor on brink of second bailout for banks". Recompensa: 50 BTC.', cycle: 'genesis', edu: { obj: ['Ledger imutável','Tecnologia como crítica política'], act: 'Criar mensagens simbólicas para um "bloco pessoal".', qs: ['Por que usar manchete de jornal?','O que é imutabilidade?'], dur: '1 aula', bncc: ['EF09GE12','EM13MAT305'] }},
+      { id: 'firsttx', date: '2009-01-12', dateD: '12 de jan 2009', cat: 'tech', title: 'Primeira Transação', desc: 'Satoshi envia 10 BTC para Hal Finney. Primeira transferência peer-to-peer da história do Bitcoin.', cycle: 'genesis', edu: { obj: ['Funcionamento de transações','Rede P2P na prática'], act: 'Simular envio de "moedas" em sala com papel.', qs: ['Como uma transação é validada?'], dur: '1 aula', bncc: ['EM13MAT305','EF09MA08'] }},
+      
+      // PRIMEIROS ANOS E MERCADO
+      { id: 'piz', date: '2010-05-22', dateD: '22 de mai 2010', cat: 'market', title: 'Bitcoin Pizza Day', desc: 'Laszlo Hanyecz paga 10.000 BTC por duas pizzas. Primeiro uso comercial documentado. Hoje valeriam ~$700 milhões.', cycle: 'genesis', edu: { obj: ['Evolução de valor','Escassez vs utilidade'], act: 'Cálculo proporcional: valor das pizzas em 2010 vs hoje.', qs: ['O que dá valor às coisas?','História ajuda a entender o presente?'], dur: '1-2 aulas', bncc: ['EF09MA08','EM13MAT305'] }},
+      { id: 'mtgox-launch', date: '2010-07', cat: 'tech', title: 'Mt. Gox Lança Exchange', desc: 'Maior exchange da época. Processava 70% das transações globais antes do colapso em 2014.', cycle: 'genesis', edu: { obj: ['Infraestrutura de mercado','Riscos de centralização'], act: 'Debate: "Exchanges são necessárias ou perigosas?"', qs: ['Qual a diferença entre custódia própria e exchange?'], dur: '1-2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      { id: 'satoshi-leave', date: '2010-12', cat: 'tech', title: 'Satoshi Desaparece', desc: 'Últimas comunicações públicas. Satoshi entrega o controle para Gavin Andresen. Identidade permanece desconhecida.', cycle: 'genesis', edu: { obj: ['Descentralização radical','Anonimato e liderança'], act: 'Redação: "Por que o anonimato de Satoshi importa?"', qs: ['Bitcoin precisa de um líder?'], dur: '1 aula', bncc: ['EM13LGG603','EM13CHS402'] }},
+      
+      // PRIMEIRO HALVING (2012)
+      { id: 'halv1', date: '2012-11-28', dateD: '28 de nov 2012', cat: 'halving', title: '1º Halving do Bitcoin', desc: 'Recompensa cai de 50 para 25 BTC. Primeiro evento de escassez programada. Marco na política monetária algorítmica.', cycle: 'h1', edu: { obj: ['Progressão geométrica','Política monetária programada'], act: 'Calcular emissão total de BTC até 2140 usando PG.', qs: ['Por que programar escassez?','Como difere de moedas fiduciárias?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }},
+      { id: 'btc-usd-1', date: '2011-04', cat: 'market', title: 'Bitcoin Alcança $1 USD', desc: 'Paridade com o dólar pela primeira vez. BTC valia menos de 1 centavo dois anos antes.', cycle: 'h1', edu: { obj: ['Volatilidade e adoção','Formação de preço'], act: 'Gráfico histórico: BTC/USD de 2009 a 2012.', qs: ['O que faz o preço subir?'], dur: '1 aula', bncc: ['EF09MA08','EM13MAT305'] }},
+      { id: 'silkroad', date: '2011-06', cat: 'regulation', title: 'Silk Road — Bitcoin na Dark Web', desc: 'Mercado anônimo impulsiona adoção. FBI fecha em 2013, prendendo Ross Ulbricht. Debate sobre uso dual da tecnologia.', cycle: 'h1', edu: { obj: ['Tecnologia de uso dual','Ética e inovação'], act: 'Debate: "Deve-se banir tecnologia por usos ilícitos?"', qs: ['Como regular sem censurar inovação?'], dur: '2-3 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      { id: 'litecoin', date: '2011-10', cat: 'tech', title: 'Litecoin — Primeira Altcoin', desc: 'Charlie Lee lança Litecoin com confirmações 4x mais rápidas. Template para centenas de criptomoedas.', cycle: 'h1', edu: { obj: ['Inovação por fork','Competição tecnológica'], act: 'Comparar Bitcoin vs Litecoin em tabela técnica.', qs: ['Por que criar uma nova moeda?'], dur: '1 aula', bncc: ['EM13MAT305','EM13LGG601'] }},
+      
+      // SEGUNDO HALVING (2016)
+      { id: 'halv2', date: '2016-07-09', dateD: '9 de jul 2016', cat: 'halving', title: '2º Halving do Bitcoin', desc: 'Recompensa cai de 25 para 12.5 BTC. Segundo ciclo de 4 anos. Historicamente precede bull runs.', cycle: 'h2', edu: { obj: ['Ciclos econômicos','Análise histórica de padrões'], act: 'Gráfico: preço do BTC 12 meses antes/depois de cada halving.', qs: ['Padrões históricos garantem futuro?'], dur: '2 aulas', bncc: ['EM13MAT312','EM13CHS402'] }},
+      { id: 'eth-whitepaper', date: '2013-11', cat: 'tech', title: 'Whitepaper do Ethereum', desc: 'Vitalik Buterin, aos 19 anos, propõe blockchain programável com smart contracts.', cycle: 'h2', edu: { obj: ['Evolução de blockchains','Smart contracts'], act: 'Exemplo simples de smart contract em pseudocódigo.', qs: ['Qual a diferença entre Bitcoin e Ethereum?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EM13LGG601'] }},
+      { id: 'btc-100', date: '2013-04', cat: 'market', title: 'Bitcoin Supera $100', desc: 'Crise bancária no Chipre impulsiona interesse. Primeira grande cobertura da mídia mainstream.', cycle: 'h2', edu: { obj: ['Crises e adoção','Mídia e percepção pública'], act: 'Análise de manchetes de 2013 sobre Bitcoin.', qs: ['Como crises afetam a busca por alternativas?'], dur: '1 aula', bncc: ['EM13CHS402','EM13LGG603'] }},
+      { id: 'btc-1000', date: '2013-11', cat: 'market', title: 'Bitcoin Alcança $1.000', desc: 'Primeiro grande bull run. Senado dos EUA realiza audiências sobre Bitcoin. Seguido por queda de 80%.', cycle: 'h2', edu: { obj: ['Ciclos de mercado','Regulação e preço'], act: 'Linha do tempo: eventos regulatórios vs preço.', qs: ['Regulação ajuda ou atrapalha a adoção?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13MAT305'] }},
+      { id: 'mtgox-collapse', date: '2014-02-24', dateD: '24 de fev 2014', cat: 'hack', title: 'Colapso da Mt. Gox', desc: '850.000 BTC (~$450M) desaparecem. Maior hack da época. Bitcoin cai 50%. Lição sobre custódia.', cycle: 'h2', edu: { obj: ['Segurança digital','"Not your keys, not your coins"'], act: 'Simulação: comparar custódia própria vs. terceiros.', qs: ['Por que guardar suas próprias chaves é importante?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      
+      // TERCEIRO HALVING (2020)
+      { id: 'halv3', date: '2020-05-11', dateD: '11 de mai 2020', cat: 'halving', title: '3º Halving do Bitcoin', desc: 'Recompensa cai de 12.5 para 6.25 BTC. Historicamente precede grandes bull runs. Pandemia global como pano de fundo.', cycle: 'h3', edu: { obj: ['Macroeconomia e cripto','Eventos globais e mercados'], act: 'Pesquisar: como a pandemia afetou diferentes ativos.', qs: ['Bitcoin é "ouro digital" ou ativo de risco?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13MAT312'] }},
+      { id: 'microstrategy', date: '2020-08', cat: 'market', title: 'MicroStrategy Adota Bitcoin', desc: 'Michael Saylor anuncia compra de $250M em BTC. Primeira empresa pública a adotar Bitcoin como reserva de tesouraria.', cycle: 'h3', edu: { obj: ['Tesouraria corporativa','Reserva de valor institucional'], act: 'Debate: "Empresas devem ter BTC no balanço?"', qs: ['Que riscos e benefícios isso traz?'], dur: '1-2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      { id: 'defi-summer', date: '2020-06', cat: 'defi', title: 'DeFi Summer', desc: 'Uniswap, Compound, Aave acumulam bilhões em TVL em semanas. Revolução das finanças descentralizadas.', cycle: 'h3', edu: { obj: ['Inovação financeira','Riscos e oportunidades em DeFi'], act: 'Explorar interface do Uniswap (simulação).', qs: ['DeFi substitui bancos tradicionais?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13CHS402'] }},
+      { id: 'paypal-btc', date: '2020-10', cat: 'market', title: 'PayPal Habilita Bitcoin', desc: '346 milhões de usuários podem comprar BTC. Sinal claro de adoção institucional e mainstream.', cycle: 'h3', edu: { obj: ['Adoção em massa','Papel de grandes plataformas'], act: 'Pesquisar: quais países o PayPal oferece BTC?', qs: ['Por que grandes empresas entram no mercado cripto?'], dur: '1 aula', bncc: ['EM13CHS101','EM13LGG603'] }},
+      
+      // QUARTO HALVING (2024)
+      { id: 'halv4', date: '2024-04-20', dateD: '20 de abr 2024', cat: 'halving', title: '4º Halving do Bitcoin', desc: 'Recompensa cai para 3.125 BTC. Primeiro halving após aprovação de ETFs institucionais nos EUA.', cycle: 'h4', edu: { obj: ['Escassez programada','Institucionalização do mercado'], act: 'Calcular: quantos BTC restam para minerar após 2024?', qs: ['Como ETFs mudam a dinâmica de oferta e demanda?'], dur: '2 aulas', bncc: ['EM13MAT305','EM13MAT312'] }},
+      { id: 'etf-approval', date: '2024-01-10', dateD: '10 de jan 2024', cat: 'regulation', title: 'SEC Aprova ETFs Spot de Bitcoin', desc: 'BlackRock, Fidelity e outros lançam ETFs. Maior evento de adoção institucional da história.', cycle: 'h4', edu: { obj: ['Regulação financeira','Produtos de investimento'], act: 'Comparar: ETF vs comprar BTC direto. Prós e contras.', qs: ['ETFs aproximam ou distorcem o Bitcoin?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
+      { id: 'elsalvador', date: '2021-09-07', dateD: '7 de set 2021', cat: 'adopt', title: 'El Salvador: Bitcoin como Moeda Legal', desc: 'Primeiro país a adotar Bitcoin como moeda oficial. Foco em inclusão financeira e redução de custos de remessas.', cycle: 'h4', edu: { obj: ['Políticas públicas','Inclusão financeira global'], act: 'Estudo comparativo: El Salvador vs Brasil.', qs: ['Que problemas buscavam resolver?','Educação vem antes ou depois da tecnologia?'], dur: '3 aulas', bncc: ['EM13CHS101','EM13CHS402'] }},
+      { id: 'taproot', date: '2021-11-14', dateD: '14 de nov 2021', cat: 'tech', title: 'Taproot Ativado no Bitcoin', desc: 'Maior upgrade desde SegWit. Melhora privacidade e habilita smart contracts mais complexos.', cycle: 'h4', edu: { obj: ['Upgrades de protocolo','Governança descentralizada'], act: 'Pesquisar: como funciona o processo de BIPs?', qs: ['Como mudanças são decididas no Bitcoin?'], dur: '1-2 aulas', bncc: ['EM13LGG601','EM13MAT305'] }},
+      { id: 'btc-69k', date: '2021-11', cat: 'market', title: 'Bitcoin Alcança $69.000 — ATH #3', desc: 'Máxima histórica em novembro de 2021. Capitalização total do mercado cripto supera $3 trilhões.', cycle: 'h4', edu: { obj: ['Bolhas e ciclos de mercado','Análise de sentimentos'], act: 'Gráfico: BTC vs S&P500 vs Ouro em 2021.', qs: ['O que leva a máximas históricas?'], dur: '1-2 aulas', bncc: ['EM13MAT305','EM13CHS402'] }},
+      
+      // EVENTOS RECENTES E FUTURO
+      { id: 'terra-collapse', date: '2022-05', cat: 'scam', title: 'Colapso Terra/Luna — $60B Perdidos', desc: 'TerraUSD perde paridade. LUNA cai de $80 para $0 em dias. Maior colapso único na história cripto.', cycle: 'h4', edu: { obj: ['Riscos de stablecoins','Due diligence em cripto'], act: 'Estudo de caso: o que deu errado no Terra?', qs: ['Como identificar projetos arriscados?'], dur: '2 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      { id: 'ftx-collapse', date: '2022-11', cat: 'scam', title: 'FTX Colapsa — SBF Preso', desc: 'Sam Bankman-Fried e FTX revelam déficit de $8B em fundos de clientes. SBF condenado a 25 anos.', cycle: 'h4', edu: { obj: ['Ética nos negócios','Transparência e auditoria'], act: 'Debate: "Regulação previne fraudes?"', qs: ['Como proteger investidores sem sufocar inovação?'], dur: '2-3 aulas', bncc: ['EM13CHS101','EM13LGG602'] }},
+      { id: 'btc-100k', date: '2024-12', cat: 'market', title: 'Bitcoin Supera $100.000', desc: 'Após vitória eleitoral nos EUA e promessas de reserva estratégica de Bitcoin, BTC cruza a barreira de $100k.', cycle: 'h4', edu: { obj: ['Geopolítica e cripto','Reservas soberanas'], act: 'Pesquisar: quais países consideram reserva em BTC?', qs: ['Bitcoin pode ser reserva de valor nacional?'], dur: '2 aulas', bncc: ['EM13CHS402','EM13LGG603'] }},
+      { id: 'halv5-proj', date: '2028', cat: 'halving', title: '5º Halving (Projeção)', desc: 'Recompensa cairá para 1.5625 BTC. Duas certezas na vida: impostos e os 210.000 blocos que formam uma Era no Bitcoin.', cycle: 'h5', edu: { obj: ['Previsão vs realidade','Matemática da emissão'], act: 'Calcular: ano estimado do último BTC minerado.', qs: ['O que acontece quando todos os 21M BTC forem minerados?'], dur: '2 aulas', bncc: ['EM13MAT312','EM13MAT305'] }}
     ];
 
-    const modules = [
-      { slug: 'dinheiro', title: 'O Dinheiro Antes do Bitcoin', icon: '🪙', age: 'Fund. II', diff: 'Iniciante', dur: '3 aulas', bncc: ['EF09GE12','EF67LP25'], areas: ['Geografia','Português'], themes: ['História do Dinheiro','Educação Financeira'], desc: 'Evolução das moedas e problemas que o Bitcoin propõe resolver.', content: '<h2>Da Troca ao Digital</h2><p>1. <b>Escambo:</b> Troca direta. Problema: coincidência de desejos.<br>2. <b>Moeda Mercadoria:</b> Conchas, sal, ouro. Raros e divisíveis.<br>3. <b>Papel e Bancos:</b> Confiança institucional e fiduciária.<br>4. <b>Digital:</b> PIX e cartões. Ainda dependem de terceiros.</p><h3>Por que Bitcoin?</h3><p>✅ Sem intermediários obrigatórios<br>✅ Regras transparentes e imutáveis<br>✅ Acesso global com internet<br>✅ Emissão previsível e limitada</p>', quiz: [{q:'Qual o principal problema do escambo?', opts:['Muito rápido','Coincidência de desejos','Usava papel','Sem regras'], ans:1, exp:'Ambos precisam querer exatamente o que o outro tem.'},{q:'Moeda fiduciária vale por:', opts:['Ouro físico','Confiança no emissor','Ser digital','Ser impresso'], ans:1, exp:'Fidúcia significa confiança na instituição/governo.'}]},
-      { slug: 'funcionamento', title: 'Como Funciona o Bitcoin?', icon: '⛓️', age: 'Ens. Médio', diff: 'Intermediário', dur: '4 aulas', bncc: ['EM13MAT305','EM13CHS402'], areas: ['Matemática','Ciências Humanas'], themes: ['Tecnologia','Pensamento Computacional'], desc: 'Blockchain, descentralização e segurança explicados de forma conceitual.', content: '<h2>Blockchain: Caderno Compartilhado</h2><p>📓 Todos têm cópia<br>✏️ Escrever = resolver quebra-cabeça (Prova de Trabalho)<br>🔒 Imutável após validação<br>👥 Consenso sem líder central</p><h3>Segurança</h3><p>Alterar passado = refazer tudo em >50% da rede. Inviável computacionalmente. Mineradores ganham BTC por blocos + taxas, alinhando interesses.</p><p><b>Não é:</b> Anônimo (é pseudônimo), só para investir, ou substituto de tudo.</p>', quiz: [{q:'Proof of Work transforma:', opts:['Tempo em dinheiro','Energia em segurança','Papel em digital','Confiança em ouro'], ans:1, exp:'Consumo computacional comprova trabalho e protege a rede.'},{q:'Para fraudar a blockchain seria necessário:', opts:['Hacker famoso','Controlar >50% da rede','Pagar mineradores','Esperar o halving'], ans:1, exp:'Ataque de 51% é teoricamente possível, mas economicamente inviável.'}]},
-      { slug: 'mundo', title: 'Bitcoin no Mundo Real', icon: '🌍', age: 'Ens. Médio', diff: 'Avançado', dur: '5 aulas', bncc: ['EM13CHS101','EM13LGG603'], areas: ['Sociologia','Linguagens'], themes: ['Globalização','Cidadania Digital'], desc: 'Casos de uso, impactos sociais e debates sobre adoção tecnológica.', content: '<h2>Casos Reais</h2><p>🇸🇻 <b>El Salvador:</b> Moeda legal. 70% sem banco. Infraestrutura desafiadora.<br>🇳🇬 <b>Nigéria:</b> Uso orgânico contra inflação. Remessas P2P.<br>🇧🇷 <b>Brasil:</b> PIX líder. Marco legal cripto. Debate CBDC vs Descentralizado.</p><h3>Pensamento Crítico</h3><p>• Descentralização x Eficiência<br>• Escassez programada x Flexibilidade monetária<br>• Quem se beneficia? Quem fica para trás?</p><p><b>Projeto Final:</b> Pesquisar indicadores locais, propor análise crítica, apresentar relatório.</p>', quiz: [{q:'El Salvador adotou BTC principalmente para:', opts:['Substituir o dólar','Inclusão financeira e remessas','Ganhar eleições','Proibir bancos'], ans:1, exp:'Foco em reduzir custos de remessas e bancarizar população.'},{q:'No Brasil, o principal sistema digital concorrente/complementar é:', opts:['Bitcoin','Pix','Ethereum','Dólar'], ans:1, exp:'Pix é infraestrutura estatal de pagamentos instantâneos.'}]}
+    // Categorias para filtros
+    const categories = [
+      { id: 'all', label: 'Todos', icon: '🌐' },
+      { id: 'precursor', label: 'Precursores', icon: '🔐' },
+      { id: 'tech', label: 'Tecnologia', icon: '⚙️' },
+      { id: 'market', label: 'Mercado', icon: '📈' },
+      { id: 'adopt', label: 'Adoção', icon: '🌍' },
+      { id: 'regulation', label: 'Regulação', icon: '⚖️' },
+      { id: 'halving', label: 'Halving', icon: '✂️' },
+      { id: 'hack', label: 'Hacks', icon: '🔓' },
+      { id: 'scam', label: 'Fraudes', icon: '⚠️' },
+      { id: 'defi', label: 'DeFi/NFT', icon: '🌐' }
     ];
 
-    const glossary = [
-      { term: 'Blockchain', def: 'Registro digital distribuído e imutável de transações.', cat: 'tecnologia' },
-      { term: 'Descentralização', def: 'Controle distribuído entre múltiplos participantes, sem autoridade central.', cat: 'conceito' },
-      { term: 'Proof of Work', def: 'Mecanismo que exige esforço computacional para validar transações.', cat: 'tecnologia' },
-      { term: 'Halving', def: 'Redução pela metade da recompensa de mineração a cada ~4 anos.', cat: 'economia' },
-      { term: 'Carteira (Wallet)', def: 'Ferramenta para gerenciar chaves criptográficas e transações.', cat: 'uso' },
-      { term: 'Moeda Legal', def: 'Reconhecida por lei para quitar dívidas e obrigações.', cat: 'economia' },
-      { term: 'Inclusão Financeira', def: 'Acesso a serviços financeiros úteis para toda a população.', cat: 'social' }
-    ];
-
-    // ROTEADOR
-    function router(hash) {
-      if(hash.startsWith('#module/')) {
-        loadModuleDetail(hash.split('/')[1]);
-        hash = '#module-detail';
-      }
+    // === FUNÇÕES DE NAVEGAÇÃO ===
+    function router(section) {
+      // Atualiza navegação
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`nav a[href="#${section}"]`)?.classList.add('active');
+      
+      // Mostra seção
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      const target = document.querySelector(hash) || document.getElementById('home');
-      if(target) target.classList.add('active');
-      document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === hash));
+      document.getElementById(section)?.classList.add('active');
+      
+      // Fecha menu mobile
+      document.getElementById('main-nav')?.classList.remove('open');
+      
+      // Scroll para topo
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    window.addEventListener('hashchange', () => router(location.hash));
-    function loadModuleDetail(slug) {
-      const m = modules.find(x => x.slug === slug);
-      if(!m) return router('#modules');
-      const content = document.getElementById('module-content');
-      content.innerHTML = `
-        <div class="module-header">
-          <h1>${m.icon} ${m.title}</h1>
-          <p>${m.desc}</p>
-          <div class="module-meta"><span>⏱️ ${m.dur}</span><span>🎓 ${m.age}</span><span>📊 ${m.diff}</span><span>📚 ${m.areas.join(' • ')}</span></div>
-        </div>
-        <div class="grid" style="grid-template-columns: 2fr 1fr; gap:2rem">
-          <div>
-            <div class="card"><h2>🎯 Objetivos</h2><ul style="margin-left:1.2rem; margin-top:0.5rem">${m.bdcc? m.bdcc.map(o=>`<li>${o}</li>`).join(''):''}</ul></div>
-            <div class="card" style="margin-top:1rem"><h2>📚 Conteúdo</h2><div style="margin-top:1rem">${m.content}</div></div>
-          </div>
-          <div>
-            <div class="card"><h3>🔗 BNCC</h3><div style="margin:0.5rem 0">${m.bncc.map(b=>`<span class="badge" style="margin:2px">${b}</span>`).join('')}</div><h4 style="margin-top:0.5rem">Temas:</h4><div>${m.themes.map(t=>`<span class="badge secondary" style="margin:2px">${t}</span>`).join('')}</div></div>
-            <div class="card" style="margin-top:1rem"><h3>📥 Downloads</h3><ul style="list-style:none; margin-top:0.5rem">['Plano de Aula','Slides','Atividade Impressa','Gabarito'].map(f=>`<li style="padding:4px 0; border-bottom:1px dashed var(--border)"><a href="#">⬇️ ${f}</a></li>`).join('')}</ul></div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:2rem"><h2>🧠 Quiz de Fixação</h2><div id="quiz-container" class="quiz-container" style="margin-top:1rem"></div></div>
-      `;
-      initQuiz(m.quiz, m.slug);
+
+    function toggleMenu() {
+      document.getElementById('main-nav').classList.toggle('open');
     }
 
-    // RENDERIZADORES
-    function renderTimeline() {
-      const list = document.getElementById('timeline-list');
-      const cats = [...new Set(events.map(e=>e.cat))];
-      document.getElementById('tl-filters').innerHTML = `<button class="filter-btn active" onclick="filterCat('all')">Todos</button>` + cats.map(c=>`<button class="filter-btn" onclick="filterCat('${c}')">${c}</button>`).join('');
-      window.tlData = events;
-      updateTimeline();
+    // === FUNÇÕES DA TIMELINE ===
+    function renderTimelineFilters() {
+      const container = document.getElementById('tl-filters');
+      container.innerHTML = categories.map(cat => 
+        `<button class="filter-btn ${cat.id === 'all' ? 'active' : ''}" 
+                data-cat="${cat.id}" 
+                onclick="setTimelineFilter('${cat.id}')">
+          ${cat.icon} ${cat.label}
+        </button>`
+      ).join('');
     }
-    function filterCat(cat) {
-      document.querySelectorAll('#tl-filters .filter-btn').forEach(b=>b.classList.toggle('active', b.textContent.toLowerCase()===cat || (cat==='all' && b.textContent==='Todos')));
-      updateTimeline();
+
+    function setTimelineFilter(cat) {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      filterTimeline();
     }
-    function filterTimeline() { updateTimeline(); }
-    function updateTimeline() {
-      const q = document.getElementById('tl-search').value.toLowerCase();
-      const activeCat = document.querySelector('#tl-filters .filter-btn.active').textContent.toLowerCase();
-      const filtered = window.tlData.filter(e => {
-        const matchCat = activeCat==='todos' || e.cat===activeCat;
-        const matchQ = e.title.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q);
-        return matchCat && matchQ;
+
+    function filterTimeline() {
+      const search = document.getElementById('tl-search')?.value.toLowerCase() || '';
+      const activeCat = document.querySelector('.filter-btn.active')?.dataset.cat || 'all';
+      const activeCycle = document.querySelector('.cycle-dot.active')?.dataset.cycle || 'all';
+      
+      const filtered = events.filter(e => {
+        const matchesSearch = e.title.toLowerCase().includes(search) || 
+                             e.desc.toLowerCase().includes(search);
+        const matchesCat = activeCat === 'all' || e.cat === activeCat;
+        const matchesCycle = activeCycle === 'all' || e.cycle === activeCycle;
+        return matchesSearch && matchesCat && matchesCycle;
       });
-      document.getElementById('timeline-list').innerHTML = filtered.map(e => `
-        <div class="timeline-item category-${e.cat}">
-          <div class="timeline-content" onclick="this.classList.toggle('expanded')">
-            <div class="timeline-date">${e.dateD || e.date}</div>
-            <div class="timeline-title">${e.title}</div>
-            <div class="timeline-desc">
-              <p>${e.desc}</p>
+      
+      renderTimelineItems(filtered);
+    }
+
+    function renderTimelineItems(items) {
+      const container = document.getElementById('timeline-list');
+      if (!container) return;
+      
+      if (items.length === 0) {
+        container.innerHTML = '<p class="text-muted" style="text-align:center; padding:2rem">Nenhum evento encontrado.</p>';
+        return;
+      }
+      
+      container.innerHTML = items.map(e => `
+        <div class="timeline-item category-${e.cat}" tabindex="0" 
+             onclick="toggleEvent('${e.id}')" 
+             onkeydown="if(event.key==='Enter')toggleEvent('${e.id}')">
+          <div class="timeline-content" id="content-${e.id}">
+            <div class="timeline-date">
+              ${e.dateD || e.date}
+              ${e.cycle ? `<span class="cycle-badge">${halvingCycles.find(c=>c.id===e.cycle)?.label || ''}</span>` : ''}
+            </div>
+            <div class="timeline-title">
+              ${e.title} 
+              <span class="badge ${e.cat}">${categories.find(c=>c.id===e.cat)?.icon}</span>
+            </div>
+            <p class="timeline-desc">${e.desc}</p>
+            ${e.edu ? `
               <div class="edu-box">
-                <p><b>🎓 Para Sala:</b> ${e.edu.act}</p>
-                <p><b>💬 Debate:</b> ${e.edu.qs.join(' • ')}</p>
-                <p><b>⏱️ Duração:</b> ${e.edu.dur} | <b>BNCC:</b> ${e.edu.bncc.join(', ')}</p>
+                <strong>🎓 Para o Professor:</strong>
+                <p><strong>Objetivos:</strong> ${e.edu.obj.join(' • ')}</p>
+                <p><strong>Atividade:</strong> ${e.edu.act}</p>
+                <p><strong>Perguntas:</strong> ${e.edu.qs.join(' • ')}</p>
+                <p><strong>Duração:</strong> ${e.edu.dur} | <strong>BNCC:</strong> ${e.edu.bncc.join(', ')}</p>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleEvent(id) {
+      const content = document.getElementById(`content-${id}`);
+      if (content) content.classList.toggle('expanded');
+    }
+
+    // === CICLOS DE HALVING ===
+    function renderCyclePreview() {
+      const container = document.getElementById('cycle-preview');
+      const info = document.getElementById('cycle-info');
+      if (!container) return;
+      
+      container.innerHTML = halvingCycles.map((c, i) => `
+        <div class="cycle-dot ${i === halvingCycles.length - 2 ? 'active' : ''}" 
+             data-cycle="${c.id}" 
+             onclick="selectCycle('${c.id}')">
+          <div class="cycle-year">${c.year}</div>
+          <div class="cycle-reward">${c.reward} BTC</div>
+        </div>
+      `).join('');
+      
+      // Info inicial
+      updateCycleInfo(halvingCycles[halvingCycles.length - 2]);
+    }
+
+    function renderCycleFilter() {
+      const container = document.getElementById('cycle-filter');
+      if (!container) return;
+      
+      container.innerHTML = `
+        <div class="cycle-dot active" data-cycle="all" onclick="selectCycle('all')">
+          <div class="cycle-year">Todos</div>
+          <div class="cycle-reward">—</div>
+        </div>
+        ${halvingCycles.map(c => `
+          <div class="cycle-dot" data-cycle="${c.id}" onclick="selectCycle('${c.id}')">
+            <div class="cycle-year">${c.year}</div>
+            <div class="cycle-reward">${c.reward} BTC</div>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function selectCycle(cycleId) {
+      // Atualiza visual
+      document.querySelectorAll('.cycle-dot').forEach(d => d.classList.remove('active'));
+      document.querySelector(`.cycle-dot[data-cycle="${cycleId}"]`)?.classList.add('active');
+      
+      // Atualiza info
+      const cycle = halvingCycles.find(c => c.id === cycleId);
+      if (cycle) updateCycleInfo(cycle);
+      
+      // Filtra timeline
+      filterTimeline();
+    }
+
+    function updateCycleInfo(cycle) {
+      const info = document.getElementById('cycle-info');
+      if (!info) return;
+      
+      const nextIdx = halvingCycles.findIndex(c => c.id === cycle.id) + 1;
+      const next = halvingCycles[nextIdx];
+      
+      info.innerHTML = `
+        <strong>${cycle.label}:</strong> ${cycle.year} • 
+        Recompensa: ${cycle.reward} BTC • 
+        ${next ? `Próximo: ${next.year} → ${next.reward} BTC` : 'Último ciclo projetado'}
+        <br><small style="color:var(--text-muted)">${cycle.desc}</small>
+      `;
+    }
+
+    // === MÓDULOS EDUCATIVOS ===
+    function renderModules() {
+      const modules = [
+        { id: 'mod1', title: 'O Que É Bitcoin?', icon: '₿', desc: 'Conceitos fundamentais: blockchain, descentralização, chaves públicas/privadas.', level: 'Fundamental II', duration: '4 aulas', bncc: ['EF09MA08','EF09CI10'] },
+        { id: 'mod2', title: 'História do Dinheiro', icon: '🪙', desc: 'De trocas ao Bitcoin: evolução dos sistemas monetários e crises que moldaram inovações.', level: 'Ensino Médio', duration: '6 aulas', bncc: ['EM13CHS402','EM13LGG603'] },
+        { id: 'mod3', title: 'Ciclos de Halving', icon: '✂️', desc: 'Matemática da escassez programada: progressão geométrica, emissão e política monetária algorítmica.', level: 'Ensino Médio', duration: '3 aulas', bncc: ['EM13MAT305','EM13MAT312'] },
+        { id: 'mod4', title: 'Segurança Digital', icon: '🔐', desc: 'Custódia, phishing, 2FA e práticas seguras para estudantes no mundo cripto.', level: 'Fundamental II', duration: '2 aulas', bncc: ['EF09CI10','EM13LGG602'] },
+        { id: 'mod5', title: 'Bitcoin e Sociedade', icon: '🌍', desc: 'Inclusão financeira, remessas, soberania monetária e o papel do Estado na regulação.', level: 'Ensino Médio', duration: '5 aulas', bncc: ['EM13CHS101','EM13CHS402'] },
+        { id: 'mod6', title: 'Matemática do Bitcoin', icon: '📊', desc: 'Hash functions, proof-of-work, dificuldade de mineração e análise de dados on-chain.', level: 'Ensino Médio', duration: '4 aulas', bncc: ['EM13MAT305','EM13MAT312'] }
+      ];
+      
+      const container = document.getElementById('modules-grid');
+      if (!container) return;
+      
+      container.innerHTML = modules.map(m => `
+        <div class="card" style="cursor:pointer" onclick="openModule('${m.id}')">
+          <div style="font-size:2rem; margin-bottom:0.5rem">${m.icon}</div>
+          <h3>${m.title}</h3>
+          <p class="text-muted" style="margin:0.5rem 0">${m.desc}</p>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:1rem">
+            <span class="badge">${m.level}</span>
+            <span class="badge secondary">⏱ ${m.duration}</span>
+            <span class="badge accent">📜 ${m.bncc.length} BNCC</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openModule(id) {
+      const module = {
+        mod1: {
+          title: 'O Que É Bitcoin?',
+          content: `
+            <div class="module-header">
+              <h2>₿ O Que É Bitcoin?</h2>
+              <p>Conceitos fundamentais para estudantes do Fundamental II</p>
+              <div class="module-meta">
+                <span>⏱ 4 aulas</span>
+                <span>🎯 EF09MA08 • EF09CI10</span>
+                <span>👥 8º-9º ano</span>
               </div>
             </div>
-          </div>
-        </div>
-      `).join('');
+            <div class="card">
+              <h3>Objetivos de Aprendizagem</h3>
+              <ul style="margin-left:1.5rem; margin-top:0.5rem">
+                <li>Compreender o conceito de descentralização</li>
+                <li>Diferenciar moeda fiduciária de criptomoeda</li>
+                <li>Entender o papel das chaves públicas e privadas</li>
+                <li>Identificar usos legítimos e riscos do Bitcoin</li>
+              </ul>
+            </div>
+            <div class="grid" style="margin-top:1.5rem">
+              <div class="card">
+                <h4>🎲 Atividade 1: Simulando Transações</h4>
+                <p>Em duplas, os alunos simulam envio de "BTC" usando envelopes (chaves) e um quadro público (blockchain).</p>
+              </div>
+              <div class="card">
+                <h4>🗣️ Atividade 2: Debate Guiado</h4>
+                <p>"Bitcoin é dinheiro?" — Argumentação com base em funções da moeda: meio de troca, reserva de valor, unidade de conta.</p>
+              </div>
+            </div>
+            <button class="btn btn-primary" style="margin-top:1.5rem" onclick="router('modules')">← Voltar para Módulos</button>
+          `
+        }
+      }[id] || { title: 'Módulo', content: '<p>Conteúdo em desenvolvimento.</p><button class="btn btn-outline" onclick="router(\'modules\')">← Voltar</button>' };
+      
+      document.getElementById('module-content').innerHTML = module.content;
+      router('module-detail');
     }
 
-    function renderModules() {
-      document.getElementById('modules-grid').innerHTML = modules.map(m => `
-        <div class="card">
-          <div style="display:flex; gap:0.75rem; align-items:center; margin-bottom:0.5rem"><span style="font-size:2rem">${m.icon}</span><h3>${m.title}</h3></div>
-          <span class="badge">${m.age}</span> <span class="badge secondary">${m.diff}</span>
-          <p style="margin:0.5rem 0; color:var(--text-muted)">${m.desc}</p>
-          <div style="display:flex; gap:0.5rem; margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted)">⏱️ ${m.dur} • 📚 ${m.areas[0]}</div>
-          <button class="btn btn-primary" style="width:100%; margin-top:1rem" onclick="location.hash='#module/${m.slug}'">Começar Módulo</button>
-        </div>
-      `).join('');
-    }
-
+    // === GLOSSÁRIO ===
     function renderGlossary() {
-      const grid = document.getElementById('glossary-grid');
-      grid.innerHTML = glossary.map(g => `
-        <div class="card term-card"><h3>${g.term} <span class="badge" style="margin-left:0.5rem">${g.cat}</span></h3><p style="margin:0.5rem 0">${g.def}</p></div>
-      `).join('');
-    }
-    function filterGlossary() {
-      const q = document.getElementById('gl-search').value.toLowerCase();
-      document.querySelectorAll('#glossary-grid .card').forEach(c => {
-        c.style.display = c.textContent.toLowerCase().includes(q) ? 'block' : 'none';
-      });
+      const terms = [
+        { term: 'Blockchain', def: 'Registro digital descentralizado e imutável de transações, organizado em blocos encadeados criptograficamente.' },
+        { term: 'Halving', def: 'Evento programado a cada 210.000 blocos (~4 anos) que reduz pela metade a recompensa dos mineradores, controlando a emissão de novos bitcoins.' },
+        { term: 'Proof-of-Work', def: 'Mecanismo de consenso que exige esforço computacional para validar transações e criar novos blocos, garantindo segurança à rede.' },
+        { term: 'Chave Privada', def: 'Senha secreta que prova propriedade de bitcoins. Quem controla a chave privada controla os fundos. Nunca compartilhe!' },
+        { term: 'Descentralização', def: 'Distribuição de controle e decisão entre muitos participantes, sem autoridade central única. Princípio fundamental do Bitcoin.' },
+        { term: 'Escassez Programada', def: 'Política monetária algorítmica que limita a oferta total de Bitcoin a 21 milhões de unidades, com emissão decrescente via halvings.' },
+        { term: 'Wallet (Carteira)', def: 'Software ou dispositivo que armazena chaves criptográficas e permite enviar/receber bitcoins. Pode ser custodial ou não-custodial.' },
+        { term: 'Mining (Mineração)', def: 'Processo de validar transações e criar novos blocos usando poder computacional, recompensado com bitcoins recém-emitidos e taxas.' }
+      ];
+      
+      const container = document.getElementById('glossary-grid');
+      if (!container) return;
+      
+      const search = document.getElementById('gl-search')?.value.toLowerCase() || '';
+      const filtered = terms.filter(t => t.term.toLowerCase().includes(search) || t.def.toLowerCase().includes(search));
+      
+      container.innerHTML = filtered.map(t => `
+        <div class="card term-card">
+          <h4 style="color:var(--primary); margin-bottom:0.25rem">${t.term}</h4>
+          <p style="font-size:0.95rem; color:var(--text-muted)">${t.def}</p>
+        </div>
+      `).join('') || '<p style="grid-column:1/-1; text-align:center; color:var(--text-muted)">Nenhum termo encontrado.</p>';
     }
 
-    // QUIZ
-    let quizState = { idx: 0, score: 0, questions: [] };
-    function initQuiz(questions, modSlug) {
-      if(!questions || !questions.length) return;
-      quizState = { idx: 0, score: 0, questions, modSlug, selected: -1, answered: false };
-      renderQuiz();
+    function filterGlossary() {
+      renderGlossary();
     }
-    function renderQuiz() {
-      const c = document.getElementById('quiz-container');
-      if(!c) return;
-      const q = quizState.questions[quizState.idx];
-      const total = quizState.questions.length;
-      c.innerHTML = `
-        <div class="quiz-progress"><div class="quiz-progress-bar" style="width:${((quizState.idx)/total)*100}%"></div></div>
-        <h3>Pergunta ${quizState.idx+1} de ${total}</h3>
-        <p style="margin:1rem 0; font-size:1.1rem">${q.q}</p>
-        <div id="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-option" onclick="selectQuizOpt(${i})" data-idx="${i}">${String.fromCharCode(65+i)}) ${o}</button>`).join('')}</div>
-        <div id="quiz-fb" class="quiz-feedback"></div>
-        <div style="display:flex; justify-content:space-between; margin-top:1rem">
-          <button class="btn btn-outline" disabled>← Anterior</button>
-          <button id="quiz-next" class="btn btn-primary" disabled onclick="confirmQuiz()">Confirmar</button>
-        </div>
-      `;
+
+    // === ACESSIBILIDADE ===
+    function toggleA11y() {
+      document.getElementById('a11y-panel').classList.toggle('open');
     }
-    function selectQuizOpt(i) {
-      if(quizState.answered) return;
-      quizState.selected = i;
-      document.querySelectorAll('.quiz-option').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.idx)===i));
-      document.getElementById('quiz-next').disabled = false;
-    }
-    function confirmQuiz() {
-      const q = quizState.questions[quizState.idx];
-      quizState.answered = true;
-      const isCorrect = quizState.selected === q.ans;
-      if(isCorrect) quizState.score++;
-      document.querySelectorAll('.quiz-option').forEach(b => {
-        const idx = parseInt(b.dataset.idx);
-        if(idx === q.ans) b.classList.add('correct');
-        else if(idx === quizState.selected) b.classList.add('wrong');
-        b.onclick = null;
-      });
-      const fb = document.getElementById('quiz-fb');
-      fb.className = `quiz-feedback show ${isCorrect?'correct':'wrong'}`;
-      fb.innerHTML = `<b>${isCorrect?'✅ Correto!':'❌ Incorreto.'}</b><br>${q.exp}`;
-      const btn = document.getElementById('quiz-next');
-      btn.textContent = quizState.idx < quizState.questions.length - 1 ? 'Próxima →' : 'Ver Resultado';
-      btn.disabled = false;
-      btn.onclick = nextQuiz;
-    }
-    function nextQuiz() {
-      if(quizState.idx < quizState.questions.length - 1) {
-        quizState.idx++; quizState.selected = -1; quizState.answered = false;
-        renderQuiz();
-      } else {
-        const pct = Math.round((quizState.score/quizState.questions.length)*100);
-        document.getElementById('quiz-container').innerHTML = `
-          <div style="text-align:center; padding:2rem">
-            <div style="font-size:4rem; margin-bottom:1rem">${pct>=80?'🏆':pct>=50?'👍':'📚'}</div>
-            <h2>Quiz Concluído!</h2>
-            <p style="font-size:2rem; font-weight:bold; color:var(--primary)">${pct}%</p>
-            <p>Você acertou ${quizState.score} de ${quizState.questions.length} questões.</p>
-            <button class="btn btn-primary" style="margin-top:1rem" onclick="initQuiz(${JSON.stringify(quizState.questions).replace(/"/g, '&quot;')}, '${quizState.modSlug}')">Refazer Quiz</button>
-            <button class="btn btn-outline" style="margin-top:1rem; margin-left:0.5rem" onclick="location.hash='#modules'">Voltar aos Módulos</button>
-          </div>
-        `;
+
+    function toggleA11ySetting(setting) {
+      const toggle = document.getElementById(`toggle-${setting}`);
+      const isOn = toggle.classList.toggle('on');
+      
+      if (setting === 'contrast') {
+        document.body.classList.toggle('high-contrast', isOn);
+        if (isOn) { document.body.classList.remove('dark'); document.getElementById('toggle-dark').classList.remove('on'); }
+      }
+      if (setting === 'dark') {
+        document.body.classList.toggle('dark', isOn);
+        if (isOn) { document.body.classList.remove('high-contrast'); document.getElementById('toggle-contrast').classList.remove('on'); }
+      }
+      if (setting === 'large') {
+        document.body.classList.toggle('large-text', isOn);
       }
     }
 
-    // ACESSIBILIDADE & UI
-    function toggleMenu() { document.getElementById('main-nav').classList.toggle('open'); }
-    function toggleA11y() { document.getElementById('a11y-panel').classList.toggle('open'); }
-    function toggleA11ySetting(type) {
-      const el = document.getElementById('toggle-'+type);
-      el.classList.toggle('on');
-      const body = document.body;
-      if(type==='contrast') body.classList.toggle('high-contrast');
-      if(type==='large') body.classList.toggle('large-text');
-      if(type==='dark') body.classList.toggle('dark');
-      try { localStorage.setItem('a11y-'+type, el.classList.contains('on')); } catch {}
-    }
-    function loadA11y() {
-      ['contrast','large','dark'].forEach(t => {
-        const val = localStorage.getItem('a11y-'+t) === 'true';
-        if(val) { document.body.classList.toggle('high-contrast', t==='contrast'); document.body.classList.toggle('large-text', t==='large'); document.body.classList.toggle('dark', t==='dark'); document.getElementById('toggle-'+t).classList.add('on'); }
+    // === INICIALIZAÇÃO ===
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ano no footer
+      document.getElementById('year').textContent = new Date().getFullYear();
+      
+      // Timeline
+      renderTimelineFilters();
+      renderCyclePreview();
+      renderCycleFilter();
+      renderTimelineItems(events);
+      
+      // Módulos
+      renderModules();
+      
+      // Glossário
+      renderGlossary();
+      
+      // Event listeners para inputs
+      const tlSearch = document.getElementById('tl-search');
+      if (tlSearch) tlSearch.addEventListener('input', filterTimeline);
+      
+      const glSearch = document.getElementById('gl-search');
+      if (glSearch) glSearch.addEventListener('input', filterGlossary);
+      
+      // Fechar painel de acessibilidade ao clicar fora
+      document.addEventListener('click', (e) => {
+        const panel = document.getElementById('a11y-panel');
+        const toggle = document.querySelector('.a11y-toggle');
+        if (panel?.classList.contains('open') && !panel.contains(e.target) && !toggle.contains(e.target)) {
+          panel.classList.remove('open');
+        }
       });
-    }
-
-    // INIT
-    document.getElementById('year').textContent = new Date().getFullYear();
-    window.addEventListener('DOMContentLoaded', () => {
-      renderTimeline(); renderModules(); renderGlossary(); loadA11y();
-      if(location.hash) router(location.hash); else router('#home');
     });
   </script>
 </body>
